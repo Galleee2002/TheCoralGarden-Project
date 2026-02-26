@@ -5,3 +5,98 @@ datasource db {
 generator client {
   provider = "prisma-client-js"
 }
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  products    Product[]
+  createdAt   DateTime  @default(now())
+}
+
+model Product {
+  id          String      @id @default(cuid())
+  name        String
+  slug        String      @unique
+  description String
+  price       Decimal     @db.Decimal(10, 2)
+  stock       Int         @default(0)
+  images      String[]
+  featured    Boolean     @default(false)
+  active      Boolean     @default(true)
+  category    Category    @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  orderItems  OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Order {
+  id               String      @id @default(cuid())
+  status           OrderStatus @default(PENDING)
+  customerName     String
+  customerEmail    String
+  customerPhone    String
+  customerStreet   String
+  customerCity     String
+  customerProvince String
+  customerZip      String
+  subtotal         Decimal     @db.Decimal(10, 2)
+  shippingCost     Decimal     @db.Decimal(10, 2)
+  total            Decimal     @db.Decimal(10, 2)
+  mpPreferenceId   String?
+  mpPaymentId      String?
+  items            OrderItem[]
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model OrderItem {
+  id          String  @id @default(cuid())
+  order       Order   @relation(fields: [orderId], references: [id])
+  orderId     String
+  product     Product @relation(fields: [productId], references: [id])
+  productId   String
+  productName String
+  quantity    Int
+  unitPrice   Decimal @db.Decimal(10, 2)
+}
+
+model TechnicalServiceRequest {
+  id               String                  @id @default(cuid())
+  name             String
+  email            String
+  phone            String
+  equipmentBrand   String
+  useCase          TechnicalServiceUseCase
+  issueDescription String
+  status           TechnicalServiceStatus  @default(PENDING)
+  adminNotes       String?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  PROCESSING
+  SHIPPED
+  DELIVERED
+  CANCELLED
+}
+
+enum TechnicalServiceUseCase {
+  ACUARISMO
+  CULTIVO_INDOOR
+  DOMESTICO
+  COMERCIAL
+  INDUSTRIAL
+}
+
+enum TechnicalServiceStatus {
+  PENDING
+  CONTACTED
+  IN_PROGRESS
+  RESOLVED
+}
