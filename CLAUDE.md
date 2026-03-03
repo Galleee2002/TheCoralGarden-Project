@@ -46,11 +46,55 @@
 
 ## Frontend
 - Componentes usan primitivas de shadcn, extendidas con Tailwind
-- **Paleta de colores, tipografías, espaciados y border-radius AÚN NO ESTÁN DEFINIDOS**
-- Los tokens de diseño se determinarán a partir de los wireframes del cliente
-- Hasta entonces NO asumir ni inventar valores; esperar confirmación antes de definirlos en `src/app/globals.css`
 - Botón flotante de WhatsApp en todas las páginas (`WhatsAppButton.tsx`)
 - CartDrawer accesible desde el Navbar en todas las páginas
+
+## Paleta de colores — Design Tokens (`src/app/globals.css`)
+
+Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
+
+### Variables de marca (custom, disponibles como utilidades Tailwind)
+| Variable CSS         | Color     | Uso                                          |
+|----------------------|-----------|----------------------------------------------|
+| `--bg-primary`       | `#F8F8F8` | Fondo principal de páginas                   |
+| `--bg-secondary`     | `#042F34` | Navbar, footer, secciones oscuras, banners   |
+| `--text-primary`     | `#111C24` | Texto de cuerpo y títulos sobre fondo claro  |
+| `--text-secondary`   | `#74E4BB` | Texto de acento / highlights                 |
+| `--btn-primary`      | `#042F34` | Botón primario (ej: "Comprar ahora")         |
+| `--btn-outline`      | `#74E4BB` | Borde de botones outline (ej: "Ver más")     |
+| `--btn-secondary`    | `#74E4BB` | Botón secundario sólido sin outline          |
+| `--btn-disabled`     | `#82979A` | Estado deshabilitado                         |
+| `--btn-destructive`  | `#DC2626` | Acciones destructivas                        |
+| `--btn-focus`        | `#A1A1AA` | Ring de foco                                 |
+| `--card-default`     | `#F8F8F8` | Tarjetas de producto (estándar)              |
+| `--card-dark`        | `#042F34` | Card variant 1 — oscura                      |
+| `--card-blue`        | `#33C2E9` | Card variant 2 — azul cielo                  |
+| `--card-light`       | `#D6E5E9` | Fondos de sección (ej: Productos Relacionados)|
+
+### Uso en Tailwind
+```tsx
+// Las variables están mapeadas en @theme inline → disponibles como utilidades
+<div className="bg-bg-secondary text-text-secondary" />
+<div className="bg-card-dark" />
+<div className="bg-card-blue" />
+<button className="bg-btn-primary" />
+// También se puede usar var() directamente
+<div className="bg-[var(--card-light)]" />
+```
+
+### Tokens semánticos de Shadcn mapeados a la marca
+| Token Shadcn     | → Variable de marca     |
+|------------------|-------------------------|
+| `--background`   | `#F8F8F8` (bg-primary)  |
+| `--foreground`   | `#111C24` (text-primary)|
+| `--primary`      | `#042F34` (btn-primary) |
+| `--accent`       | `#74E4BB` (btn-outline) |
+| `--secondary`    | `#D6E5E9` (card-light)  |
+| `--destructive`  | `#DC2626`               |
+| `--ring`         | `#A1A1AA` (btn-focus)   |
+| `--sidebar`      | `#042F34` (bg-secondary)|
+
+> **Tipografías, espaciados y border-radius**: aún por definir.
 
 ## Backend / DB
 - Todas las mutaciones de DB van a través de Prisma
