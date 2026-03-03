@@ -104,7 +104,7 @@ Variables CSS disponibles como utilidades Tailwind:
 - `font-heading` → Le Havre (`--font-le-havre`)
 - `font-sans` / `font-body` → Montserrat (`--font-montserrat`)
 
-> **Importante:** colocar `LeHavre-Black.woff2` y `LeHavre-Bold.woff2` en `src/app/fonts/` para que el build funcione.
+> Archivos ya ubicados en `src/app/fonts/LeHavre-Black.otf` y `src/app/fonts/LeHavre-Bold.otf`.
 
 ### Border Radius
 | Variable CSS         | Valor  | Uso                              | Utilidad Tailwind    |

@@ -24,12 +24,12 @@ const leHavre = localFont({
   display: "swap",
   src: [
     {
-      path: "./fonts/LeHavre-Black.woff2",
+      path: "./fonts/LeHavre-Black.otf",
       weight: "900",
       style: "normal",
     },
     {
-      path: "./fonts/LeHavre-Bold.woff2",
+      path: "./fonts/LeHavre-Bold.otf",
       weight: "700",
       style: "normal",
     },
