@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import { Geist } from "next/font/google";
+import { Montserrat } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
@@ -7,9 +8,32 @@ import { Providers } from "@/components/layout/Providers";
 import { Toaster } from "@/components/ui/sonner";
 import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Body: Montserrat Medium (500) y Bold (700)
+const montserrat = Montserrat({
+  variable: "--font-montserrat",
   subsets: ["latin"],
+  weight: ["500", "700"],
+  display: "swap",
+});
+
+// Headings: Le Havre Black (900) y Bold (700)
+// Colocar los archivos en: src/app/fonts/LeHavre-Black.woff2
+//                           src/app/fonts/LeHavre-Bold.woff2
+const leHavre = localFont({
+  variable: "--font-le-havre",
+  display: "swap",
+  src: [
+    {
+      path: "./fonts/LeHavre-Black.woff2",
+      weight: "900",
+      style: "normal",
+    },
+    {
+      path: "./fonts/LeHavre-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
 });
 
 export const metadata: Metadata = {
@@ -36,7 +60,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${geistSans.variable} font-sans antialiased`}>
+      <body className={`${montserrat.variable} ${leHavre.variable} font-sans antialiased`}>
         <Providers>
           <Navbar />
           <main className="min-h-screen">{children}</main>

@@ -94,7 +94,27 @@ Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
 | `--ring`         | `#A1A1AA` (btn-focus)   |
 | `--sidebar`      | `#042F34` (bg-secondary)|
 
-> **Tipografías, espaciados y border-radius**: aún por definir.
+### Tipografías
+| Fuente       | Pesos           | Uso                        | Carga              |
+|--------------|-----------------|----------------------------|--------------------|
+| Le Havre     | Black 900, Bold 700 | Encabezados y títulos  | `next/font/local` — archivos en `src/app/fonts/` |
+| Montserrat   | Medium 500, Bold 700 | Body                  | `next/font/google` |
+
+Variables CSS disponibles como utilidades Tailwind:
+- `font-heading` → Le Havre (`--font-le-havre`)
+- `font-sans` / `font-body` → Montserrat (`--font-montserrat`)
+
+> **Importante:** colocar `LeHavre-Black.woff2` y `LeHavre-Bold.woff2` en `src/app/fonts/` para que el build funcione.
+
+### Border Radius
+| Variable CSS         | Valor  | Uso                              | Utilidad Tailwind    |
+|----------------------|--------|----------------------------------|----------------------|
+| `--radius-card`      | `15px` | Tarjetas de producto             | `rounded-card` / `rounded-lg` |
+| `--radius-button`    | `6px`  | Botones                          | `rounded-button` / `rounded-md` |
+| `--radius-dropdown`  | `5px`  | Desplegables, FAQ, tooltips      | `rounded-dropdown` / `rounded-sm` |
+
+### Espaciados
+> Aún por definir — ver sección de pendientes.
 
 ## Backend / DB
 - Todas las mutaciones de DB van a través de Prisma
