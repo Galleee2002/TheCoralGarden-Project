@@ -1,24 +1,26 @@
-import { HeroSection } from "@/features/home/components/HeroSection";
-import { ValueProposition } from "@/features/home/components/ValueProposition";
-import { UseCasesGrid } from "@/features/home/components/UseCasesGrid";
-import { FeaturedProducts } from "@/features/home/components/FeaturedProducts";
-import { TechnicalServiceBanner } from "@/features/home/components/TechnicalServiceBanner";
 import { Suspense } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HeroSection } from "@/features/home/components/HeroSection";
+import { AboutSection } from "@/features/home/components/AboutSection";
+import { BrandsCarousel } from "@/features/home/components/BrandsCarousel";
+import { ServicesSection } from "@/features/home/components/ServicesSection";
+import { FeaturedProducts } from "@/features/home/components/FeaturedProducts";
+import { FAQSection } from "@/features/home/components/FAQSection";
+import { MiniBanner } from "@/features/home/components/MiniBanner";
 
 function FeaturedProductsSkeleton() {
   return (
-    <section className="py-16 sm:py-20">
+    <section className="bg-bg-secondary py-section-mobile md:py-section">
       <div className="container mx-auto px-4">
         <div className="mb-10">
-          <Skeleton className="mb-2 h-8 w-64" />
-          <Skeleton className="h-5 w-48" />
+          <Skeleton className="mb-2 h-8 w-64 bg-white/10" />
+          <Skeleton className="h-5 w-48 bg-white/10" />
         </div>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="overflow-hidden rounded-xl border">
-              <Skeleton className="aspect-square w-full" />
-              <div className="p-4">
+            <div key={i} className="overflow-hidden rounded-card">
+              <Skeleton className="aspect-square w-full bg-white/10" />
+              <div className="bg-card-default p-4">
                 <Skeleton className="mb-2 h-4 w-full" />
                 <Skeleton className="h-4 w-2/3" />
               </div>
@@ -34,12 +36,14 @@ export default function HomePage() {
   return (
     <>
       <HeroSection />
-      <ValueProposition />
-      <UseCasesGrid />
+      <AboutSection />
+      <BrandsCarousel />
+      <ServicesSection />
       <Suspense fallback={<FeaturedProductsSkeleton />}>
         <FeaturedProducts />
       </Suspense>
-      <TechnicalServiceBanner />
+      <FAQSection />
+      <MiniBanner />
     </>
   );
 }

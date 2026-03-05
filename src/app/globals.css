@@ -60,6 +60,7 @@
   --color-text-primary: var(--text-primary);
   --color-text-secondary: var(--text-secondary);
   --color-btn-primary: var(--btn-primary);
+  --color-btn-primary-hover: var(--btn-primary-hover);
   --color-btn-outline: var(--btn-outline);
   --color-btn-secondary: var(--btn-secondary);
   --color-btn-disabled: var(--btn-disabled);
@@ -108,6 +109,7 @@
 
   /* Buttons */
   --btn-primary: #042F34;
+  --btn-primary-hover: #063B41;
   --btn-outline: #74E4BB;
   --btn-secondary: #74E4BB;
   --btn-disabled: #82979A;
@@ -204,5 +206,14 @@
   }
   body {
     @apply bg-background text-foreground;
+  }
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
   }
 }

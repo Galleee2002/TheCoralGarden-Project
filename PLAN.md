@@ -5,6 +5,53 @@ Separado por capa: **Backend** primero (siempre), luego **Frontend**.
 
 ---
 
+## Estado del Backend — COMPLETADO
+
+Todo el backend está implementado y funcional. A continuación el inventario completo:
+
+### Modelos Prisma (5 modelos, 3 enums)
+| Modelo | Propósito |
+|--------|-----------|
+| `Category` | Categorización de productos (name, slug, description) |
+| `Product` | Productos e-commerce (precio, stock, imágenes[], specs[], featured, active, FK→Category) |
+| `Order` | Órdenes guest checkout (datos cliente, subtotal, shipping, total, integración MP) |
+| `OrderItem` | Ítems de orden (FK→Order, FK→Product, cantidad, precio unitario) |
+| `TechnicalServiceRequest` | Solicitudes de servicio técnico (datos contacto, equipo, caso de uso, estado) |
+
+**Enums:** `OrderStatus` (PENDING→PAID→PROCESSING→SHIPPED→DELIVERED/CANCELLED), `TechnicalServiceUseCase` (ACUARISMO, CULTIVO_INDOOR, DOMESTICO, COMERCIAL, INDUSTRIAL), `TechnicalServiceStatus` (PENDING→CONTACTED→IN_PROGRESS→RESOLVED)
+
+### Server Actions implementadas
+| Feature | Action | Tipo |
+|---------|--------|------|
+| Products | `getProducts` | Lectura — filtros, búsqueda, paginación (12/pág) |
+| Products | `getProductBySlug` | Lectura — detalle con categoría |
+| Products | `getFeaturedProducts` | Lectura — carousel home (limit 8) |
+| Products | `getCategories` | Lectura — con conteo de productos |
+| Checkout | `createOrder` | Mutación — crea orden + ítems, calcula subtotal |
+| Checkout | `createMercadoPagoPreference` | Mutación — crea preferencia MP, retorna initPoint |
+| Admin | `createProduct` / `updateProduct` / `deleteProduct` | CRUD productos |
+| Admin | `createCategory` / `updateCategory` / `deleteCategory` | CRUD categorías |
+| Admin | `getOrders` | Lectura — tabla órdenes con paginación (20/pág) |
+| Admin | `updateOrderStatus` | Mutación — cambio manual de estado |
+| Admin | `getTechnicalRequests` | Lectura — tabla solicitudes con paginación |
+| Admin | `updateTechnicalRequestStatus` | Mutación — estado + notas admin |
+
+### API Routes
+- `POST /api/webhooks/mp` — Webhook MercadoPago (valida pago → actualiza Order.status)
+- `POST /api/auth/logout` — Logout admin (Supabase signOut → redirect)
+
+### Infraestructura
+- [x] Migración inicial aplicada (`0_init/migration.sql`)
+- [x] Prisma client singleton con connection pooling (`src/lib/prisma/client.ts`)
+- [x] Supabase clients: server SSR (`src/lib/supabase/server.ts`) + browser (`src/lib/supabase/client.ts`)
+- [x] next-safe-action instance (`src/lib/safe-action.ts`)
+- [x] Zod v4 + hookform resolver wrapper (`src/lib/zod-resolver.ts`)
+- [x] Middleware de auth para `/admin/*` (`src/middleware.ts`)
+- [x] Enums re-exportados para cliente (`src/types/enums.ts`)
+- [x] Cart store Zustand con persistencia (`src/features/cart/store/cartStore.ts`)
+
+---
+
 ## 0. Punto de Partida: El Wireframe
 
 **Lo que vos me pasás:**
@@ -25,141 +72,6 @@ Separado por capa: **Backend** primero (siempre), luego **Frontend**.
 
 ---
 
-## 1. Backend
-
-Todo lo que involucra DB, lógica de servidor y validaciones.
-**Siempre se hace antes que el frontend** para que los componentes ya tengan datos reales.
-
-### 1.1 Schema de Prisma (si aplica)
-
-Aplica cuando la página requiere un modelo nuevo o cambio a uno existente.
-
-**Archivos involucrados:**
-- `prisma/schema.prisma` — agregar/modificar modelos y enums
-- `prisma.config.ts` — no tocar (ya configurado)
-
-**Pasos (red normal):**
-1. Agregar el modelo o campo nuevo en `schema.prisma`
-2. Ejecutar `pnpm prisma migrate dev --name <nombre-descriptivo>`
-3. Ejecutar `pnpm prisma generate` para regenerar los tipos
-4. Actualizar `src/types/enums.ts` si se agregaron nuevos enums de Prisma
-
-**Pasos alternativos (si la red bloquea puertos 5432/6543):**
-1. Agregar el modelo o campo nuevo en `schema.prisma`
-2. Escribir el SQL equivalente y aplicarlo via Supabase MCP (`apply_migration`)
-3. Crear el archivo `prisma/migrations/<timestamp>_<nombre>/migration.sql` con ese SQL
-4. Registrar la migración en `_prisma_migrations` via `execute_sql`:
-   ```sql
-   INSERT INTO "_prisma_migrations" (id, checksum, finished_at, migration_name, started_at, applied_steps_count)
-   VALUES (gen_random_uuid()::varchar, 'manual_baseline', now(), '<timestamp>_<nombre>', now(), 1);
-   ```
-5. Ejecutar `pnpm prisma generate` localmente (no requiere conexión DB)
-
-**Ejemplo — agregar campo `weight` a `Product`:**
-```prisma
-// prisma/schema.prisma
-model Product {
-  // ...campos existentes
-  weight Float? // gramos, opcional
-}
-```
-```bash
-pnpm prisma migrate dev --name add-product-weight
-pnpm prisma generate
-```
-
-**Convenciones:**
-- Nombres de modelos en PascalCase singular (`Product`, no `Products`)
-- Enums en SCREAMING_SNAKE_CASE
-- El bloque `datasource db` solo tiene `provider = "postgresql"` (no URL)
-
----
-
-### 1.2 Server Actions de Lectura
-
-Para traer datos que se muestran en la página.
-
-**Ubicación:** `src/features/<feature>/actions/<actionName>.ts`
-
-**Patrón estándar:**
-```ts
-// src/features/products/actions/getProducts.ts
-"use server";
-
-import { action } from "@/lib/safe-action";
-import { prisma } from "@/lib/prisma/client";
-import { z } from "zod";
-
-const schema = z.object({
-  categorySlug: z.string().optional(),
-  page: z.number().int().min(1).default(1),
-});
-
-export const getProducts = action
-  .schema(schema)
-  .action(async ({ parsedInput }) => {
-    const products = await prisma.product.findMany({
-      where: {
-        active: true,
-        ...(parsedInput.categorySlug && {
-          category: { slug: parsedInput.categorySlug },
-        }),
-      },
-      include: { category: true },
-    });
-    return { products };
-  });
-```
-
-**Checklist:**
-- [ ] `"use server"` al inicio
-- [ ] Schema Zod para todos los inputs
-- [ ] Usar `action` de `@/lib/safe-action`
-- [ ] Acceso a DB solo a través de `@/lib/prisma/client`
-- [ ] Retornar objeto con nombre descriptivo (no retornar el array directamente)
-
----
-
-### 1.3 Server Actions de Mutación
-
-Para formularios y acciones que modifican datos.
-
-**Patrón estándar:**
-```ts
-// src/features/technical-service/actions/createTechnicalServiceRequest.ts
-"use server";
-
-import { action } from "@/lib/safe-action";
-import { prisma } from "@/lib/prisma/client";
-import { z } from "zod";
-import { TechnicalServiceUseCase } from "@/types/enums";
-
-const schema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().min(6),
-  equipmentBrand: z.string().min(1),
-  useCase: z.nativeEnum(TechnicalServiceUseCase),
-  issueDescription: z.string().min(10),
-});
-
-export const createTechnicalServiceRequest = action
-  .schema(schema)
-  .action(async ({ parsedInput }) => {
-    const request = await prisma.technicalServiceRequest.create({
-      data: parsedInput,
-    });
-    return { id: request.id };
-  });
-```
-
-**Checklist:**
-- [ ] Validar todo con Zod antes de tocar la DB
-- [ ] Enums de Prisma: importar desde `@/types/enums` (no desde `@prisma/client`)
-- [ ] Errores tipados, nunca `throw "string"`
-- [ ] Para rutas admin: verificar sesión antes de mutar
-
----
 
 ### 1.4 API Routes (solo cuando es necesario)
 
@@ -507,11 +419,11 @@ No duplicarlos ni volver a montarlos en páginas individuales.
 
 Antes de declarar una página como terminada:
 
-**Backend:**
-- [ ] Migraciones aplicadas y `prisma generate` ejecutado
-- [ ] Server Actions validan input con Zod
-- [ ] Rutas admin protegidas por middleware
-- [ ] Sin lógica de DB directa en componentes (todo pasa por actions)
+**Backend:** *(completado)*
+- [x] Migraciones aplicadas y `prisma generate` ejecutado
+- [x] Server Actions validan input con Zod
+- [x] Rutas admin protegidas por middleware
+- [x] Sin lógica de DB directa en componentes (todo pasa por actions)
 
 **Frontend:**
 - [ ] Todos los `searchParams` y `params` son `await`-eados (Next.js 16)

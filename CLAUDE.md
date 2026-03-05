@@ -61,6 +61,7 @@ Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
 | `--text-primary`     | `#111C24` | Texto de cuerpo y títulos sobre fondo claro  |
 | `--text-secondary`   | `#74E4BB` | Texto de acento / highlights                 |
 | `--btn-primary`      | `#042F34` | Botón primario (ej: "Comprar ahora")         |
+| `--btn-primary-hover`| `#063B41` | Hover del botón primario                     |
 | `--btn-outline`      | `#74E4BB` | Borde de botones outline (ej: "Ver más")     |
 | `--btn-secondary`    | `#74E4BB` | Botón secundario sólido sin outline          |
 | `--btn-disabled`     | `#82979A` | Estado deshabilitado                         |
@@ -155,3 +156,7 @@ Si la red bloquea los puertos 5432/6543 (prisma migrate dev se congela), usar es
 - `src/middleware.ts` protege todas las rutas `/admin/*`
 - Redirige a `/admin/login` si no hay sesión de Supabase
 - Redirige a `/admin` si ya hay sesión e intenta ir al login
+
+## Estado del proyecto
+- **Backend: COMPLETADO** — Schema Prisma (5 modelos, 3 enums), migración aplicada, 16 Server Actions (products, checkout, admin CRUD), webhook MP, auth middleware, Supabase clients, cart store Zustand
+- **Frontend: EN PROGRESO** — Todas las páginas listadas en la tabla tienen sus componentes implementados (ver `src/features/*/components/`)

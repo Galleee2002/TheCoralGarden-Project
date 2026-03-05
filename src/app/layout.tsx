@@ -63,7 +63,7 @@ export default function RootLayout({
       <body className={`${montserrat.variable} ${leHavre.variable} font-sans antialiased`}>
         <Providers>
           <Navbar />
-          <main className="min-h-screen">{children}</main>
+          <main className="min-h-screen pt-16">{children}</main>
           <Footer />
           <WhatsAppButton />
           <Toaster />
