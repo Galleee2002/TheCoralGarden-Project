@@ -114,7 +114,13 @@ Variables CSS disponibles como utilidades Tailwind:
 | `--radius-dropdown`  | `5px`  | Desplegables, FAQ, tooltips      | `rounded-dropdown` / `rounded-sm` |
 
 ### Espaciados
-> Aún por definir — ver sección de pendientes.
+| Variable CSS                | Valor  | Uso                                          | Utilidad Tailwind          |
+|-----------------------------|--------|----------------------------------------------|----------------------------|
+| `--section-spacing`         | `64px` | Padding vertical de secciones — desktop/tablet | `py-section`             |
+| `--section-spacing-mobile`  | `40px` | Padding vertical de secciones — mobile        | `py-section-mobile`        |
+| `--card-gap-mobile`         | `40px` | Gap entre product cards — mobile (columna)   | `gap-card-gap-mobile`      |
+
+> Desktop/tablet: gap entre cards manejado por el grid (`auto`).
 
 ## Backend / DB
 - Todas las mutaciones de DB van a través de Prisma

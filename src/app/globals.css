@@ -69,6 +69,11 @@
   --color-card-dark: var(--card-dark);
   --color-card-blue: var(--card-blue);
   --color-card-light: var(--card-light);
+
+  /* Spacing */
+  --spacing-section: var(--section-spacing);
+  --spacing-section-mobile: var(--section-spacing-mobile);
+  --spacing-card-gap-mobile: var(--card-gap-mobile);
 }
 
 :root {
@@ -108,6 +113,14 @@
   --btn-disabled: #82979A;
   --btn-destructive: #DC2626;
   --btn-focus: #A1A1AA;
+
+  /* ============================================
+     TheCoralGarden — Spacing Tokens
+     ============================================ */
+  --section-spacing: 64px;        /* sección — desktop & tablet  */
+  --section-spacing-mobile: 40px; /* sección — mobile            */
+  --card-gap-mobile: 40px;        /* gap entre product cards — mobile (columna) */
+  /* gap entre product cards — desktop/tablet: auto (grid) */
 
   /* Cards */
   --card-default: #F8F8F8;
