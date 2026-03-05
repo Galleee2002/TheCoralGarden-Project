@@ -38,11 +38,22 @@ Aplica cuando la página requiere un modelo nuevo o cambio a uno existente.
 - `prisma/schema.prisma` — agregar/modificar modelos y enums
 - `prisma.config.ts` — no tocar (ya configurado)
 
-**Pasos:**
+**Pasos (red normal):**
 1. Agregar el modelo o campo nuevo en `schema.prisma`
 2. Ejecutar `pnpm prisma migrate dev --name <nombre-descriptivo>`
 3. Ejecutar `pnpm prisma generate` para regenerar los tipos
 4. Actualizar `src/types/enums.ts` si se agregaron nuevos enums de Prisma
+
+**Pasos alternativos (si la red bloquea puertos 5432/6543):**
+1. Agregar el modelo o campo nuevo en `schema.prisma`
+2. Escribir el SQL equivalente y aplicarlo via Supabase MCP (`apply_migration`)
+3. Crear el archivo `prisma/migrations/<timestamp>_<nombre>/migration.sql` con ese SQL
+4. Registrar la migración en `_prisma_migrations` via `execute_sql`:
+   ```sql
+   INSERT INTO "_prisma_migrations" (id, checksum, finished_at, migration_name, started_at, applied_steps_count)
+   VALUES (gen_random_uuid()::varchar, 'manual_baseline', now(), '<timestamp>_<nombre>', now(), 1);
+   ```
+5. Ejecutar `pnpm prisma generate` localmente (no requiere conexión DB)
 
 **Ejemplo — agregar campo `weight` a `Product`:**
 ```prisma

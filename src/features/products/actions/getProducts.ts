@@ -1,7 +1,9 @@
 import { prisma } from "@/lib/prisma/client";
+import { Prisma } from "@prisma/client";
 
 interface GetProductsParams {
   categorySlug?: string;
+  query?: string;
   page?: number;
   pageSize?: number;
   activeOnly?: boolean;
@@ -9,14 +11,21 @@ interface GetProductsParams {
 
 export async function getProducts({
   categorySlug,
+  query,
   page = 1,
   pageSize = 12,
   activeOnly = true,
 }: GetProductsParams = {}) {
-  const where = {
+  const where: Prisma.ProductWhereInput = {
     ...(activeOnly && { active: true }),
     ...(categorySlug && {
       category: { slug: categorySlug },
+    }),
+    ...(query && {
+      OR: [
+        { name: { contains: query, mode: "insensitive" } },
+        { description: { contains: query, mode: "insensitive" } },
+      ],
     }),
   };
 

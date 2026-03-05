@@ -22,8 +22,9 @@ model Product {
   description String
   price       Decimal     @db.Decimal(10, 2)
   stock       Int         @default(0)
-  images      String[]
-  featured    Boolean     @default(false)
+  images         String[]
+  specifications String[]
+  featured       Boolean     @default(false)
   active      Boolean     @default(true)
   category    Category    @relation(fields: [categoryId], references: [id])
   categoryId  String

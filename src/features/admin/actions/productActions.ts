@@ -11,6 +11,7 @@ const productSchema = z.object({
   price: z.number().positive(),
   stock: z.number().int().min(0),
   images: z.array(z.string().url()).default([]),
+  specifications: z.array(z.string()).default([]),
   featured: z.boolean().default(false),
   active: z.boolean().default(true),
   categoryId: z.string(),

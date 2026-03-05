@@ -136,6 +136,15 @@ Variables CSS disponibles como utilidades Tailwind:
 - Para generar tipos: `pnpm prisma generate`
 - Para migrar: `pnpm prisma migrate dev --name <nombre>`
 
+## Migraciones cuando el puerto DB está bloqueado
+Si la red bloquea los puertos 5432/6543 (prisma migrate dev se congela), usar este flujo alternativo:
+1. Aplicar el SQL directamente via Supabase MCP (`mcp__supabase__apply_migration`)
+2. Crear manualmente `prisma/migrations/<timestamp>_<nombre>/migration.sql` con el SQL equivalente
+3. Registrar la migración en `_prisma_migrations` via `mcp__supabase__execute_sql`
+4. Correr `pnpm prisma generate` localmente (no necesita conexión DB)
+- La migración inicial ya está aplicada en `prisma/migrations/0_init/migration.sql`
+- Para futuras migraciones con este problema: seguir el mismo flujo manual
+
 ## Pagos con MercadoPago
 - Flujo: `createOrder` → `createMercadoPagoPreference` → redirect a MP Checkout Pro
 - Webhook en `src/app/api/webhooks/mp/route.ts` actualiza `Order.status`
