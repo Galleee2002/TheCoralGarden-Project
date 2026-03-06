@@ -39,7 +39,7 @@ export function FAQSection() {
   return (
     <section className="bg-bg-secondary py-section-mobile md:py-section">
       <div className="container mx-auto px-4">
-        <h2 className="mb-10 text-center font-heading text-3xl font-black uppercase text-white sm:text-4xl">
+        <h2 className="mb-10 text-center font-heading text-3xl font-black uppercase text-white md:text-[64px]">
           Preguntas frecuentes
         </h2>
 

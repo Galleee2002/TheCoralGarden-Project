@@ -10,13 +10,13 @@ export function TechnicalServiceHero() {
           Disponible 24hs / 365 días
         </Badge>
 
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+        <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-[96px]">
           Servicio Técnico
           <br />
           <span className="text-accent">Especializado</span>
         </h1>
 
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/80 sm:text-xl">
+        <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/80 md:text-2xl">
           Reparación, mantenimiento y optimización de equipos de ósmosis inversa
           y purificación de agua. Respondemos rápido porque el agua no espera.
         </p>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Droplets, LayoutDashboard, Package, Wrench, ShoppingBag, LogOut } from "lucide-react";
+import { Droplets, LayoutDashboard, Package, Wrench, ShoppingBag, LogOut, Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -8,6 +8,7 @@ const adminLinks = [
   { href: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
   { href: "/admin/productos", label: "Productos", icon: Package },
   { href: "/admin/servicio-tecnico", label: "Servicio Técnico", icon: Wrench },
+  { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
 export default function AdminLayout({

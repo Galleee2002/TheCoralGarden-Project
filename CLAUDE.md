@@ -43,6 +43,7 @@
 | Admin Órdenes        | `features/admin`               | `/admin/ordenes`                  |
 | Admin Productos      | `features/admin`               | `/admin/productos`                |
 | Admin Servicio Téc.  | `features/admin`               | `/admin/servicio-tecnico`         |
+| Admin Configuración  | `features/admin`               | `/admin/configuracion`            |
 
 ## Frontend
 - Componentes usan primitivas de shadcn, extendidas con Tailwind
@@ -107,6 +108,18 @@ Variables CSS disponibles como utilidades Tailwind:
 
 > Archivos ya ubicados en `src/app/fonts/LeHavre-Black.otf` y `src/app/fonts/LeHavre-Bold.otf`.
 
+### Tamaños tipográficos (desktop/tablet — `md:`)
+| Elemento | Tamaño | Clase Tailwind |
+|---|---|---|
+| H1 de banners (HeroSection, TechnicalServiceHero, AboutHero) | 96px | `md:text-[96px]` |
+| Descripción bajo H1 | 24px | `md:text-2xl` |
+| H2 de secciones (AboutSection, FeaturedProducts, ServicesSection, FAQSection) | 64px | `md:text-[64px]` |
+| Descripción bajo H2 | 16px | `text-base` |
+| Nombre de producto (cards y detalle) | 30px | `md:text-3xl` |
+| Descripción de producto (cards y detalle) | 16px | `text-base` |
+
+> Mobile usa tamaños menores (clases sin prefijo responsive). Desktop/tablet = `md:` en adelante.
+
 ### Border Radius
 | Variable CSS         | Valor  | Uso                              | Utilidad Tailwind    |
 |----------------------|--------|----------------------------------|----------------------|
@@ -138,13 +151,22 @@ Variables CSS disponibles como utilidades Tailwind:
 - Para migrar: `pnpm prisma migrate dev --name <nombre>`
 
 ## Migraciones cuando el puerto DB está bloqueado
-Si la red bloquea los puertos 5432/6543 (prisma migrate dev se congela), usar este flujo alternativo:
-1. Aplicar el SQL directamente via Supabase MCP (`mcp__supabase__apply_migration`)
-2. Crear manualmente `prisma/migrations/<timestamp>_<nombre>/migration.sql` con el SQL equivalente
-3. Registrar la migración en `_prisma_migrations` via `mcp__supabase__execute_sql`
-4. Correr `pnpm prisma generate` localmente (no necesita conexión DB)
-- La migración inicial ya está aplicada en `prisma/migrations/0_init/migration.sql`
-- Para futuras migraciones con este problema: seguir el mismo flujo manual
+Si la red bloquea los puertos 5432/6543 (`prisma migrate dev` se congela), usar este flujo alternativo:
+1. Aplicar el SQL directamente via `mcp__supabase__apply_migration`
+2. Crear `prisma/migrations/<timestamp>_<nombre>/migration.sql` manualmente
+3. Registrar en `_prisma_migrations` via `mcp__supabase__execute_sql`
+4. Correr `pnpm prisma generate` localmente
+
+## Imágenes — Cloudinary
+- Proveedor de imágenes: **Cloudinary** vía `next-cloudinary`
+- Upload desde admin usando `CldUploadWidget` con upload preset público
+- Componentes de upload en `src/components/shared/`:
+  - `ImageUploader.tsx` — sube una sola imagen, devuelve la URL via `onUpload`
+  - `MultiImageUploader.tsx` — sube múltiples imágenes (ej: galería de productos)
+- Variable de entorno: `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
+- Variable de entorno: `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` (requerida por `next-cloudinary`)
+- Las URLs de Cloudinary (`res.cloudinary.com`) están whitelisted en `next.config.ts`
+- Supabase Storage ya NO se usa para imágenes (reemplazado por Cloudinary)
 
 ## Pagos con MercadoPago
 - Flujo: `createOrder` → `createMercadoPagoPreference` → redirect a MP Checkout Pro
@@ -157,6 +179,22 @@ Si la red bloquea los puertos 5432/6543 (prisma migrate dev se congela), usar es
 - Redirige a `/admin/login` si no hay sesión de Supabase
 - Redirige a `/admin` si ya hay sesión e intenta ir al login
 
+## SiteSetting — Configuración del sitio
+- Modelo `SiteSetting` en Prisma: tabla key-value para ajustes globales del sitio
+- Claves usadas:
+  - `hero_banner_url` — imagen del hero principal
+  - `about_gallery_1/2/3` — galería de fotos de la sección Sobre Nosotros
+  - `service_venta_image`, `service_postventa_image`, `service_reparacion_image` — imágenes de tarjetas de servicios
+- Acciones: `getSetting(key)` y `upsertSetting({ key, value })` en `src/features/admin/actions/settingActions.ts`
+- UI admin: `HeroBannerForm.tsx`, `SettingImageForm.tsx` — usan `ImageUploader` internamente
+- Página admin: `/admin/configuracion` — gestión visual de todas las imágenes del sitio
+
+## Category — imágenes
+- Campo `imageUrl` (opcional) en modelo `Category`
+- `CategoryForm.tsx` incluye `ImageUploader` para asignar imagen a categoría
+
 ## Estado del proyecto
-- **Backend: COMPLETADO** — Schema Prisma (5 modelos, 3 enums), migración aplicada, 16 Server Actions (products, checkout, admin CRUD), webhook MP, auth middleware, Supabase clients, cart store Zustand
+- **Backend: COMPLETADO** — Schema Prisma (6 modelos: Category, Product, Order, OrderItem, TechnicalServiceRequest, SiteSetting; 3 enums), migración aplicada, 18+ Server Actions (products, checkout, admin CRUD, settings), webhook MP, auth middleware, Supabase clients, cart store Zustand
 - **Frontend: EN PROGRESO** — Todas las páginas listadas en la tabla tienen sus componentes implementados (ver `src/features/*/components/`)
+- **Imágenes: COMPLETADO** — Cloudinary integrado (`next-cloudinary`), `ImageUploader` y `MultiImageUploader` disponibles para admin
+- **Admin Configuración: COMPLETADO** — `/admin/configuracion` permite gestionar todas las imágenes globales del sitio vía Cloudinary

@@ -11,8 +11,14 @@ model Category {
   name        String
   slug        String    @unique
   description String?
+  imageUrl    String?
   products    Product[]
   createdAt   DateTime  @default(now())
+}
+
+model SiteSetting {
+  key   String @id
+  value String
 }
 
 model Product {

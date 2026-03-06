@@ -51,12 +51,12 @@ export function ProductInfo({
         <Badge variant="secondary" className="mb-3">
           {category.name}
         </Badge>
-        <h1 className="text-3xl font-bold tracking-tight">{name}</h1>
+        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{name}</h1>
       </div>
 
       <div className="text-3xl font-bold text-primary">{formatPrice(price)}</div>
 
-      <p className="leading-relaxed text-muted-foreground">{description}</p>
+      <p className="text-base leading-relaxed text-muted-foreground">{description}</p>
 
       <div className="flex items-center gap-2">
         {stock > 0 ? (

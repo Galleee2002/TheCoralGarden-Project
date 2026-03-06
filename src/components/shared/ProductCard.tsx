@@ -91,7 +91,7 @@ export function ProductCard({
               {category}
             </p>
           )}
-          <h3 className="font-semibold leading-tight text-foreground">
+          <h3 className="text-xl font-semibold leading-tight text-foreground md:text-3xl">
             {name}
           </h3>
         </CardContent>

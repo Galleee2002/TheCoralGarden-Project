@@ -16,10 +16,10 @@ export async function FeaturedProducts() {
         {/* Header */}
         <div className="mb-10 flex items-end justify-between">
           <div>
-            <h2 className="font-heading text-3xl font-black uppercase text-white sm:text-4xl">
+            <h2 className="font-heading text-3xl font-black uppercase text-white md:text-[64px]">
               Productos destacados
             </h2>
-            <p className="mt-3 text-white/60">
+            <p className="mt-3 text-base text-white/60">
               Los mas elegidos por nuestros clientes
             </p>
           </div>

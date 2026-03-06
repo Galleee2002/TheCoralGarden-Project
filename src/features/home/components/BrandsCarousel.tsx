@@ -6,12 +6,11 @@ const brands = [
   "/marca-3.png",
   "/marca-4.png",
   "/marca-5.png",
-  "/marca-6.png",
 ];
 
 export function BrandsCarousel() {
-  // Duplicate for seamless infinite loop
-  const allBrands = [...brands, ...brands];
+  // 4 copies so content always exceeds viewport width, animating -25% (= 1 copy) for seamless loop
+  const allBrands = [...brands, ...brands, ...brands, ...brands];
 
   return (
     <section className="overflow-hidden bg-bg-secondary py-10">

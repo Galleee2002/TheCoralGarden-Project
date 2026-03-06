@@ -21,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { MultiImageUploader } from "@/components/shared/MultiImageUploader";
 import { createProduct, updateProduct } from "@/features/admin/actions/productActions";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
@@ -35,6 +36,7 @@ const formSchema = z.object({
   description: z.string().min(10),
   price: z.number().positive(),
   stock: z.number().int().min(0),
+  images: z.array(z.string().url()).default([]),
   categoryId: z.string().min(1, "Seleccioná una categoría"),
   featured: z.boolean(),
   active: z.boolean(),
@@ -49,7 +51,7 @@ interface Category {
 
 interface ProductFormProps {
   categories: Category[];
-  defaultValues?: Partial<FormValues> & { id?: string };
+  defaultValues?: Partial<FormValues> & { id?: string; images?: string[] };
   mode: "create" | "edit";
 }
 
@@ -64,6 +66,7 @@ export function ProductForm({ categories, defaultValues, mode }: ProductFormProp
       description: defaultValues?.description ?? "",
       price: defaultValues?.price ?? 0,
       stock: defaultValues?.stock ?? 0,
+      images: defaultValues?.images ?? [],
       categoryId: defaultValues?.categoryId ?? "",
       featured: defaultValues?.featured ?? false,
       active: defaultValues?.active ?? true,
@@ -129,6 +132,20 @@ export function ProductForm({ categories, defaultValues, mode }: ProductFormProp
               <FormLabel>Descripción</FormLabel>
               <FormControl>
                 <Textarea rows={4} {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="images"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Imágenes</FormLabel>
+              <FormControl>
+                <MultiImageUploader value={field.value} onChange={field.onChange} />
               </FormControl>
               <FormMessage />
             </FormItem>

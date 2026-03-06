@@ -1,4 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
+import { getSetting } from "@/features/admin/actions/settingActions";
 
 const services = [
   {
@@ -23,27 +25,36 @@ const services = [
   },
 ];
 
-export function ServicesSection() {
+export async function ServicesSection() {
+  const [ventaImage, postventaImage, reparacionImage] = await Promise.all([
+    getSetting("service_venta_image"),
+    getSetting("service_postventa_image"),
+    getSetting("service_reparacion_image"),
+  ]);
+
+  const serviceImages = [ventaImage, postventaImage];
+
   return (
     <section className="py-section-mobile md:py-section">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <h2 className="font-heading text-3xl font-black uppercase text-text-primary sm:text-4xl">
+          <h2 className="font-heading text-3xl font-black uppercase text-text-primary md:text-[64px]">
             Nuestros servicios
           </h2>
-          <p className="mt-3 text-text-primary/70">
-            Soluciones integrales para cada necesidad
+          <p className="mt-3 text-base text-text-primary/70">
+         Impulsamos cada proyecto con sistemas de filtración y ósmosis inversa diseñados para garantizar agua pura, estable y segura en cualquier aplicación.
           </p>
         </div>
 
         {/* Top 2 cards */}
         <div className="grid gap-6 sm:grid-cols-2">
-          {services.map((service) => (
+          {services.map((service, i) => (
             <div
               key={service.title}
-              className={`flex flex-col justify-between rounded-card p-8 ${service.bg}`}
+              className={`relative flex flex-col overflow-hidden rounded-card p-8 ${service.bg}`}
+              style={{ minHeight: "320px" }}
             >
-              <div>
+              <div className="flex-1">
                 <h3 className={`mb-3 font-heading text-2xl font-bold ${service.text}`}>
                   {service.title}
                 </h3>
@@ -51,38 +62,59 @@ export function ServicesSection() {
                   {service.description}
                 </p>
               </div>
-              {/* Placeholder image area */}
-              <div className="mb-6 aspect-video w-full rounded-lg bg-black/10" />
               <Link
                 href="/servicio-tecnico"
-                className={`inline-flex w-fit items-center rounded-button border-2 px-6 py-2.5 text-sm font-bold uppercase tracking-wider transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
+                className={`relative z-10 mt-auto inline-flex w-fit items-center rounded-button border-2 px-6 py-2.5 text-sm font-bold uppercase tracking-wider transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
               >
                 Conoce mas
               </Link>
+              {serviceImages[i] && (
+                <div className="absolute bottom-0 right-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+                  <Image
+                    src={serviceImages[i]!}
+                    alt={service.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+              )}
             </div>
           ))}
         </div>
 
-        {/* Full-width bottom card */}
-        <div className="mt-6 grid overflow-hidden rounded-card bg-[#111C24] sm:grid-cols-2">
-          <div className="flex flex-col justify-center p-8 sm:p-10">
-            <h3 className="mb-3 font-heading text-2xl font-bold text-white">
-              Reparacion y mantenimiento
-            </h3>
-            <p className="mb-6 leading-relaxed text-white/70">
-              Servicio tecnico especializado en reparacion y mantenimiento de
-              equipos de osmosis inversa y purificacion de agua. Disponible
-              24/7 los 365 dias del ano.
-            </p>
+        {/* Bottom card — same style as top cards */}
+        <div className="mt-6 flex justify-center">
+          <div className="relative flex w-full flex-col overflow-hidden rounded-card bg-[#111C24] p-8 sm:w-[calc(50%-12px)]" style={{ minHeight: "320px" }}>
+            {/* Text content */}
+            <div className="flex-1">
+              <h3 className="mb-3 font-heading text-2xl font-bold text-white">
+                Reparacion y mantenimiento
+              </h3>
+              <p className="mb-6 leading-relaxed text-white/70">
+                Servicio tecnico especializado en reparacion y mantenimiento de
+                equipos de osmosis inversa y purificacion de agua. Disponible
+                24/7 los 365 dias del ano.
+              </p>
+            </div>
+            {/* Button — bottom-left */}
             <Link
               href="/servicio-tecnico"
-              className="inline-flex w-fit items-center rounded-button border-2 border-text-secondary px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
+              className="relative z-10 mt-auto inline-flex w-fit items-center rounded-button border-2 border-text-secondary px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
             >
               Conoce mas
             </Link>
+            {/* Image — absolutely positioned bottom-right, only top-left radius */}
+            {reparacionImage && (
+              <div className="absolute bottom-0 right-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+                <Image
+                  src={reparacionImage}
+                  alt="Reparacion y mantenimiento"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
           </div>
-          {/* Placeholder image */}
-          <div className="aspect-video bg-white/5 sm:aspect-auto" />
         </div>
       </div>
     </section>

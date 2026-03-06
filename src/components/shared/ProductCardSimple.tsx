@@ -44,11 +44,11 @@ export function ProductCardSimple({
 
         {/* Info */}
         <div className="p-4">
-          <h3 className="mb-1 font-bold leading-tight text-text-primary">
+          <h3 className="mb-1 text-xl font-bold leading-tight text-text-primary md:text-3xl">
             {name}
           </h3>
           {description && (
-            <p className="mb-2 line-clamp-2 text-sm text-text-primary/60">
+            <p className="mb-2 line-clamp-2 text-base text-text-primary/60">
               {description}
             </p>
           )}

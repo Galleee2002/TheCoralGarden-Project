@@ -35,7 +35,9 @@ function FeaturedProductsSkeleton() {
 export default function HomePage() {
   return (
     <>
-      <HeroSection />
+      <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-[#042F34] via-[#063B41] to-[#111C24]" />}>
+        <HeroSection />
+      </Suspense>
       <AboutSection />
       <BrandsCarousel />
       <ServicesSection />
