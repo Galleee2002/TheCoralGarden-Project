@@ -38,11 +38,13 @@ export async function ServicesSection() {
     <section className="py-section-mobile md:py-section">
       <div className="container mx-auto px-4">
         <div className="mb-10 text-center">
-          <h2 className="font-heading text-3xl font-black uppercase text-text-primary md:text-[64px]">
+          <h2 className="font-heading text-text-primary text-3xl font-black uppercase md:text-[64px]">
             Nuestros servicios
           </h2>
-          <p className="mt-3 text-base text-text-primary/70">
-         Impulsamos cada proyecto con sistemas de filtración y ósmosis inversa diseñados para garantizar agua pura, estable y segura en cualquier aplicación.
+          <p className="text-text-primary/70 mt-3 text-base">
+            Impulsamos cada proyecto con sistemas de filtración y ósmosis
+            inversa diseñados para garantizar agua pura, estable y segura en
+            cualquier aplicación.
           </p>
         </div>
 
@@ -51,11 +53,13 @@ export async function ServicesSection() {
           {services.map((service, i) => (
             <div
               key={service.title}
-              className={`relative flex flex-col overflow-hidden rounded-card p-8 ${service.bg}`}
+              className={`rounded-card relative flex flex-col overflow-hidden p-8 ${service.bg}`}
               style={{ minHeight: "320px" }}
             >
               <div className="flex-1">
-                <h3 className={`mb-3 font-heading text-2xl font-bold ${service.text}`}>
+                <h3
+                  className={`font-heading mb-3 text-2xl font-bold ${service.text}`}
+                >
                   {service.title}
                 </h3>
                 <p className={`mb-6 leading-relaxed ${service.textMuted}`}>
@@ -64,12 +68,12 @@ export async function ServicesSection() {
               </div>
               <Link
                 href="/servicio-tecnico"
-                className={`relative z-10 mt-auto inline-flex w-fit items-center rounded-button border-2 px-6 py-2.5 text-sm font-bold uppercase tracking-wider transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
+                className={`rounded-button relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-bold tracking-wider uppercase transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
               >
                 Conoce mas
               </Link>
               {serviceImages[i] && (
-                <div className="absolute bottom-0 right-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+                <div className="absolute right-0 bottom-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
                   <Image
                     src={serviceImages[i]!}
                     alt={service.title}
@@ -84,10 +88,13 @@ export async function ServicesSection() {
 
         {/* Bottom card — same style as top cards */}
         <div className="mt-6 flex justify-center">
-          <div className="relative flex w-full flex-col overflow-hidden rounded-card bg-[#111C24] p-8 sm:w-[calc(50%-12px)]" style={{ minHeight: "320px" }}>
+          <div
+            className="rounded-card relative flex w-full flex-col overflow-hidden bg-[#111C24] p-8 sm:w-[calc(50%-12px)]"
+            style={{ minHeight: "320px" }}
+          >
             {/* Text content */}
             <div className="flex-1">
-              <h3 className="mb-3 font-heading text-2xl font-bold text-white">
+              <h3 className="font-heading mb-3 text-2xl font-bold text-white">
                 Reparacion y mantenimiento
               </h3>
               <p className="mb-6 leading-relaxed text-white/70">
@@ -99,13 +106,13 @@ export async function ServicesSection() {
             {/* Button — bottom-left */}
             <Link
               href="/servicio-tecnico"
-              className="relative z-10 mt-auto inline-flex w-fit items-center rounded-button border-2 border-text-secondary px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
+              className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-bold tracking-wider text-white uppercase transition-colors"
             >
               Conoce mas
             </Link>
             {/* Image — absolutely positioned bottom-right, only top-left radius */}
             {reparacionImage && (
-              <div className="absolute bottom-0 right-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+              <div className="absolute right-0 bottom-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
                 <Image
                   src={reparacionImage}
                   alt="Reparacion y mantenimiento"

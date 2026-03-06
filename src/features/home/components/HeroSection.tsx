@@ -29,16 +29,16 @@ export async function HeroSection() {
       {/* Dark overlay for text legibility */}
       <div className="absolute inset-0 bg-black/30" />
 
-      <div className="container relative z-10 mx-auto px-4 py-32">
+      <div className="relative z-10 container mx-auto px-4 py-32">
         <div className="max-w-5xl">
-          <h1 className="mb-8 font-heading text-5xl font-black uppercase leading-[1.1] text-white md:text-[96px]">
+          <h1 className="font-heading mb-8 text-5xl leading-[1.1] font-black text-white uppercase md:text-[96px]">
             Purificadores de agua
           </h1>
 
           <ul className="mb-10 flex flex-col gap-4">
             {features.map((text) => (
               <li key={text} className="flex items-center gap-3">
-                <CheckCircle className="h-5 w-5 shrink-0 text-text-secondary" />
+                <CheckCircle className="text-text-secondary h-5 w-5 shrink-0" />
                 <span className="text-base font-medium text-white/90 md:text-2xl">
                   {text}
                 </span>
@@ -48,7 +48,7 @@ export async function HeroSection() {
 
           <Link
             href="/productos"
-            className="inline-flex items-center rounded-button border-2 border-text-secondary px-8 py-3 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
+            className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary inline-flex items-center border-2 px-8 py-3 text-sm font-bold tracking-wider text-white uppercase transition-colors"
           >
             Conoce mas
           </Link>

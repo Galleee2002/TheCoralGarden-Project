@@ -13,7 +13,7 @@ export function BrandsCarousel() {
   const allBrands = [...brands, ...brands, ...brands, ...brands];
 
   return (
-    <section className="overflow-hidden bg-bg-secondary py-10">
+    <section className="bg-bg-secondary overflow-hidden py-10">
       <div
         className="flex items-center gap-16"
         style={{
@@ -27,7 +27,7 @@ export function BrandsCarousel() {
               src={src}
               alt={`Marca ${(i % brands.length) + 1}`}
               fill
-              className="object-contain brightness-0 invert opacity-70"
+              className="object-contain opacity-70 brightness-0 invert"
             />
           </div>
         ))}
