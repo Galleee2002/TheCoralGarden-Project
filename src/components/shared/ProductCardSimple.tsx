@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface ProductCardSimpleProps {
   name: string;
@@ -55,9 +56,7 @@ export function ProductCardSimple({
           <span className="text-lg font-bold text-text-primary">
             {formatPrice(price)}
           </span>
-          <span className="mt-2 block text-sm font-bold text-text-secondary transition-colors group-hover:text-text-primary">
-            Ver mas &gt;
-          </span>
+          <Button className="mt-2 w-full">Ver más</Button>
         </div>
       </div>
     </Link>

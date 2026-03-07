@@ -53,8 +53,7 @@ export async function ServicesSection() {
           {services.map((service, i) => (
             <div
               key={service.title}
-              className={`rounded-card relative flex flex-col overflow-hidden p-8 ${service.bg}`}
-              style={{ minHeight: "320px" }}
+              className={`rounded-card relative flex min-h-[260px] flex-col items-center p-8 text-center lg:min-h-[420px] lg:items-start lg:overflow-hidden lg:text-left ${service.bg}`}
             >
               <div className="flex-1">
                 <h3
@@ -73,7 +72,7 @@ export async function ServicesSection() {
                 Conoce mas
               </Link>
               {serviceImages[i] && (
-                <div className="absolute right-0 bottom-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+                <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
                   <Image
                     src={serviceImages[i]!}
                     alt={service.title}
@@ -88,10 +87,7 @@ export async function ServicesSection() {
 
         {/* Bottom card — same style as top cards */}
         <div className="mt-6 flex justify-center">
-          <div
-            className="rounded-card relative flex w-full flex-col overflow-hidden bg-[#111C24] p-8 sm:w-[calc(50%-12px)]"
-            style={{ minHeight: "320px" }}
-          >
+          <div className="rounded-card relative flex min-h-[260px] w-full flex-col items-center bg-[#111C24] p-8 text-center sm:w-[calc(50%-12px)] lg:min-h-[420px] lg:items-start lg:overflow-hidden lg:text-left">
             {/* Text content */}
             <div className="flex-1">
               <h3 className="font-heading mb-3 text-2xl font-bold text-white">
@@ -112,7 +108,7 @@ export async function ServicesSection() {
             </Link>
             {/* Image — absolutely positioned bottom-right, only top-left radius */}
             {reparacionImage && (
-              <div className="absolute right-0 bottom-0 h-[55%] w-[55%] overflow-hidden rounded-tl-lg">
+              <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
                 <Image
                   src={reparacionImage}
                   alt="Reparacion y mantenimiento"

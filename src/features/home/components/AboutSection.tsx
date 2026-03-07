@@ -69,7 +69,7 @@ export async function AboutSection() {
                 className="object-cover"
               />
             )}
-            <div className="absolute inset-0 mt-13 flex flex-col items-start justify-start bg-gradient-to-t from-black/60 to-transparent p-6">
+            <div className="absolute inset-0 flex flex-col items-start justify-end bg-gradient-to-t from-black/60 to-transparent p-6">
               <p className="mb-3 text-lg font-medium text-white">
                 Desarrollamos soluciones de filtración y ósmosis inversa para
                 sistemas que requieren máxima estabilidad y calidad.{" "}

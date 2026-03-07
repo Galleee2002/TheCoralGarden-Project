@@ -54,7 +54,7 @@ export function Navbar() {
           {/* Logo */}
           <Link href="/" className="relative h-10 w-40 shrink-0">
             <Image
-              src="/LOGO.svg"
+              src={isTransparent ? "/LOGO.svg" : "/LOGO-2.png"}
               alt="The Coral Garden"
               fill
               className={cn(
