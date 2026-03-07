@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Droplets, LayoutDashboard, Package, Wrench, ShoppingBag, LogOut, Settings } from "lucide-react";
+import { Droplets, LayoutDashboard, Package, Wrench, ShoppingBag, LogOut, Settings, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 
@@ -39,7 +39,19 @@ export default function AdminLayout({
             </Link>
           ))}
         </nav>
-        <div className="mt-auto p-4">
+        <div className="mt-auto p-4 flex flex-col gap-1">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="w-full justify-start text-sidebar-foreground/60 hover:text-sidebar-foreground"
+            asChild
+          >
+            <Link href="/" target="_blank">
+              <ExternalLink className="mr-2 h-4 w-4" />
+              Ver sitio
+            </Link>
+          </Button>
+          <Separator className="my-1 bg-sidebar-border" />
           <form action="/api/auth/logout" method="POST">
             <Button
               variant="ghost"

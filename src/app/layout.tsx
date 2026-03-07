@@ -2,11 +2,8 @@ import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Navbar } from "@/components/layout/Navbar";
-import { Footer } from "@/components/layout/Footer";
 import { Providers } from "@/components/layout/Providers";
 import { Toaster } from "@/components/ui/sonner";
-import { WhatsAppButton } from "@/components/shared/WhatsAppButton";
 
 // Body: Montserrat Medium (500) y Bold (700)
 const montserrat = Montserrat({
@@ -62,10 +59,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={`${montserrat.variable} ${leHavre.variable} font-sans antialiased`}>
         <Providers>
-          <Navbar />
-          <main className="min-h-screen pt-16">{children}</main>
-          <Footer />
-          <WhatsAppButton />
+          {children}
           <Toaster />
         </Providers>
       </body>
