@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/features/cart/store/cartStore";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useFavoritesStore } from "@/features/favorites/store/favoritesStore";
+import { CheckCircle2, Heart, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 interface ProductInfoProps {
   id: string;
@@ -16,6 +17,7 @@ interface ProductInfoProps {
   stock: number;
   category: { name: string };
   image?: string;
+  specifications?: string[];
 }
 
 export function ProductInfo({
@@ -25,19 +27,13 @@ export function ProductInfo({
   description,
   price,
   stock,
-  category,
   image,
+  specifications = [],
 }: ProductInfoProps) {
-  const [quantity, setQuantity] = useState(1);
+  const router = useRouter();
   const addItem = useCartStore((s) => s.addItem);
-
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem({ productId: id, name, price, image: image ?? "", slug });
-    }
-    toast.success(`${quantity} × ${name} agregado al carrito`);
-    setQuantity(1);
-  };
+  const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
+  const isFavorite = useFavoritesStore((s) => s.isFavorite(id));
 
   const formatPrice = (p: number) =>
     new Intl.NumberFormat("es-AR", {
@@ -45,62 +41,96 @@ export function ProductInfo({
       currency: "ARS",
     }).format(p);
 
+  const handleBuyNow = () => {
+    addItem({ productId: id, name, price, image: image ?? "", slug });
+    router.push("/carrito");
+  };
+
+  const handleAddToCart = () => {
+    addItem({ productId: id, name, price, image: image ?? "", slug });
+    toast.success(`${name} agregado al carrito`);
+  };
+
+  const handleToggleFavorite = () => {
+    toggleFavorite({ productId: id, name, price, image: image ?? "", slug });
+    if (isFavorite) {
+      toast.info("Eliminado de favoritos");
+    } else {
+      toast.success("Agregado a favoritos");
+    }
+  };
+
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <Badge variant="secondary" className="mb-3">
-          {category.name}
-        </Badge>
-        <h1 className="text-2xl font-bold tracking-tight md:text-3xl">{name}</h1>
+      {/* Title + Price row */}
+      <div className="flex items-start justify-between gap-4">
+        <h1 className="font-heading text-3xl md:text-4xl">{name}</h1>
+        <span className="font-heading text-3xl font-bold whitespace-nowrap">
+          {formatPrice(price)}
+        </span>
       </div>
 
-      <div className="text-3xl font-bold text-primary">{formatPrice(price)}</div>
+      <hr className="border-border/40" />
 
-      <p className="text-base leading-relaxed text-muted-foreground">{description}</p>
+      {/* Description */}
+      <h2 className="font-heading text-xl font-bold">
+        Descripción del producto
+      </h2>
+      <p className="text-muted-foreground text-base leading-relaxed">
+        {description}
+      </p>
 
-      <div className="flex items-center gap-2">
-        {stock > 0 ? (
-          <Badge className="bg-green-100 text-green-800">
-            En stock ({stock} disponibles)
-          </Badge>
-        ) : (
-          <Badge variant="destructive">Sin stock</Badge>
-        )}
-      </div>
-
-      {stock > 0 && (
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-              disabled={quantity <= 1}
-            >
-              <Minus className="h-4 w-4" />
-            </Button>
-            <span className="w-12 text-center text-lg font-semibold">
-              {quantity}
-            </span>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setQuantity((q) => Math.min(stock, q + 1))}
-              disabled={quantity >= stock}
-            >
-              <Plus className="h-4 w-4" />
-            </Button>
+      {/* Specifications */}
+      {specifications.length > 0 && (
+        <div className="flex flex-col gap-3">
+          <h2 className="font-heading text-xl font-bold">Especificaciones</h2>
+          <div className="border-border/30 grid grid-cols-2 gap-3 rounded-lg border p-4">
+            {specifications.map((spec, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm">
+                <CheckCircle2 className="text-text-primary h-4 w-4 shrink-0" />
+                <span>{spec}</span>
+              </div>
+            ))}
           </div>
+        </div>
+      )}
+
+      {/* CTA row */}
+      {stock > 0 ? (
+        <div className="flex items-center gap-2">
+          <Button
+            onClick={handleBuyNow}
+            size="lg"
+            className="bg-btn-primary text-text-secondary hover:bg-btn-primary-hover flex-1"
+          >
+            Comprar ahora
+          </Button>
 
           <Button
-            onClick={handleAddToCart}
-            size="lg"
-            className="flex-1 gap-2 sm:flex-none sm:px-8"
+            size="icon"
+            onClick={handleToggleFavorite}
+            aria-label="Favoritos"
+            className="bg-card-light hover:bg-card-light/80 border-0"
           >
-            <ShoppingCart className="h-5 w-5" />
-            Agregar al carrito
+            <Heart
+              className={cn(
+                "h-5 w-5 transition-colors",
+                isFavorite ? "fill-red-500 text-red-500" : "text-bg-secondary"
+              )}
+            />
+          </Button>
+
+          <Button
+            size="icon"
+            onClick={handleAddToCart}
+            className="bg-card-light hover:bg-card-light/80 border-0"
+            aria-label="Agregar al carrito"
+          >
+            <ShoppingCart className="h-5 w-5 text-bg-secondary" />
           </Button>
         </div>
+      ) : (
+        <p className="text-destructive text-sm font-medium">Sin stock</p>
       )}
     </div>
   );

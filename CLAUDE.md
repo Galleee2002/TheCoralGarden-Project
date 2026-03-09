@@ -73,6 +73,23 @@
 - `MiniBanner` al final de la página (antes del footer)
 - Componentes nuevos: `SearchBar.tsx`, `ProductsPagination.tsx` en `src/features/products/components/`
 
+## Página `/productos/[slug]` — detalle de producto
+- **Breadcrumb**: "Productos → {nombre}" con `ChevronRight`
+- **Grid 2 cols** (`lg:grid-cols-2`): `ProductGallery` | `ProductInfo`
+- **`ProductGallery`** (client): imagen principal `aspect-[4/3]` + thumbnails max 3 (flex-1, `h-24`), borde activo `border-btn-primary`
+- **`ProductInfo`** (client): título + precio en fila, descripción, specs en grid 2 cols (`CheckCircle2`), CTA row:
+  - "Comprar ahora" → agrega al carrito y redirige a `/carrito`
+  - Botón `Heart` → `useFavoritesStore.toggleFavorite`, rojo si `isFavorite`
+  - Botón `ShoppingCart` → agrega al carrito con toast
+  - Sin stock: muestra "Sin stock" en `text-destructive`
+- **Productos relacionados**: hasta 4 de la misma categoría; si hay menos de 4, rellena con otros productos. `MiniBanner` al final.
+
+## Favoritos — `src/features/favorites/`
+- `store/favoritesStore.ts` — Zustand persist store, clave `coral-garden-favorites`
+- `FavoriteItem`: `{ productId, name, price, image, slug }`
+- Métodos: `toggleFavorite(item)`, `isFavorite(productId)`
+- Usado en `ProductInfo` (detalle de producto)
+
 ## Paleta de colores — Design Tokens (`src/app/globals.css`)
 
 Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
@@ -96,68 +113,29 @@ Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
 | `--card-blue`        | `#33C2E9` | Card variant 2 — azul cielo                  |
 | `--card-light`       | `#D6E5E9` | Fondos de sección (ej: Productos Relacionados)|
 
-### Uso en Tailwind
-```tsx
-// Las variables están mapeadas en @theme inline → disponibles como utilidades
-<div className="bg-bg-secondary text-text-secondary" />
-<div className="bg-card-dark" />
-<div className="bg-card-blue" />
-<button className="bg-btn-primary" />
-// También se puede usar var() directamente
-<div className="bg-[var(--card-light)]" />
-```
+Variables mapeadas en `@theme inline` → disponibles como utilidades Tailwind (`bg-bg-secondary`, `bg-card-dark`, `bg-btn-primary`, etc.) o con `var()` directo.
 
-### Tokens semánticos de Shadcn mapeados a la marca
-| Token Shadcn     | → Variable de marca     |
-|------------------|-------------------------|
-| `--background`   | `#F8F8F8` (bg-primary)  |
-| `--foreground`   | `#111C24` (text-primary)|
-| `--primary`      | `#042F34` (btn-primary) |
-| `--accent`       | `#74E4BB` (btn-outline) |
-| `--secondary`    | `#D6E5E9` (card-light)  |
-| `--destructive`  | `#DC2626`               |
-| `--ring`         | `#A1A1AA` (btn-focus)   |
-| `--sidebar`      | `#042F34` (bg-secondary)|
+### Tokens semánticos de Shadcn → marca
+`--background`→`#F8F8F8` · `--foreground`→`#111C24` · `--primary`→`#042F34` · `--accent`→`#74E4BB` · `--secondary`→`#D6E5E9` · `--destructive`→`#DC2626` · `--ring`→`#A1A1AA` · `--sidebar`→`#042F34`
 
 ### Tipografías
-| Fuente       | Pesos           | Uso                        | Carga              |
-|--------------|-----------------|----------------------------|--------------------|
-| Le Havre     | Black 900, Bold 700 | Encabezados y títulos  | `next/font/local` — archivos en `src/app/fonts/` |
-| Montserrat   | Medium 500, Bold 700 | Body                  | `next/font/google` |
+- **Le Havre** (900/700) → `font-heading` — headings. Archivos en `src/app/fonts/`
+- **Montserrat** (500/700) → `font-sans` / `font-body` — body. Google Fonts.
 
-Variables CSS disponibles como utilidades Tailwind:
-- `font-heading` → Le Havre (`--font-le-havre`)
-- `font-sans` / `font-body` → Montserrat (`--font-montserrat`)
-
-> Archivos ya ubicados en `src/app/fonts/LeHavre-Black.otf` y `src/app/fonts/LeHavre-Bold.otf`.
-
-### Tamaños tipográficos (desktop/tablet — `md:`)
-| Elemento | Tamaño | Clase Tailwind |
-|---|---|---|
-| H1 de banners (HeroSection, TechnicalServiceHero, AboutHero) | 96px | `md:text-[96px]` |
-| Descripción bajo H1 | 24px | `md:text-2xl` |
-| H2 de secciones (AboutSection, FeaturedProducts, ServicesSection, FAQSection) | 64px | `md:text-[64px]` |
-| Descripción bajo H2 | 16px | `text-base` |
-| Nombre de producto (cards y detalle) | 30px | `md:text-3xl` |
-| Descripción de producto (cards y detalle) | 16px | `text-base` |
-
-> Mobile usa tamaños menores (clases sin prefijo responsive). Desktop/tablet = `md:` en adelante.
+### Tamaños tipográficos (desktop `md:`, mobile sin prefijo)
+| Elemento | Clase |
+|---|---|
+| H1 banners | `md:text-[96px]` |
+| Descripción H1 | `md:text-2xl` |
+| H2 secciones | `md:text-[64px]` |
+| Nombre producto | `md:text-3xl` |
+| Cuerpo / desc | `text-base` |
 
 ### Border Radius
-| Variable CSS         | Valor  | Uso                              | Utilidad Tailwind    |
-|----------------------|--------|----------------------------------|----------------------|
-| `--radius-card`      | `15px` | Tarjetas de producto             | `rounded-card` / `rounded-lg` |
-| `--radius-button`    | `6px`  | Botones                          | `rounded-button` / `rounded-md` |
-| `--radius-dropdown`  | `5px`  | Desplegables, FAQ, tooltips      | `rounded-dropdown` / `rounded-sm` |
+`--radius-card: 15px` → `rounded-card` · `--radius-button: 6px` → `rounded-button` · `--radius-dropdown: 5px` → `rounded-dropdown`
 
 ### Espaciados
-| Variable CSS                | Valor  | Uso                                          | Utilidad Tailwind          |
-|-----------------------------|--------|----------------------------------------------|----------------------------|
-| `--section-spacing`         | `64px` | Padding vertical de secciones — desktop/tablet | `py-section`             |
-| `--section-spacing-mobile`  | `40px` | Padding vertical de secciones — mobile        | `py-section-mobile`        |
-| `--card-gap-mobile`         | `40px` | Gap entre product cards — mobile (columna)   | `gap-card-gap-mobile`      |
-
-> Desktop/tablet: gap entre cards manejado por el grid (`auto`).
+`--section-spacing: 64px` → `py-section` · `--section-spacing-mobile: 40px` → `py-section-mobile` · `--card-gap-mobile: 40px` → `gap-card-gap-mobile`
 
 ## Backend / DB
 - Todas las mutaciones de DB van a través de Prisma
@@ -217,8 +195,10 @@ Si la red bloquea los puertos 5432/6543 (`prisma migrate dev` se congela), usar 
 - `CategoryForm.tsx` incluye `ImageUploader` para asignar imagen a categoría
 
 ## Estado del proyecto
-- **Backend: COMPLETADO** — Schema Prisma (6 modelos: Category, Product, Order, OrderItem, TechnicalServiceRequest, SiteSetting; 3 enums), migración aplicada, 18+ Server Actions (products, checkout, admin CRUD, settings), webhook MP, auth middleware, Supabase clients, cart store Zustand
-- **Frontend: EN PROGRESO** — Todas las páginas listadas en la tabla tienen sus componentes implementados (ver `src/features/*/components/`)
-- **Página Productos: COMPLETADO** — diseño desktop con Navbar oscuro, H1 + SearchBar, chips de filtro horizontales, grid 4 columnas, paginación shadcn, MiniBanner al final
-- **Imágenes: COMPLETADO** — Cloudinary integrado (`next-cloudinary`), `ImageUploader` y `MultiImageUploader` disponibles para admin
-- **Admin Configuración: COMPLETADO** — `/admin/configuracion` permite gestionar todas las imágenes globales del sitio vía Cloudinary
+- **Backend: COMPLETADO** — 6 modelos Prisma, 3 enums, 18+ Server Actions, webhook MP, auth middleware, cart + favorites store Zustand
+- **Frontend: EN PROGRESO** — Todas las páginas de la tabla tienen componentes implementados
+- **Página `/productos`: COMPLETADO** — SearchBar, chips, grid 4 cols, paginación, MiniBanner
+- **Página `/productos/[slug]`: COMPLETADO** — ProductGallery, ProductInfo (cart + favoritos), productos relacionados, MiniBanner
+- **Favoritos: COMPLETADO** — Zustand persist store en `src/features/favorites/`
+- **Imágenes: COMPLETADO** — Cloudinary, `ImageUploader`, `MultiImageUploader`
+- **Admin Configuración: COMPLETADO** — `/admin/configuracion` gestiona imágenes del sitio

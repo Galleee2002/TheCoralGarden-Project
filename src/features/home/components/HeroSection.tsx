@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 import { getSetting } from "@/features/admin/actions/settingActions";
 
 const features = [
@@ -38,7 +38,7 @@ export async function HeroSection() {
           <ul className="mb-10 flex flex-col gap-4">
             {features.map((text) => (
               <li key={text} className="flex items-center gap-3">
-                <CheckCircle className="text-text-secondary h-5 w-5 shrink-0" />
+                <CircleCheckBig className="h-[28px] w-[28px] shrink-0 text-white" />
                 <span className="text-base font-medium text-white/90 md:text-2xl">
                   {text}
                 </span>

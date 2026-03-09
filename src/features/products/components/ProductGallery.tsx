@@ -15,16 +15,18 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
 
   if (images.length === 0) {
     return (
-      <div className="flex aspect-square w-full items-center justify-center rounded-xl bg-muted">
+      <div className="flex aspect-[4/3] w-full items-center justify-center rounded-xl bg-muted">
         <ImageOff className="h-20 w-20 text-muted-foreground" />
       </div>
     );
   }
 
+  const thumbnails = images.slice(0, 3);
+
   return (
     <div className="flex flex-col gap-4">
       {/* Main image */}
-      <div className="relative aspect-square overflow-hidden rounded-xl bg-muted">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-muted">
         <Image
           src={images[selected]}
           alt={name}
@@ -34,18 +36,18 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
         />
       </div>
 
-      {/* Thumbnails */}
-      {images.length > 1 && (
-        <div className="flex gap-2 overflow-x-auto">
-          {images.map((img, i) => (
+      {/* Thumbnails — max 3, equal width */}
+      {thumbnails.length > 1 && (
+        <div className="flex gap-2">
+          {thumbnails.map((img, i) => (
             <button
               key={i}
               onClick={() => setSelected(i)}
               className={cn(
-                "relative h-16 w-16 flex-shrink-0 overflow-hidden rounded-lg border-2 transition-all",
+                "relative h-24 flex-1 overflow-hidden rounded-lg border-2 transition-all",
                 i === selected
-                  ? "border-primary"
-                  : "border-transparent hover:border-primary/50",
+                  ? "border-btn-primary"
+                  : "border-transparent hover:border-btn-primary/50",
               )}
             >
               <Image src={img} alt={`${name} ${i + 1}`} fill className="object-cover" />
