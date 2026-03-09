@@ -1,6 +1,7 @@
 import { TechnicalServiceHero } from "@/features/technical-service/components/TechnicalServiceHero";
-import { ServicesCards } from "@/features/technical-service/components/ServicesCards";
-import { CoverageSection } from "@/features/technical-service/components/CoverageSection";
+import { AttentionSection } from "@/features/technical-service/components/AttentionSection";
+import { ContactCards } from "@/features/technical-service/components/ContactCards";
+import { MiniBanner } from "@/features/home/components/MiniBanner";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -13,8 +14,9 @@ export default function TechnicalServicePage() {
   return (
     <>
       <TechnicalServiceHero />
-      <ServicesCards />
-      <CoverageSection />
+      <AttentionSection />
+      <ContactCards />
+      <MiniBanner />
     </>
   );
 }

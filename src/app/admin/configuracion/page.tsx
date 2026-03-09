@@ -1,6 +1,7 @@
 import { getSetting } from "@/features/admin/actions/settingActions";
 import { HeroBannerForm } from "@/features/admin/components/HeroBannerForm";
 import { SettingImageForm } from "@/features/admin/components/SettingImageForm";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 
 export default async function ConfiguracionPage() {
   const [
@@ -23,18 +24,24 @@ export default async function ConfiguracionPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-bold">Configuración del sitio</h1>
-        <p className="text-muted-foreground">Gestioná las imágenes y ajustes globales.</p>
-      </div>
+      <AdminPageHeader
+        title="Configuración"
+        description="Gestioná las imágenes y ajustes globales del sitio"
+      />
 
-      <div className="rounded-lg border p-6">
-        <h2 className="mb-4 text-lg font-semibold">Banner principal (Hero)</h2>
+      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+        <h2 className="mb-4 flex items-center gap-2 text-lg font-semibold text-text-primary">
+          <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          Banner principal (Hero)
+        </h2>
         <HeroBannerForm currentUrl={heroBannerUrl} />
       </div>
 
-      <div className="rounded-lg border p-6">
-        <h2 className="mb-1 text-lg font-semibold">Sección "Sobre nosotros" — Galería</h2>
+      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+        <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
+          <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          Sección &ldquo;Sobre nosotros&rdquo; — Galería
+        </h2>
         <p className="mb-6 text-sm text-muted-foreground">
           Las 3 fotos verticales debajo del texto principal.
         </p>
@@ -69,8 +76,11 @@ export default async function ConfiguracionPage() {
         </div>
       </div>
 
-      <div className="rounded-lg border p-6">
-        <h2 className="mb-1 text-lg font-semibold">Sección "Nuestros servicios" — Imágenes</h2>
+      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+        <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
+          <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          Sección &ldquo;Nuestros servicios&rdquo; — Imágenes
+        </h2>
         <p className="mb-6 text-sm text-muted-foreground">
           Una imagen por cada tarjeta de servicio.
         </p>

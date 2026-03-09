@@ -27,7 +27,7 @@ export async function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-br from-[#042F34] via-[#063B41] to-[#111C24]" />
       )}
       {/* Dark overlay for text legibility */}
-      <div className="absolute inset-0 bg-black/30" />
+      <div className="absolute inset-0 bg-black/55" />
 
       <div className="relative z-10 container mx-auto px-4 py-32">
         <div className="max-w-5xl">
@@ -48,7 +48,7 @@ export async function HeroSection() {
 
           <Link
             href="/productos"
-            className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary inline-flex items-center border-2 px-8 py-3 text-sm font-bold tracking-wider text-white uppercase transition-colors"
+            className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary inline-flex items-center border-2 px-8 py-3 text-sm font-medium tracking-wider text-white uppercase transition-colors"
           >
             Conoce mas
           </Link>

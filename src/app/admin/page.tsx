@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma/client";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Package, ShoppingBag, Wrench, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
 
@@ -35,41 +36,66 @@ export default async function AdminDashboardPage() {
       value: stats.totalOrders.toString(),
       icon: ShoppingBag,
       description: "Todas las órdenes",
+      urgent: false,
     },
     {
       title: "Ingresos",
       value: formatCurrency(Number(stats.revenue._sum.total)),
       icon: TrendingUp,
       description: "Pagos confirmados",
+      urgent: false,
     },
     {
       title: "Productos activos",
       value: stats.totalProducts.toString(),
       icon: Package,
       description: "En el catálogo",
+      urgent: false,
     },
     {
       title: "Servicio técnico pendiente",
       value: stats.pendingTechnicalRequests.toString(),
       icon: Wrench,
       description: "Solicitudes sin atender",
+      urgent: true,
     },
   ];
 
   return (
     <div>
+      <AdminPageHeader
+        title="Dashboard"
+        description="Resumen general del sitio"
+      />
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((card) => (
-          <Card key={card.title}>
-            <CardHeader className="flex flex-row items-center justify-between pb-2">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
-                {card.title}
-              </CardTitle>
-              <card.icon className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <p className="text-2xl font-bold">{card.value}</p>
-              <p className="text-xs text-muted-foreground">{card.description}</p>
+          <Card
+            key={card.title}
+            className="hover:shadow-md transition-shadow"
+          >
+            <CardContent className="p-6">
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <p className="text-sm text-muted-foreground">{card.title}</p>
+                  <p className="mt-2 text-3xl font-black font-heading text-text-primary leading-none">
+                    {card.value}
+                  </p>
+                  <p className="mt-1 text-xs text-muted-foreground">{card.description}</p>
+                </div>
+                <div
+                  className={[
+                    "h-11 w-11 rounded-card flex items-center justify-center shrink-0",
+                    card.urgent ? "bg-destructive/10" : "bg-card-light",
+                  ].join(" ")}
+                >
+                  <card.icon
+                    className={[
+                      "h-5 w-5",
+                      card.urgent ? "text-destructive" : "text-bg-secondary",
+                    ].join(" ")}
+                  />
+                </div>
+              </div>
             </CardContent>
           </Card>
         ))}

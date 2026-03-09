@@ -67,7 +67,7 @@ export async function ServicesSection() {
               </div>
               <Link
                 href="/servicio-tecnico"
-                className={`rounded-button relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-bold tracking-wider uppercase transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
+                className={`rounded-button relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider uppercase transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
               >
                 Conoce mas
               </Link>
@@ -102,7 +102,7 @@ export async function ServicesSection() {
             {/* Button — bottom-left */}
             <Link
               href="/servicio-tecnico"
-              className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-bold tracking-wider text-white uppercase transition-colors"
+              className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider text-white uppercase transition-colors"
             >
               Conoce mas
             </Link>

@@ -1,36 +1,36 @@
-import { Badge } from "@/components/ui/badge";
-import { Clock, PhoneCall } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export function TechnicalServiceHero() {
   return (
-    <section className="bg-gradient-to-br from-primary to-primary/80 py-16 text-primary-foreground sm:py-24">
-      <div className="container mx-auto px-4 text-center">
-        <Badge className="mb-6 bg-primary-foreground/20 text-primary-foreground hover:bg-primary-foreground/30">
-          <Clock className="mr-1.5 h-3 w-3" />
-          Disponible 24hs / 365 días
-        </Badge>
+    <section className="relative -mt-16 flex min-h-screen items-center overflow-hidden bg-gradient-to-br from-[#042F34] to-[#111C24]">
+      {/* Background image */}
+      <Image
+        src="/banner-servicio-tecnico.jpg"
+        alt="Servicio técnico especializado"
+        fill
+        priority
+        className="object-cover"
+      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/55" />
 
-        <h1 className="mb-4 text-4xl font-extrabold tracking-tight md:text-[96px]">
+      <div className="relative z-10 container mx-auto px-4 py-32 flex flex-col items-center text-center">
+        <h1 className="font-heading mb-6 text-5xl leading-[1.1] font-black text-white uppercase md:text-[96px]">
           Servicio Técnico
-          <br />
-          <span className="text-accent">Especializado</span>
         </h1>
 
-        <p className="mx-auto mb-8 max-w-2xl text-lg text-primary-foreground/80 md:text-2xl">
-          Reparación, mantenimiento y optimización de equipos de ósmosis inversa
-          y purificación de agua. Respondemos rápido porque el agua no espera.
+        <p className="mb-10 max-w-xl text-base text-white/90 md:text-2xl">
+          Realizamos mantenimiento preventivo y correctivo de equipos de
+          ósmosis inversa, tanto de The Coral Garden como de otras marcas.
         </p>
 
-        <div className="flex flex-wrap items-center justify-center gap-6 text-sm">
-          <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2">
-            <PhoneCall className="h-4 w-4 text-accent" />
-            Respuesta inmediata
-          </div>
-          <div className="flex items-center gap-2 rounded-full bg-primary-foreground/10 px-4 py-2">
-            <Clock className="h-4 w-4 text-accent" />
-            Sin días ni horarios
-          </div>
-        </div>
+        <Link
+          href="#contacto"
+          className="rounded-button inline-flex items-center border-2 border-text-secondary px-8 py-3 text-sm font-medium tracking-wider text-text-secondary uppercase transition-colors hover:bg-text-secondary/10"
+        >
+          Contactanos →
+        </Link>
       </div>
     </section>
   );

@@ -1,15 +1,7 @@
-import Link from "next/link";
-import { Droplets, LayoutDashboard, Package, Wrench, ShoppingBag, LogOut, Settings, ExternalLink } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Droplets } from "lucide-react";
 import { Separator } from "@/components/ui/separator";
-
-const adminLinks = [
-  { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { href: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
-  { href: "/admin/productos", label: "Productos", icon: Package },
-  { href: "/admin/servicio-tecnico", label: "Servicio Técnico", icon: Wrench },
-  { href: "/admin/configuracion", label: "Configuración", icon: Settings },
-];
+import { AdminSidebarNav } from "@/features/admin/components/AdminSidebarNav";
+import { AdminMobileNav } from "@/features/admin/components/AdminMobileNav";
 
 export default function AdminLayout({
   children,
@@ -17,58 +9,32 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex min-h-screen">
-      {/* Sidebar */}
-      <aside className="hidden w-56 flex-col border-r bg-sidebar lg:flex">
+    <div className="flex min-h-screen flex-col lg:flex-row">
+      {/* Mobile header */}
+      <header className="flex h-14 items-center gap-3 border-b bg-sidebar px-4 lg:hidden">
+        <AdminMobileNav />
+        <Droplets className="h-5 w-5 text-text-secondary" />
+        <span className="font-bold text-sidebar-foreground text-sm">Admin Panel</span>
+      </header>
+
+      {/* Desktop sidebar */}
+      <aside className="hidden w-64 flex-col border-r border-sidebar-border bg-sidebar lg:flex">
         <div className="flex h-16 items-center gap-2 px-4">
-          <Droplets className="h-6 w-6 text-sidebar-primary" />
-          <span className="font-bold text-sidebar-foreground">
-            Admin Panel
-          </span>
+          <Droplets className="h-6 w-6 text-text-secondary" />
+          <span className="font-bold text-sidebar-foreground">Admin Panel</span>
         </div>
         <Separator className="bg-sidebar-border" />
-        <nav className="flex flex-col gap-1 p-2">
-          {adminLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm text-sidebar-foreground/80 transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-            >
-              <link.icon className="h-4 w-4" />
-              {link.label}
-            </Link>
-          ))}
-        </nav>
-        <div className="mt-auto p-4 flex flex-col gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="w-full justify-start text-sidebar-foreground/60 hover:text-sidebar-foreground"
-            asChild
-          >
-            <Link href="/" target="_blank">
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Ver sitio
-            </Link>
-          </Button>
-          <Separator className="my-1 bg-sidebar-border" />
-          <form action="/api/auth/logout" method="POST">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start text-sidebar-foreground/60 hover:text-sidebar-foreground"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              Cerrar sesión
-            </Button>
-          </form>
+        <div className="flex flex-1 flex-col">
+          <AdminSidebarNav />
         </div>
       </aside>
 
       {/* Main content */}
-      <main className="flex-1 overflow-auto bg-background">
-        <div className="container mx-auto p-6">{children}</div>
-      </main>
+      <div className="flex flex-1 flex-col overflow-hidden">
+        <main className="flex-1 overflow-auto bg-background">
+          <div className="container mx-auto p-6 lg:p-8">{children}</div>
+        </main>
+      </div>
     </div>
   );
 }

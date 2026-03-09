@@ -37,13 +37,15 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted/40 px-4">
-      <Card className="w-full max-w-sm">
+    <div className="bg-card-light flex min-h-screen items-center justify-center px-4">
+      <Card className="rounded-card w-full max-w-sm shadow-md">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-            <Droplets className="h-6 w-6 text-primary" />
+          <div className="bg-text-secondary/15 mx-auto mb-2 flex h-12 w-12 items-center justify-center rounded-full">
+            <Droplets className="text-bg-secondary h-6 w-6" />
           </div>
-          <CardTitle>Acceso administrativo</CardTitle>
+          <CardTitle className="font-heading">
+            Bienvenido/a a The Coral Garden
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="flex flex-col gap-4">
@@ -69,7 +71,11 @@ export default function AdminLoginPage() {
                 autoComplete="current-password"
               />
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
+            <Button
+              type="submit"
+              className="rounded-button w-full"
+              disabled={loading}
+            >
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Ingresar
             </Button>

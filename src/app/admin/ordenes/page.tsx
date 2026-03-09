@@ -7,19 +7,19 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import type { OrderStatus } from "@/types/enums";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Órdenes" };
 
-const statusLabels: Record<OrderStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  PENDING: { label: "Pendiente", variant: "secondary" },
-  PAID: { label: "Pagado", variant: "default" },
-  PROCESSING: { label: "En proceso", variant: "default" },
-  SHIPPED: { label: "Enviado", variant: "default" },
-  DELIVERED: { label: "Entregado", variant: "outline" },
-  CANCELLED: { label: "Cancelado", variant: "destructive" },
+const statusStyles: Record<OrderStatus, { label: string; className: string }> = {
+  PENDING:    { label: "Pendiente",  className: "bg-amber-100 text-amber-800 border border-amber-200" },
+  PAID:       { label: "Pagado",     className: "bg-emerald-100 text-emerald-800 border border-emerald-200" },
+  PROCESSING: { label: "En proceso", className: "bg-blue-100 text-blue-800 border border-blue-200" },
+  SHIPPED:    { label: "Enviado",    className: "bg-violet-100 text-violet-800 border border-violet-200" },
+  DELIVERED:  { label: "Entregado",  className: "bg-card-light text-text-primary border border-border" },
+  CANCELLED:  { label: "Cancelado",  className: "bg-destructive/10 text-destructive border border-destructive/20" },
 };
 
 export default async function AdminOrdersPage() {
@@ -39,10 +39,14 @@ export default async function AdminOrdersPage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Órdenes</h1>
-      <div className="rounded-xl border bg-card">
+      <AdminPageHeader title="Órdenes" description="Historial de pedidos" />
+      <div
+        role="region"
+        aria-label="Tabla de órdenes"
+        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
+      >
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead>ID</TableHead>
               <TableHead>Cliente</TableHead>
@@ -63,7 +67,7 @@ export default async function AdminOrdersPage() {
               </TableRow>
             ) : (
               orders.map((order) => {
-                const status = statusLabels[order.status];
+                const status = statusStyles[order.status];
                 return (
                   <TableRow key={order.id}>
                     <TableCell className="font-mono text-xs">
@@ -78,7 +82,14 @@ export default async function AdminOrdersPage() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <span
+                        className={[
+                          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          status.className,
+                        ].join(" ")}
+                      >
+                        {status.label}
+                      </span>
                     </TableCell>
                     <TableCell className="font-semibold">
                       {formatPrice(order.total)}

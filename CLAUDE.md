@@ -4,29 +4,22 @@
 - Next.js 16 App Router, TypeScript strict mode
 - Tailwind CSS v4 + Shadcn/UI (new-york style, lucide icons)
 - Prisma v7 + Supabase (PostgreSQL)
-- Zustand v5 para estado cliente, React Query v5 para servidor
-- MercadoPago v2 para pagos
-- next-safe-action v8 para Server Actions
-- Zod v4 para validaciones
+- Zustand v5 (cliente), React Query v5 (servidor)
+- MercadoPago v2, next-safe-action v8, Zod v4
+- Framer Motion v12 (animaciones en SpecialtiesSection)
 
 ## Arquitectura: Feature-First + Clean Layers
-- Cada feature vive en `src/features/<name>/`
-- Dentro de cada feature: `components/`, `hooks/`, `actions/`, `types/`
-- Server Actions en `actions/` usando next-safe-action (`src/lib/safe-action.ts`)
-- UI compartida en `src/components/`
-- Layout global en `src/components/layout/`
-- Componentes compartidos en `src/components/shared/`
-- Acceso a DB solo a través de `src/lib/prisma/client.ts`
+- `src/features/<name>/components|hooks|actions|types/`
+- Server Actions con next-safe-action en `src/lib/safe-action.ts`
+- UI compartida: `src/components/shared/` · Layout: `src/components/layout/`
+- DB solo via `src/lib/prisma/client.ts`
 
 ## Convenciones de código
-- TypeScript con tipos estrictos
-- Nunca usar `any` excepto en `src/lib/zod-resolver.ts` (workaround Zod v4.3 + hookform)
-- Schemas Zod para todas las validaciones
+- TypeScript estricto — nunca `any` excepto `src/lib/zod-resolver.ts`
 - Server Components por defecto, `"use client"` solo cuando sea necesario
-- Todos los formularios usan react-hook-form + zod resolver
-- Para el resolver importar desde `@/lib/zod-resolver` (NO desde `@hookform/resolvers/zod` directamente)
-- Manejo de errores con tipos, nunca throw strings crudas
-- Enums de Prisma: importar desde `@/types/enums` para uso en cliente/shared code
+- Formularios: react-hook-form + zod resolver desde `@/lib/zod-resolver` (NO `@hookform/resolvers/zod`)
+- Enums: importar desde `@/types/enums` (no `@prisma/client`) para uso cliente/shared
+- Next.js 16: `await searchParams` / `await params` en páginas dinámicas
 
 ## Páginas del sitio
 | Sección              | Feature                        | Ruta                              |
@@ -45,160 +38,118 @@
 | Admin Servicio Téc.  | `features/admin`               | `/admin/servicio-tecnico`         |
 | Admin Configuración  | `features/admin`               | `/admin/configuracion`            |
 
-## Frontend
-- Componentes usan primitivas de shadcn, extendidas con Tailwind
-- Botón flotante de WhatsApp en todas las páginas (`WhatsAppButton.tsx`)
-- CartDrawer accesible desde el Navbar en todas las páginas
+## Páginas — estructura de componentes
 
-## Navbar — comportamiento de transparencia
-- **Páginas con hero banner** (`/` y `/servicio-tecnico`): Navbar transparente al top, se vuelve `bg-bg-secondary` al hacer scroll (`scrollY > 50`)
-- **Resto de páginas**: siempre `bg-bg-secondary` (`#042F34`), nunca transparente
-- Logo: `isTransparent ? "/LOGO.svg" : "/logo-fade.svg"` — en dark bg usa `logo-fade.svg`
-- Links e íconos: siempre `text-white/90 hover:text-white` y `hover:bg-white/10` (el bg ya es oscuro en ambos estados)
-- Mobile menu: siempre `bg-bg-secondary/95 backdrop-blur`
+### `/sobre-nosotros`
+`AboutHero` (grid 2 cols: foto `/DUEÑOS.png` + historia) → `SpecialtiesSection` (accordion horizontal desktop / stacked mobile, framer-motion) → `BrandsCarousel` → `MiniBanner`
+> **Eliminados:** `MissionVision.tsx`, `WhyChooseUs.tsx`
 
-## ProductCard — convenciones
-- CTA: solo "Ver más →" (`ChevronRight`) — sin botón de carrito en la lista
-- Prop `description?: string` — se muestra con `line-clamp-2`
-- NO tiene prop `category` (se eliminó)
-- Es un Server Component (sin `"use client"`, sin `useCartStore`)
-- Estilos: `rounded-card`, `border border-border/30`, CTA con `bg-btn-primary text-text-secondary`
+### `/servicio-tecnico`
+`TechnicalServiceHero` → `AttentionSection` ("365 días", cards con `CheckCircle2`) → `ContactCards` (WhatsApp + Gmail, usa `/whatsapp-icon.svg` y `/gmail-icon.svg`) → `MiniBanner`
+> Navbar transparente en hero, igual que `/`
 
-## Página `/productos` — layout
-- H1 "PRODUCTOS" en `font-heading` (96px desktop / 56px mobile), a la izquierda
-- `SearchBar` a la derecha del H1 — filtra con `?q=` al presionar Enter, `bg-card-light`
-- Filter chips horizontales (`flex flex-wrap gap-2`, `rounded-full`) debajo del header
-- Grid 4 columnas: `sm:grid-cols-2 lg:grid-cols-4`, `pageSize: 16`
-- `ProductsPagination` (shadcn `<Pagination>`) al final del grid, preserva todos los params
-- `MiniBanner` al final de la página (antes del footer)
-- Componentes nuevos: `SearchBar.tsx`, `ProductsPagination.tsx` en `src/features/products/components/`
+### `/productos`
+Header con H1 + `SearchBar` (`?q=`, `bg-card-light`) → filter chips → grid `sm:grid-cols-2 lg:grid-cols-4` (pageSize 16) → `ProductsPagination` → `MiniBanner`
 
-## Página `/productos/[slug]` — detalle de producto
-- **Breadcrumb**: "Productos → {nombre}" con `ChevronRight`
-- **Grid 2 cols** (`lg:grid-cols-2`): `ProductGallery` | `ProductInfo`
-- **`ProductGallery`** (client): imagen principal `aspect-[4/3]` + thumbnails max 3 (flex-1, `h-24`), borde activo `border-btn-primary`
-- **`ProductInfo`** (client): título + precio en fila, descripción, specs en grid 2 cols (`CheckCircle2`), CTA row:
-  - "Comprar ahora" → agrega al carrito y redirige a `/carrito`
-  - Botón `Heart` → `useFavoritesStore.toggleFavorite`, rojo si `isFavorite`
-  - Botón `ShoppingCart` → agrega al carrito con toast
-  - Sin stock: muestra "Sin stock" en `text-destructive`
-- **Productos relacionados**: hasta 4 de la misma categoría; si hay menos de 4, rellena con otros productos. `MiniBanner` al final.
+### `/productos/[slug]`
+Breadcrumb → grid 2 cols: `ProductGallery` (aspect-[4/3], max 3 thumbnails) | `ProductInfo` (cart + `useFavoritesStore` + toast) → Relacionados (4 misma categoría) → `MiniBanner`
 
-## Favoritos — `src/features/favorites/`
-- `store/favoritesStore.ts` — Zustand persist store, clave `coral-garden-favorites`
+## Admin — layout y navegación
+- **Desktop**: sidebar `w-64` con `AdminSidebarNav` (active link: `border-l-2 border-text-secondary`)
+- **Mobile**: header con hamburger → `AdminMobileNav` (Sheet drawer) usando `AdminSidebarNav` internamente
+- **`AdminPageHeader`** (`src/components/shared/`): header estándar para páginas admin (title, description?, action?)
+- Sidebar tiene logout (`/api/auth/logout`) y link "Ver sitio" (nueva pestaña)
+
+## Frontend — convenciones clave
+
+### Navbar
+- Con hero (`/` y `/servicio-tecnico`): transparente → `bg-bg-secondary` al `scrollY > 50`
+- Sin hero: siempre `bg-bg-secondary`
+- Logo: `isTransparent ? "/LOGO.svg" : "/logo-fade.svg"`
+
+### ProductCard
+- Server Component — sin `"use client"`, sin `useCartStore`
+- CTA: "Ver más →" con `ChevronRight`, `bg-btn-primary text-text-secondary`
+- Props: `description?: string` (line-clamp-2) — sin prop `category`
+
+### Favoritos — `src/features/favorites/store/favoritesStore.ts`
+- Zustand persist, clave `coral-garden-favorites`
 - `FavoriteItem`: `{ productId, name, price, image, slug }`
 - Métodos: `toggleFavorite(item)`, `isFavorite(productId)`
-- Usado en `ProductInfo` (detalle de producto)
 
 ## Paleta de colores — Design Tokens (`src/app/globals.css`)
+Paleta: `#042F34` · `#111C24` · `#33C2E9` · `#74E4BB` · `#D6E5E9` · `#F8F8F8`
 
-Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
-
-### Variables de marca (custom, disponibles como utilidades Tailwind)
 | Variable CSS         | Color     | Uso                                          |
 |----------------------|-----------|----------------------------------------------|
-| `--bg-primary`       | `#F8F8F8` | Fondo principal de páginas                   |
-| `--bg-secondary`     | `#042F34` | Navbar, footer, secciones oscuras, banners   |
-| `--text-primary`     | `#111C24` | Texto de cuerpo y títulos sobre fondo claro  |
-| `--text-secondary`   | `#74E4BB` | Texto de acento / highlights                 |
-| `--btn-primary`      | `#042F34` | Botón primario (ej: "Comprar ahora")         |
-| `--btn-primary-hover`| `#063B41` | Hover del botón primario                     |
-| `--btn-outline`      | `#74E4BB` | Borde de botones outline (ej: "Ver más")     |
-| `--btn-secondary`    | `#74E4BB` | Botón secundario sólido sin outline          |
-| `--btn-disabled`     | `#82979A` | Estado deshabilitado                         |
-| `--btn-destructive`  | `#DC2626` | Acciones destructivas                        |
-| `--btn-focus`        | `#A1A1AA` | Ring de foco                                 |
-| `--card-default`     | `#F8F8F8` | Tarjetas de producto (estándar)              |
-| `--card-dark`        | `#042F34` | Card variant 1 — oscura                      |
-| `--card-blue`        | `#33C2E9` | Card variant 2 — azul cielo                  |
-| `--card-light`       | `#D6E5E9` | Fondos de sección (ej: Productos Relacionados)|
+| `--bg-primary`       | `#F8F8F8` | Fondo principal                              |
+| `--bg-secondary`     | `#042F34` | Navbar, footer, secciones oscuras            |
+| `--text-primary`     | `#111C24` | Texto sobre fondo claro                      |
+| `--text-secondary`   | `#74E4BB` | Acento / highlights                          |
+| `--btn-primary`      | `#042F34` | Botón primario                               |
+| `--btn-primary-hover`| `#063B41` | Hover botón primario                         |
+| `--btn-outline/secondary` | `#74E4BB` | Outline y botón secundario             |
+| `--card-default`     | `#F8F8F8` | Tarjetas estándar                            |
+| `--card-dark`        | `#042F34` | Card oscura                                  |
+| `--card-blue`        | `#33C2E9` | Card azul cielo                              |
+| `--card-light`       | `#D6E5E9` | Fondos de sección, SearchBar                 |
 
-Variables mapeadas en `@theme inline` → disponibles como utilidades Tailwind (`bg-bg-secondary`, `bg-card-dark`, `bg-btn-primary`, etc.) o con `var()` directo.
+Tokens `@theme inline` → clases Tailwind: `bg-bg-secondary`, `bg-card-dark`, `bg-btn-primary`, etc.
 
-### Tokens semánticos de Shadcn → marca
-`--background`→`#F8F8F8` · `--foreground`→`#111C24` · `--primary`→`#042F34` · `--accent`→`#74E4BB` · `--secondary`→`#D6E5E9` · `--destructive`→`#DC2626` · `--ring`→`#A1A1AA` · `--sidebar`→`#042F34`
+**Shadcn tokens:** `--background`→`#F8F8F8` · `--foreground`→`#111C24` · `--primary`→`#042F34` · `--accent`→`#74E4BB` · `--secondary`→`#D6E5E9` · `--sidebar`→`#042F34`
 
 ### Tipografías
-- **Le Havre** (900/700) → `font-heading` — headings. Archivos en `src/app/fonts/`
-- **Montserrat** (500/700) → `font-sans` / `font-body` — body. Google Fonts.
+- **Le Havre** (900/700) → `font-heading` — headings (`src/app/fonts/`)
+- **Montserrat** (500/700) → `font-sans` / `font-body` — body (Google Fonts)
 
-### Tamaños tipográficos (desktop `md:`, mobile sin prefijo)
-| Elemento | Clase |
+| Elemento | Desktop (`md:`) |
 |---|---|
-| H1 banners | `md:text-[96px]` |
-| Descripción H1 | `md:text-2xl` |
-| H2 secciones | `md:text-[64px]` |
-| Nombre producto | `md:text-3xl` |
-| Cuerpo / desc | `text-base` |
+| H1 banners | `text-[96px]` |
+| H2 secciones | `text-[64px]` |
+| H1 descripción | `text-2xl` |
+| Nombre producto | `text-3xl` |
 
-### Border Radius
-`--radius-card: 15px` → `rounded-card` · `--radius-button: 6px` → `rounded-button` · `--radius-dropdown: 5px` → `rounded-dropdown`
-
-### Espaciados
-`--section-spacing: 64px` → `py-section` · `--section-spacing-mobile: 40px` → `py-section-mobile` · `--card-gap-mobile: 40px` → `gap-card-gap-mobile`
+**Radius:** `rounded-card` (15px) · `rounded-button` (6px) · `rounded-dropdown` (5px)
+**Spacing:** `py-section` (64px) · `py-section-mobile` (40px) · `gap-card-gap-mobile` (40px)
 
 ## Backend / DB
-- Todas las mutaciones de DB van a través de Prisma
-- Auth manejado por Supabase Auth (solo admin — no hay cuentas de clientes)
-- Checkout es guest: datos del cliente guardados en la Order, sin registro
-- RLS (Row Level Security) habilitado en todas las tablas de Supabase
-- Prisma v7: configuración de datasource en `prisma.config.ts`, NO en `schema.prisma`
-- `PrismaClient` en v7 NO acepta `datasourceUrl` como argumento
+- Mutaciones de DB via Prisma (`src/lib/prisma/client.ts`)
+- Auth: Supabase Auth (solo admin — sin cuentas de clientes)
+- Checkout guest: datos del cliente en la Order
+- RLS habilitado en todas las tablas
+- **Prisma v7:** datasource en `prisma.config.ts` (NO en schema); `PrismaClient` sin `datasourceUrl`
+- Migrar: `pnpm prisma migrate dev --name <nombre>` | Generar: `pnpm prisma generate`
 
-## Configuración crítica de Prisma v7
-- La URL de conexión va en `prisma.config.ts` (ya configurado)
-- El bloque `datasource db` en `schema.prisma` solo lleva `provider`
-- Para generar tipos: `pnpm prisma generate`
-- Para migrar: `pnpm prisma migrate dev --name <nombre>`
-
-## Migraciones cuando el puerto DB está bloqueado
-Si la red bloquea los puertos 5432/6543 (`prisma migrate dev` se congela), usar este flujo alternativo:
-1. Aplicar el SQL directamente via `mcp__supabase__apply_migration`
-2. Crear `prisma/migrations/<timestamp>_<nombre>/migration.sql` manualmente
+### Migraciones con puerto DB bloqueado (5432/6543)
+1. SQL via `mcp__supabase__apply_migration`
+2. Crear `prisma/migrations/<timestamp>_<nombre>/migration.sql`
 3. Registrar en `_prisma_migrations` via `mcp__supabase__execute_sql`
-4. Correr `pnpm prisma generate` localmente
+4. `pnpm prisma generate`
 
 ## Imágenes — Cloudinary
-- Proveedor de imágenes: **Cloudinary** vía `next-cloudinary`
-- Upload desde admin usando `CldUploadWidget` con upload preset público
-- Componentes de upload en `src/components/shared/`:
-  - `ImageUploader.tsx` — sube una sola imagen, devuelve la URL via `onUpload`
-  - `MultiImageUploader.tsx` — sube múltiples imágenes (ej: galería de productos)
-- Variable de entorno: `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET`
-- Variable de entorno: `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` (requerida por `next-cloudinary`)
-- Las URLs de Cloudinary (`res.cloudinary.com`) están whitelisted en `next.config.ts`
-- Supabase Storage ya NO se usa para imágenes (reemplazado por Cloudinary)
-
-## Pagos con MercadoPago
-- Flujo: `createOrder` → `createMercadoPagoPreference` → redirect a MP Checkout Pro
-- Webhook en `src/app/api/webhooks/mp/route.ts` actualiza `Order.status`
-- Variables de entorno: `MERCADOPAGO_ACCESS_TOKEN`, `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`
-- Variable de entorno: `NEXT_PUBLIC_BASE_URL` para las back_urls de MP
-
-## Protección de rutas admin
-- `src/middleware.ts` protege todas las rutas `/admin/*`
-- Redirige a `/admin/login` si no hay sesión de Supabase
-- Redirige a `/admin` si ya hay sesión e intenta ir al login
+- `next-cloudinary` + `CldUploadWidget` (upload preset público)
+- `src/components/shared/ImageUploader.tsx` — imagen única
+- `src/components/shared/MultiImageUploader.tsx` — múltiples imágenes
+- Env: `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` + `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME`
 
 ## SiteSetting — Configuración del sitio
-- Modelo `SiteSetting` en Prisma: tabla key-value para ajustes globales del sitio
-- Claves usadas:
-  - `hero_banner_url` — imagen del hero principal
-  - `about_gallery_1/2/3` — galería de fotos de la sección Sobre Nosotros
-  - `service_venta_image`, `service_postventa_image`, `service_reparacion_image` — imágenes de tarjetas de servicios
-- Acciones: `getSetting(key)` y `upsertSetting({ key, value })` en `src/features/admin/actions/settingActions.ts`
-- UI admin: `HeroBannerForm.tsx`, `SettingImageForm.tsx` — usan `ImageUploader` internamente
-- Página admin: `/admin/configuracion` — gestión visual de todas las imágenes del sitio
+- Tabla key-value en Prisma. Claves: `hero_banner_url`, `about_gallery_1/2/3`, `service_venta_image`, `service_postventa_image`, `service_reparacion_image`
+- Actions: `getSetting(key)` / `upsertSetting({key, value})` en `src/features/admin/actions/settingActions.ts`
+- UI: `HeroBannerForm.tsx`, `SettingImageForm.tsx` en admin
 
-## Category — imágenes
-- Campo `imageUrl` (opcional) en modelo `Category`
-- `CategoryForm.tsx` incluye `ImageUploader` para asignar imagen a categoría
+## Pagos — MercadoPago
+- Flujo: `createOrder` → `createMercadoPagoPreference` → redirect MP Checkout Pro
+- Webhook: `src/app/api/webhooks/mp/route.ts`
+- Env: `MERCADOPAGO_ACCESS_TOKEN`, `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`, `NEXT_PUBLIC_BASE_URL`
+
+## Protección de rutas admin
+- `src/middleware.ts` → redirige a `/admin/login` sin sesión, redirige a `/admin` si ya autenticado
 
 ## Estado del proyecto
-- **Backend: COMPLETADO** — 6 modelos Prisma, 3 enums, 18+ Server Actions, webhook MP, auth middleware, cart + favorites store Zustand
-- **Frontend: EN PROGRESO** — Todas las páginas de la tabla tienen componentes implementados
-- **Página `/productos`: COMPLETADO** — SearchBar, chips, grid 4 cols, paginación, MiniBanner
-- **Página `/productos/[slug]`: COMPLETADO** — ProductGallery, ProductInfo (cart + favoritos), productos relacionados, MiniBanner
-- **Favoritos: COMPLETADO** — Zustand persist store en `src/features/favorites/`
-- **Imágenes: COMPLETADO** — Cloudinary, `ImageUploader`, `MultiImageUploader`
-- **Admin Configuración: COMPLETADO** — `/admin/configuracion` gestiona imágenes del sitio
+- **Backend: COMPLETADO** — 6 modelos Prisma, 3 enums, 18+ Server Actions, webhook MP, auth middleware
+- **`/productos` + `[slug]`: COMPLETADO** — SearchBar, paginación, galería, favoritos, carrito
+- **`/sobre-nosotros`: COMPLETADO** — AboutHero + SpecialtiesSection (framer-motion accordion)
+- **`/servicio-tecnico`: COMPLETADO** — Hero + AttentionSection + ContactCards
+- **Admin: COMPLETADO** — Sidebar responsive, active links, AdminMobileNav, AdminPageHeader
+- **Imágenes: COMPLETADO** — Cloudinary, ImageUploader, MultiImageUploader
+- **Pendiente real:** Reemplazar número WhatsApp placeholder (`5491100000000`) en `WhatsAppButton.tsx` y en `ContactCards.tsx`

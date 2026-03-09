@@ -8,24 +8,25 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import type { TechnicalServiceStatus, TechnicalServiceUseCase } from "@/types/enums";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Servicio Técnico" };
 
-const statusLabels: Record<TechnicalServiceStatus, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
-  PENDING: { label: "Pendiente", variant: "secondary" },
-  CONTACTED: { label: "Contactado", variant: "default" },
-  IN_PROGRESS: { label: "En progreso", variant: "default" },
-  RESOLVED: { label: "Resuelto", variant: "outline" },
+const statusStyles: Record<TechnicalServiceStatus, { label: string; className: string }> = {
+  PENDING:     { label: "Pendiente",   className: "bg-amber-100 text-amber-800 border border-amber-200" },
+  CONTACTED:   { label: "Contactado",  className: "bg-blue-100 text-blue-800 border border-blue-200" },
+  IN_PROGRESS: { label: "En progreso", className: "bg-violet-100 text-violet-800 border border-violet-200" },
+  RESOLVED:    { label: "Resuelto",    className: "bg-emerald-100 text-emerald-800 border border-emerald-200" },
 };
 
 const useCaseLabels: Record<TechnicalServiceUseCase, string> = {
-  ACUARISMO: "Acuarismo",
+  ACUARISMO:      "Acuarismo",
   CULTIVO_INDOOR: "Cultivo Indoor",
-  DOMESTICO: "Doméstico",
-  COMERCIAL: "Comercial",
-  INDUSTRIAL: "Industrial",
+  DOMESTICO:      "Doméstico",
+  COMERCIAL:      "Comercial",
+  INDUSTRIAL:     "Industrial",
 };
 
 export default async function AdminTechnicalServicePage() {
@@ -39,10 +40,17 @@ export default async function AdminTechnicalServicePage() {
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Solicitudes de Servicio Técnico</h1>
-      <div className="rounded-xl border bg-card">
+      <AdminPageHeader
+        title="Servicio Técnico"
+        description="Solicitudes recibidas"
+      />
+      <div
+        role="region"
+        aria-label="Tabla de solicitudes de servicio técnico"
+        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
+      >
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead>Cliente</TableHead>
               <TableHead>Equipo</TableHead>
@@ -63,7 +71,7 @@ export default async function AdminTechnicalServicePage() {
               </TableRow>
             ) : (
               requests.map((req) => {
-                const status = statusLabels[req.status];
+                const status = statusStyles[req.status];
                 return (
                   <TableRow key={req.id}>
                     <TableCell>
@@ -79,12 +87,19 @@ export default async function AdminTechnicalServicePage() {
                     </TableCell>
                     <TableCell>{req.equipmentBrand}</TableCell>
                     <TableCell>
-                      <Badge variant="secondary">
+                      <Badge variant="outline" className="text-xs font-normal">
                         {useCaseLabels[req.useCase]}
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant={status.variant}>{status.label}</Badge>
+                      <span
+                        className={[
+                          "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
+                          status.className,
+                        ].join(" ")}
+                      >
+                        {status.label}
+                      </span>
                     </TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDate(req.createdAt)}

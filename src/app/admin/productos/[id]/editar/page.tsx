@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma/client";
 import { getCategories } from "@/features/products/actions/getCategories";
 import { ProductForm } from "@/features/admin/components/ProductForm";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Editar Producto" };
@@ -22,8 +23,11 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
 
   return (
     <div>
-      <h1 className="mb-6 text-2xl font-bold">Editar producto</h1>
-      <div className="max-w-2xl rounded-xl border bg-card p-6">
+      <AdminPageHeader
+        title="Editar producto"
+        description={`Modificando: ${product.name}`}
+      />
+      <div className="max-w-2xl rounded-card border border-border/50 bg-card p-6 shadow-sm">
         <ProductForm
           categories={categories}
           mode="edit"

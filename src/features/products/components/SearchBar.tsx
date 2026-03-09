@@ -25,7 +25,7 @@ export function SearchBar() {
     <div className="relative flex w-full max-w-full items-center md:max-w-xs">
       <button
         onClick={navigate}
-        className="absolute left-3 text-text-primary/50 hover:text-text-primary"
+        className="text-text-primary/50 hover:text-text-primary absolute left-3"
         aria-label="Buscar"
         type="button"
       >
@@ -37,7 +37,7 @@ export function SearchBar() {
         defaultValue={searchParams.get("q") ?? ""}
         placeholder="Buscar productos..."
         onKeyDown={(e) => e.key === "Enter" && navigate()}
-        className="w-full rounded-md bg-card-light py-2 pl-9 pr-4 text-sm text-text-primary placeholder:text-text-primary/50 focus:outline-none focus:ring-2 focus:ring-btn-primary/30"
+        className="bg-card-light text-text-primary placeholder:text-text-primary/50 focus:ring-btn-primary/30 w-full rounded-lg py-2 pr-4 pl-9 text-sm focus:ring-2 focus:outline-none"
       />
     </div>
   );

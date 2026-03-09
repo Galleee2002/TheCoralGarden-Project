@@ -1,8 +1,7 @@
 import { AboutHero } from "@/features/about/components/AboutHero";
-import { MissionVision } from "@/features/about/components/MissionVision";
-import { WhyChooseUs } from "@/features/about/components/WhyChooseUs";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
+import { SpecialtiesSection } from "@/features/about/components/SpecialtiesSection";
+import { BrandsCarousel } from "@/features/home/components/BrandsCarousel";
+import { MiniBanner } from "@/features/home/components/MiniBanner";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -15,28 +14,17 @@ export default function AboutPage() {
   return (
     <>
       <AboutHero />
-      <MissionVision />
-      <WhyChooseUs />
-
-      {/* CTA final */}
-      <section className="py-16 text-center">
-        <div className="container mx-auto px-4">
-          <h2 className="mb-4 text-2xl font-bold sm:text-3xl">
-            ¿Listo para empezar?
+      <SpecialtiesSection />
+      {/* Trust section: heading + carrusel */}
+      <div className="pt-section-mobile md:pt-section bg-bg-primary mb-10">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-heading text-[48px] text-black uppercase md:text-[64px]">
+            CONFÍAN EN NOSOTROS
           </h2>
-          <p className="mb-8 text-muted-foreground">
-            Explorá nuestros productos o consultá por nuestro servicio técnico.
-          </p>
-          <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-            <Button asChild size="lg">
-              <Link href="/productos">Ver productos</Link>
-            </Button>
-            <Button asChild variant="outline" size="lg">
-              <Link href="/servicio-tecnico">Servicio Técnico</Link>
-            </Button>
-          </div>
         </div>
-      </section>
+      </div>
+      <BrandsCarousel />
+      <MiniBanner />
     </>
   );
 }

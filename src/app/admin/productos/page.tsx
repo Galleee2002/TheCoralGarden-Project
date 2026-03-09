@@ -1,6 +1,5 @@
 import { getProducts } from "@/features/products/actions/getProducts";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -9,6 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
@@ -26,19 +26,26 @@ export default async function AdminProductsPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-center justify-between">
-        <h1 className="text-2xl font-bold">Productos</h1>
-        <Button asChild>
-          <Link href="/admin/productos/nuevo">
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo producto
-          </Link>
-        </Button>
-      </div>
+      <AdminPageHeader
+        title="Productos"
+        description="Catálogo de productos de la tienda"
+        action={
+          <Button asChild>
+            <Link href="/admin/productos/nuevo">
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo producto
+            </Link>
+          </Button>
+        }
+      />
 
-      <div className="rounded-xl border bg-card">
+      <div
+        role="region"
+        aria-label="Tabla de productos"
+        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
+      >
         <Table>
-          <TableHeader>
+          <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead>Nombre</TableHead>
               <TableHead>Categoría</TableHead>
@@ -66,14 +73,19 @@ export default async function AdminProductsPage() {
                   <TableCell>{formatPrice(product.price)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
-                    <Badge
-                      variant={product.active ? "default" : "secondary"}
+                    <span
+                      className={[
+                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border",
+                        product.active
+                          ? "bg-emerald-100 text-emerald-800 border-emerald-200"
+                          : "bg-muted text-muted-foreground border-border",
+                      ].join(" ")}
                     >
                       {product.active ? "Activo" : "Inactivo"}
-                    </Badge>
+                    </span>
                   </TableCell>
                   <TableCell>
-                    <Button asChild variant="ghost" size="sm">
+                    <Button asChild variant="outline" size="sm">
                       <Link href={`/admin/productos/${product.id}/editar`}>
                         Editar
                       </Link>

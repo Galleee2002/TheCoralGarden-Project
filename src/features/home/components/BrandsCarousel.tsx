@@ -22,12 +22,12 @@ export function BrandsCarousel() {
         }}
       >
         {allBrands.map((src, i) => (
-          <div key={i} className="relative h-12 w-32 shrink-0 sm:h-14 sm:w-40">
+          <div key={i} className="relative h-12 w-32 shrink-0 sm:h-14 sm:w-40 transition-transform duration-300 hover:scale-110">
             <Image
               src={src}
               alt={`Marca ${(i % brands.length) + 1}`}
               fill
-              className="object-contain opacity-70 brightness-0 invert"
+              className="object-contain opacity-70 brightness-0 invert transition-opacity duration-300 hover:opacity-100"
             />
           </div>
         ))}

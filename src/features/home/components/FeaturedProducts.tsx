@@ -25,7 +25,7 @@ export async function FeaturedProducts() {
           </div>
           <Link
             href="/productos"
-            className="hidden items-center gap-2 text-sm font-bold text-text-secondary transition-colors hover:text-white sm:flex"
+            className="hidden items-center gap-2 text-sm font-medium text-text-secondary transition-colors hover:text-white sm:flex"
           >
             Ver productos
             <ArrowRight className="h-4 w-4" />
@@ -50,7 +50,7 @@ export async function FeaturedProducts() {
         <div className="mt-8 flex justify-center sm:hidden">
           <Link
             href="/productos"
-            className="inline-flex items-center gap-2 rounded-button border-2 border-text-secondary px-6 py-2.5 text-sm font-bold uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
+            className="inline-flex items-center gap-2 rounded-button border-2 border-text-secondary px-6 py-2.5 text-sm font-medium uppercase tracking-wider text-white transition-colors hover:bg-text-secondary hover:text-bg-secondary"
           >
             Ver productos
             <ArrowRight className="h-4 w-4" />
