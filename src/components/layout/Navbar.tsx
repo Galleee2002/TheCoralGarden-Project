@@ -24,16 +24,16 @@ export function Navbar() {
   const pathname = usePathname();
   const totalItems = useCartStore((s) => s.totalItems());
 
-  const isHome = pathname === "/";
-  const isTransparent = isHome && !scrolled;
+  const isTransparentPage = pathname === "/" || pathname === "/servicio-tecnico";
+  const isTransparent = isTransparentPage && !scrolled;
 
   useEffect(() => {
-    if (!isHome) return;
+    if (!isTransparentPage) return;
     const handleScroll = () => setScrolled(window.scrollY > 50);
     handleScroll();
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [isHome]);
+  }, [isTransparentPage]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -47,14 +47,14 @@ export function Navbar() {
           "fixed top-0 z-50 w-full transition-all duration-300",
           isTransparent
             ? "bg-transparent"
-            : "border-b border-border/50 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/90"
+            : "bg-bg-secondary"
         )}
       >
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           {/* Logo */}
           <Link href="/" className="relative h-10 w-40 shrink-0">
             <Image
-              src={isTransparent ? "/LOGO.svg" : "/LOGO-2.png"}
+              src={isTransparent ? "/LOGO.svg" : "/logo-fade.svg"}
               alt="The Coral Garden"
               fill
               className={cn(
@@ -75,7 +75,7 @@ export function Navbar() {
                   "text-sm font-regular tracking-wider transition-colors",
                   isTransparent
                     ? "text-white/90 hover:text-white"
-                    : "text-text-primary/80 hover:text-text-primary"
+                    : "text-white/90 hover:text-white"
                 )}
               >
                 {link.label}
@@ -92,7 +92,7 @@ export function Navbar() {
                 "hidden sm:inline-flex",
                 isTransparent
                   ? "text-white hover:bg-white/10"
-                  : "text-text-primary hover:bg-muted"
+                  : "text-white hover:bg-white/10"
               )}
               aria-label="Favoritos"
             >
@@ -106,7 +106,7 @@ export function Navbar() {
                 "relative",
                 isTransparent
                   ? "text-white hover:bg-white/10"
-                  : "text-text-primary hover:bg-muted"
+                  : "text-white hover:bg-white/10"
               )}
               onClick={() => setCartOpen(true)}
               aria-label="Abrir carrito"
@@ -131,7 +131,7 @@ export function Navbar() {
                 "hidden sm:inline-flex",
                 isTransparent
                   ? "text-white hover:bg-white/10"
-                  : "text-text-primary hover:bg-muted"
+                  : "text-white hover:bg-white/10"
               )}
               asChild
             >
@@ -148,7 +148,7 @@ export function Navbar() {
                 "lg:hidden",
                 isTransparent
                   ? "text-white hover:bg-white/10"
-                  : "text-text-primary hover:bg-muted"
+                  : "text-white hover:bg-white/10"
               )}
               onClick={() => setMobileOpen((v) => !v)}
               aria-label={mobileOpen ? "Cerrar menu" : "Abrir menu"}
@@ -167,7 +167,7 @@ export function Navbar() {
           <div
             className={cn(
               "lg:hidden",
-              isTransparent ? "bg-bg-secondary/95 backdrop-blur" : "border-t bg-white"
+              "bg-bg-secondary/95 backdrop-blur"
             )}
           >
             <nav className="container mx-auto flex flex-col px-4 py-4">
@@ -177,9 +177,7 @@ export function Navbar() {
                   href={link.href}
                   className={cn(
                     "py-3 text-sm font-bold tracking-wider transition-colors",
-                    isTransparent
-                      ? "text-white/90 hover:text-white"
-                      : "text-text-primary/80 hover:text-text-primary"
+                    "text-white/90 hover:text-white"
                   )}
                 >
                   {link.label}
@@ -190,7 +188,7 @@ export function Navbar() {
                   href="/admin"
                   className={cn(
                     "flex items-center gap-2 text-sm font-medium",
-                    isTransparent ? "text-white/70" : "text-text-primary/70"
+                    "text-white/70"
                   )}
                 >
                   <User className="h-4 w-4" />

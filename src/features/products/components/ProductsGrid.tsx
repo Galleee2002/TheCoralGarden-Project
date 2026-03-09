@@ -5,6 +5,7 @@ interface Product {
   id: string;
   name: string;
   slug: string;
+  description: string | null;
   price: number | { toString(): string };
   images: string[];
   stock: number;
@@ -30,18 +31,17 @@ export function ProductsGrid({ products }: ProductsGridProps) {
   }
 
   return (
-    <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
       {products.map((product) => (
         <ProductCard
           key={product.id}
           id={product.id}
           name={product.name}
           slug={product.slug}
+          description={product.description ?? undefined}
           price={Number(product.price)}
           image={product.images[0]}
-          category={product.category.name}
           stock={product.stock}
-          featured={product.featured}
         />
       ))}
     </div>

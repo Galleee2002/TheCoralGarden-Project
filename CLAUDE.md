@@ -50,6 +50,29 @@
 - Botón flotante de WhatsApp en todas las páginas (`WhatsAppButton.tsx`)
 - CartDrawer accesible desde el Navbar en todas las páginas
 
+## Navbar — comportamiento de transparencia
+- **Páginas con hero banner** (`/` y `/servicio-tecnico`): Navbar transparente al top, se vuelve `bg-bg-secondary` al hacer scroll (`scrollY > 50`)
+- **Resto de páginas**: siempre `bg-bg-secondary` (`#042F34`), nunca transparente
+- Logo: `isTransparent ? "/LOGO.svg" : "/logo-fade.svg"` — en dark bg usa `logo-fade.svg`
+- Links e íconos: siempre `text-white/90 hover:text-white` y `hover:bg-white/10` (el bg ya es oscuro en ambos estados)
+- Mobile menu: siempre `bg-bg-secondary/95 backdrop-blur`
+
+## ProductCard — convenciones
+- CTA: solo "Ver más →" (`ChevronRight`) — sin botón de carrito en la lista
+- Prop `description?: string` — se muestra con `line-clamp-2`
+- NO tiene prop `category` (se eliminó)
+- Es un Server Component (sin `"use client"`, sin `useCartStore`)
+- Estilos: `rounded-card`, `border border-border/30`, CTA con `bg-btn-primary text-text-secondary`
+
+## Página `/productos` — layout
+- H1 "PRODUCTOS" en `font-heading` (96px desktop / 56px mobile), a la izquierda
+- `SearchBar` a la derecha del H1 — filtra con `?q=` al presionar Enter, `bg-card-light`
+- Filter chips horizontales (`flex flex-wrap gap-2`, `rounded-full`) debajo del header
+- Grid 4 columnas: `sm:grid-cols-2 lg:grid-cols-4`, `pageSize: 16`
+- `ProductsPagination` (shadcn `<Pagination>`) al final del grid, preserva todos los params
+- `MiniBanner` al final de la página (antes del footer)
+- Componentes nuevos: `SearchBar.tsx`, `ProductsPagination.tsx` en `src/features/products/components/`
+
 ## Paleta de colores — Design Tokens (`src/app/globals.css`)
 
 Paleta completa: `#042F34` `#111C24` `#33C2E9` `#74E4BB` `#D6E5E9` `#F8F8F8`
@@ -196,5 +219,6 @@ Si la red bloquea los puertos 5432/6543 (`prisma migrate dev` se congela), usar 
 ## Estado del proyecto
 - **Backend: COMPLETADO** — Schema Prisma (6 modelos: Category, Product, Order, OrderItem, TechnicalServiceRequest, SiteSetting; 3 enums), migración aplicada, 18+ Server Actions (products, checkout, admin CRUD, settings), webhook MP, auth middleware, Supabase clients, cart store Zustand
 - **Frontend: EN PROGRESO** — Todas las páginas listadas en la tabla tienen sus componentes implementados (ver `src/features/*/components/`)
+- **Página Productos: COMPLETADO** — diseño desktop con Navbar oscuro, H1 + SearchBar, chips de filtro horizontales, grid 4 columnas, paginación shadcn, MiniBanner al final
 - **Imágenes: COMPLETADO** — Cloudinary integrado (`next-cloudinary`), `ImageUploader` y `MultiImageUploader` disponibles para admin
 - **Admin Configuración: COMPLETADO** — `/admin/configuracion` permite gestionar todas las imágenes globales del sitio vía Cloudinary

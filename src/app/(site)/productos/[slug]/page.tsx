@@ -70,9 +70,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 slug={p.slug}
                 price={Number(p.price)}
                 image={p.images[0]}
-                category={p.category.name}
                 stock={p.stock}
-                featured={p.featured}
               />
             ))}
           </div>
