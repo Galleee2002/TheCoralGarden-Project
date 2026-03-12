@@ -1,487 +1,84 @@
-# TheCoralGarden — Plan de Trabajo por Página
-
-Flujo completo desde wireframe hasta página funcional y deployada.
-Separado por capa: **Backend** primero (siempre), luego **Frontend**.
+# TheCoralGarden — Plan de Trabajo
 
 ---
 
-## Estado del Backend — COMPLETADO
+## Estado General — TODO COMPLETADO
 
-Todo el backend está implementado y funcional. A continuación el inventario completo:
+### ✅ Backend
+- 5 modelos Prisma, 18+ Server Actions, webhook MP, auth middleware
 
-### Modelos Prisma (5 modelos, 3 enums)
-| Modelo | Propósito |
-|--------|-----------|
-| `Category` | Categorización de productos (name, slug, description) |
-| `Product` | Productos e-commerce (precio, stock, imágenes[], specs[], featured, active, FK→Category) |
-| `Order` | Órdenes guest checkout (datos cliente, subtotal, shipping, total, integración MP) |
-| `OrderItem` | Ítems de orden (FK→Order, FK→Product, cantidad, precio unitario) |
-| `TechnicalServiceRequest` | Solicitudes de servicio técnico (datos contacto, equipo, caso de uso, estado) |
+### ✅ Páginas públicas
+- **`/`** — HeroSection, AboutSection, BrandsCarousel, ServicesSection, FeaturedProducts, FAQSection, MiniBanner
+- **`/productos`** — SearchBar, filter chips, grid 4 cols, paginación, MiniBanner
+- **`/productos/[slug]`** — ProductGallery, ProductInfo (cart + favoritos), Related, MiniBanner
+- **`/sobre-nosotros`** — AboutHero, SpecialtiesSection (framer-motion), BrandsCarousel, MiniBanner
+- **`/servicio-tecnico`** — Hero, AttentionSection, ContactCards, MiniBanner
+- **`/carrito`** — CartPage client component, useCartStore
+- **`/checkout`** — CheckoutForm, pages success/failure/pending
 
-**Enums:** `OrderStatus` (PENDING→PAID→PROCESSING→SHIPPED→DELIVERED/CANCELLED), `TechnicalServiceUseCase` (ACUARISMO, CULTIVO_INDOOR, DOMESTICO, COMERCIAL, INDUSTRIAL), `TechnicalServiceStatus` (PENDING→CONTACTED→IN_PROGRESS→RESOLVED)
+### ✅ Admin
+- **`/admin`** — Dashboard con stats (órdenes, ingresos, productos activos)
+- **`/admin/login`** — Supabase auth
+- **`/admin/ordenes`** — Tabla + updateOrderStatus
+- **`/admin/productos`** — CRUD completo, ProductForm con tabs
+- **`/admin/categorias`** — CRUD completo
+- **`/admin/configuracion`** — HeroBanner + galería about + imágenes servicios
 
-### Server Actions implementadas
-| Feature | Action | Tipo |
-|---------|--------|------|
-| Products | `getProducts` | Lectura — filtros, búsqueda, paginación (12/pág) |
-| Products | `getProductBySlug` | Lectura — detalle con categoría |
-| Products | `getFeaturedProducts` | Lectura — carousel home (limit 8) |
-| Products | `getCategories` | Lectura — con conteo de productos |
-| Checkout | `createOrder` | Mutación — crea orden + ítems, calcula subtotal |
-| Checkout | `createMercadoPagoPreference` | Mutación — crea preferencia MP, retorna initPoint |
-| Admin | `createProduct` / `updateProduct` / `deleteProduct` | CRUD productos |
-| Admin | `createCategory` / `updateCategory` / `deleteCategory` | CRUD categorías |
-| Admin | `getOrders` | Lectura — tabla órdenes con paginación (20/pág) |
-| Admin | `updateOrderStatus` | Mutación — cambio manual de estado |
-| Admin | `getTechnicalRequests` | Lectura — tabla solicitudes con paginación |
-| Admin | `updateTechnicalRequestStatus` | Mutación — estado + notas admin |
-
-### API Routes
-- `POST /api/webhooks/mp` — Webhook MercadoPago (valida pago → actualiza Order.status)
-- `POST /api/auth/logout` — Logout admin (Supabase signOut → redirect)
-
-### Infraestructura
-- [x] Migración inicial aplicada (`0_init/migration.sql`)
-- [x] Prisma client singleton con connection pooling (`src/lib/prisma/client.ts`)
-- [x] Supabase clients: server SSR (`src/lib/supabase/server.ts`) + browser (`src/lib/supabase/client.ts`)
-- [x] next-safe-action instance (`src/lib/safe-action.ts`)
-- [x] Zod v4 + hookform resolver wrapper (`src/lib/zod-resolver.ts`)
-- [x] Middleware de auth para `/admin/*` (`src/middleware.ts`)
-- [x] Enums re-exportados para cliente (`src/types/enums.ts`)
-- [x] Cart store Zustand con persistencia (`src/features/cart/store/cartStore.ts`)
+### ✅ Infraestructura
+- Cloudinary (ImageUploader, MultiImageUploader)
+- Favoritos (Zustand persist)
+- Navbar transparente en `/` y `/servicio-tecnico`
 
 ---
 
-## 0. Punto de Partida: El Wireframe
+## Pendiente
 
-**Lo que vos me pasás:**
-- Screenshot, imagen, PDF o descripción textual de la sección/página
-- Contexto: ¿qué hace el usuario acá? ¿qué datos muestra? ¿qué acciones realiza?
+### 🔧 Fix urgente
+- [ ] Reemplazar placeholder WhatsApp (`5491100000000`) en `WhatsAppButton.tsx` y `ContactCards.tsx`
 
-**Lo que yo hago antes de tocar código:**
-1. Leo el wireframe y descompongo la página en secciones/componentes
-2. Identifico qué datos necesita (¿viene de la DB? ¿del carrito? ¿es estático?)
-3. Identifico si hay mutaciones (formularios, botones de acción)
-4. Pregunto lo que no está claro antes de arrancar
-
-**Preguntas típicas que puedo hacer:**
-- ¿El contenido de esta sección es estático (hardcodeado) o dinámico (viene de la DB)?
-- ¿Este formulario guarda datos? ¿En qué tabla?
-- ¿Hay lógica de negocio no obvia (descuentos, validaciones especiales)?
-- ¿Hay variantes mobile/desktop distintas al wireframe?
+### 🚀 Deploy
+- [ ] Configurar variables de entorno en producción (Vercel u hosting elegido)
+- [ ] Setear `NEXT_PUBLIC_BASE_URL` real para webhook de MercadoPago
+- [ ] Credenciales MP reales (`MERCADOPAGO_ACCESS_TOKEN`, `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`)
+- [ ] Probar flujo completo de checkout con MP en staging
 
 ---
 
+## Referencia Rápida — Patrones
 
-### 1.4 API Routes (solo cuando es necesario)
-
-Solo para webhooks, endpoints que consume código externo, o cuando next-safe-action no alcanza.
-
-**Ubicación:** `src/app/api/<ruta>/route.ts`
-
-**Casos en este proyecto:**
-- `src/app/api/webhooks/mp/route.ts` — webhook de MercadoPago (ya implementado)
-- `src/app/api/auth/logout/route.ts` — logout admin (ya implementado)
-
-**No usar** para data fetching interno — para eso están los Server Actions.
-
----
-
-### 1.5 Protección de Rutas Admin
-
-Si la página es del panel admin, verificar que el middleware la cubra.
-
-```ts
-// src/middleware.ts — ya configurado, protege /admin/*
-// Solo agregar excepciones si fuera necesario (raro)
-```
-
----
-
-## 2. Frontend
-
-Todo lo que el usuario ve y con lo que interactúa.
-
-### 2.1 Estructura de Archivos
-
-Para cada página nueva:
-
-```
-src/
-  app/
-    <ruta>/
-      page.tsx          ← Server Component, orquesta la página
-      loading.tsx       ← (opcional) Skeleton mientras carga
-      error.tsx         ← (opcional) UI de error
-  features/
-    <feature>/
-      components/
-        NombreSeccion.tsx  ← Un componente por sección del wireframe
-      hooks/
-        useNombre.ts       ← (solo si hay lógica cliente compleja)
-      types/
-        index.ts           ← (solo si hay tipos propios del feature)
-```
-
----
-
-### 2.2 La Página (`page.tsx`)
-
-Server Component que:
-1. Llama los Server Actions de lectura
-2. Pasa los datos a los componentes como props
-3. Envuelve secciones con `<Suspense>` cuando cargan async
-
-**Patrón:**
+### Page.tsx (Server Component)
 ```tsx
-// src/app/productos/page.tsx
-import { Suspense } from "react";
-import { ProductsGrid } from "@/features/products/components/ProductsGrid";
-import { FiltersPanel } from "@/features/products/components/FiltersPanel";
-import { Skeleton } from "@/components/ui/skeleton";
-
-interface PageProps {
-  searchParams: Promise<{ category?: string; q?: string }>;
-}
-
-export default async function ProductosPage({ searchParams }: PageProps) {
-  const params = await searchParams; // Next.js 16: siempre await
-
-  return (
-    <main className="container mx-auto px-4 py-8">
-      <FiltersPanel />
-      <Suspense fallback={<ProductsGridSkeleton />}>
-        <ProductsGrid categorySlug={params.category} query={params.q} />
-      </Suspense>
-    </main>
-  );
+export default async function Page({ searchParams }: { searchParams: Promise<{...}> }) {
+  const params = await searchParams; // SIEMPRE await en Next.js 16
+  return <main>...</main>;
 }
 ```
 
-**Reglas:**
-- `async searchParams = await searchParams` — SIEMPRE en Next.js 16
-- `async params = await params` — en páginas dinámicas `[slug]`
-- No usar `"use client"` en `page.tsx` salvo excepción justificada
-
----
-
-### 2.3 Componentes de Feature
-
-Un componente por sección del wireframe. Pueden ser Server o Client Components.
-
-**Server Component (default) — para secciones que solo muestran datos:**
-```tsx
-// src/features/products/components/ProductsGrid.tsx
-import { getProducts } from "@/features/products/actions/getProducts";
-import { ProductCard } from "@/components/shared/ProductCard";
-
-interface ProductsGridProps {
-  categorySlug?: string;
-}
-
-export async function ProductsGrid({ categorySlug }: ProductsGridProps) {
-  const result = await getProducts({ categorySlug });
-  const products = result?.data?.products ?? [];
-
-  if (products.length === 0) {
-    return <p className="text-muted-foreground">No hay productos.</p>;
-  }
-
-  return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-      {products.map((product) => (
-        <ProductCard key={product.id} product={product} />
-      ))}
-    </div>
-  );
-}
-```
-
-**Client Component — solo cuando hay:**
-- Interactividad (clicks, hover states que mutan estado)
-- Formularios con react-hook-form
-- Acceso a store de Zustand
-- Uso de hooks de React (useState, useEffect, etc.)
-
-```tsx
-"use client"; // Solo aquí, no en page.tsx
-```
-
----
-
-### 2.4 Formularios (Client Components)
-
-**Patrón obligatorio:** react-hook-form + Zod + `@/lib/zod-resolver`
-
+### Formulario (Client Component)
 ```tsx
 "use client";
-
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@/lib/zod-resolver"; // ← NO de @hookform/resolvers/zod
-import { z } from "zod";
+import { zodResolver } from "@/lib/zod-resolver"; // NO @hookform/resolvers/zod
 import { useAction } from "next-safe-action/hooks";
-import { createTechnicalServiceRequest } from "@/features/technical-service/actions/createTechnicalServiceRequest";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form";
-import { toast } from "sonner";
-
-const formSchema = z.object({
-  name: z.string().min(2, "Nombre requerido"),
-  email: z.string().email("Email inválido"),
-  // ...
-});
-
-type FormValues = z.infer<typeof formSchema>;
-
-export function TechnicalServiceForm() {
-  const form = useForm<FormValues>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { name: "", email: "" },
-  });
-
-  const { execute, isPending } = useAction(createTechnicalServiceRequest, {
-    onSuccess: () => {
-      toast.success("Solicitud enviada con éxito");
-      form.reset();
-    },
-    onError: () => toast.error("Error al enviar. Intentá de nuevo."),
-  });
-
-  return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(execute)}>
-        <FormField
-          control={form.control}
-          name="name"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Nombre</FormLabel>
-              <FormControl><Input {...field} /></FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Enviando..." : "Enviar"}
-        </Button>
-      </form>
-    </Form>
-  );
-}
+// react-hook-form + useAction + toast onSuccess/onError
 ```
 
-**Checklist formularios:**
-- [ ] `zodResolver` importado desde `@/lib/zod-resolver`
-- [ ] `useAction` de `next-safe-action/hooks` para ejecutar la acción
-- [ ] Shadcn `<Form>` + `<FormField>` para accesibilidad y mensajes de error
-- [ ] Feedback visual: `isPending` en el botón, `toast` en onSuccess/onError
-- [ ] `form.reset()` tras éxito si corresponde
-
----
-
-### 2.5 Estado Cliente (Zustand)
-
-Solo para estado que persiste entre navegaciones o se comparte entre componentes no relacionados.
-En este proyecto: el carrito (`src/features/cart/store/cartStore.ts`).
-
-```ts
-// Consumir el store en un Client Component
-"use client";
-import { useCartStore } from "@/features/cart/store/cartStore";
-
-export function AddToCartButton({ product }) {
-  const addItem = useCartStore((s) => s.addItem);
-  return <Button onClick={() => addItem(product)}>Agregar al carrito</Button>;
-}
+### Enums
+```tsx
+import { OrderStatus } from "@/types/enums"; // NO @prisma/client
 ```
 
----
-
-### 2.6 Tokens de Diseño y Componentes UI
-
-> **PENDIENTE DE DEFINICIÓN**
-> La paleta de colores, tipografías, espaciados y border-radius **aún no están definidos**.
-> Se establecerán cuando el cliente entregue los wireframes con la identidad visual.
-> Hasta entonces: NO inventar valores, NO hardcodear colores, NO asumir fuentes.
-
-**Cuándo se definen los tokens:**
-1. El cliente entrega wireframes con guía visual (colores, fuentes, radios)
-2. Se traducen a variables CSS en `src/app/globals.css`
-3. A partir de ahí, todo el código usa los tokens (nunca valores hardcodeados)
-
-**Flujo para definir la paleta (cuando llegue el wireframe):**
-```css
-/* src/app/globals.css — se completará con los valores reales */
-:root {
-  --primary: /* color principal — pendiente */;
-  --accent: /* color de acento — pendiente */;
-  /* tipografías, radios, etc. */
-}
-```
-
-**Componentes base:** Siempre usar primitivas de Shadcn (`Button`, `Input`, `Card`, `Badge`, etc.)
-y extenderlas con Tailwind. No crear componentes UI desde cero si ya existe la primitiva.
-
-**Íconos:** Lucide React (`import { ShoppingCart } from "lucide-react"`)
+### Migraciones con puerto DB bloqueado
+1. SQL via `mcp__supabase__apply_migration`
+2. Crear `prisma/migrations/<timestamp>_<nombre>/migration.sql`
+3. Registrar en `_prisma_migrations` via `mcp__supabase__execute_sql`
+4. `pnpm prisma generate`
 
 ---
 
-### 2.7 Componentes Globales (siempre presentes)
-
-Ya implementados y montados en `src/app/layout.tsx`:
-- `<Navbar>` con `<CartDrawer>` integrado
-- `<Footer>`
-- `<WhatsAppButton>` flotante
-- `<Toaster>` de Sonner
-
-No duplicarlos ni volver a montarlos en páginas individuales.
-
----
-
-## 3. Flujo Completo por Tipo de Página
-
-### Página informativa (solo muestra contenido)
-*Ejemplo: `/sobre-nosotros`, secciones estáticas*
-
-1. Recibo wireframe
-2. **Backend:** Ninguno (contenido hardcodeado en el componente)
-3. **Frontend:**
-   - Crear `src/features/<feature>/components/` con un componente por sección
-   - Crear `src/app/<ruta>/page.tsx` que compone los componentes
-4. Verifico en browser
-
----
-
-### Página con datos dinámicos (solo lectura)
-*Ejemplo: `/productos`, `/productos/[slug]`*
-
-1. Recibo wireframe
-2. **Backend:**
-   - Verificar que el modelo Prisma existe y tiene los campos necesarios
-   - Crear/ajustar Server Action en `features/<feature>/actions/`
-3. **Frontend:**
-   - Componentes de feature (Server Components async)
-   - `page.tsx` con `<Suspense>` y skeleton de carga
-   - `loading.tsx` si la página entera carga async
-4. Verifico con datos reales de la DB
-
----
-
-### Página con formulario (mutación)
-*Ejemplo: `/servicio-tecnico`, `/checkout`*
-
-1. Recibo wireframe
-2. **Backend:**
-   - Verificar/crear modelo Prisma si aplica
-   - Correr migración
-   - Crear Server Action de mutación con schema Zod
-3. **Frontend:**
-   - Server Component para el wrapper de la página
-   - Client Component para el formulario (`"use client"`)
-   - react-hook-form + zodResolver + useAction
-   - Toast feedback en onSuccess/onError
-4. Pruebo el flujo completo (submit → DB → feedback)
-
----
-
-### Página admin (CRUD)
-*Ejemplo: `/admin/productos`, `/admin/ordenes`*
-
-2. **Backend:**
-   - Server Actions de lectura (listar) y mutación (crear/editar/eliminar)
-   - Verificar que el middleware de auth cubra la ruta
-3. **Frontend:**
-   - Tabla con datos (Server Component)
-   - Formulario de creación/edición (Client Component con react-hook-form)
-   - Botones de acción con confirmación (Dialog de Shadcn)
-   - Toast feedback en cada operación
-4. Pruebo todo el flujo CRUD con sesión admin activa
-
----
-
-### Flujo de pago (MercadoPago)
-*Solo `/checkout`*
-
-1. **Backend:**
-   - `createOrder` → persiste la orden con status `PENDING`
-   - `createMercadoPagoPreference` → crea preferencia en MP con `back_urls`
-   - Webhook `src/app/api/webhooks/mp/route.ts` → actualiza `Order.status` según notificación
-2. **Frontend:**
-   - `CheckoutForm` recopila datos del cliente
-   - Al submit: llama `createOrder` → llama `createMercadoPagoPreference` → redirect a MP
-   - Páginas de resultado: `/checkout/success`, `/checkout/failure`, `/checkout/pending`
-
----
-
-## 4. Checklist Final por Página
-
-Antes de declarar una página como terminada:
-
-**Backend:** *(completado)*
-- [x] Migraciones aplicadas y `prisma generate` ejecutado
-- [x] Server Actions validan input con Zod
-- [x] Rutas admin protegidas por middleware
-- [x] Sin lógica de DB directa en componentes (todo pasa por actions)
-
-**Frontend:**
-- [ ] Todos los `searchParams` y `params` son `await`-eados (Next.js 16)
-- [ ] Secciones async envueltas en `<Suspense>` con skeleton
-- [ ] Formularios usan `zodResolver` de `@/lib/zod-resolver`
-- [ ] No se usa `any` (excepto en `zod-resolver.ts`)
-- [ ] `"use client"` solo donde es estrictamente necesario
-- [ ] Enums importados desde `@/types/enums`
-- [ ] Colores, tipografías, espaciados y radios usan tokens definidos en `globals.css` (no valores hardcodeados)
-- [ ] WhatsAppButton y CartDrawer accesibles (ya montados en layout — no duplicar)
-
-**QA:**
-- [ ] Funciona en desktop y mobile
-- [ ] Estados de carga (skeleton/spinner) visibles
-- [ ] Mensajes de error visibles en formularios (react-hook-form)
-- [ ] Feedback de acciones exitosas (toast de Sonner)
-- [ ] La página no explota si la DB no devuelve datos (estado vacío manejado)
-
----
-
-## 5. Variables de Entorno Necesarias
-
-```env
-# Base de datos
-DATABASE_URL=postgresql://...
-
-# Supabase Auth (admin)
-NEXT_PUBLIC_SUPABASE_URL=...
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-
-# MercadoPago (solo para checkout)
-MERCADOPAGO_ACCESS_TOKEN=...
-NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY=...
-NEXT_PUBLIC_BASE_URL=https://tu-dominio.com
-```
-
-Si falta alguna variable, la funcionalidad relacionada falla en silencio o con error de runtime.
-Confirmar que todas estén seteadas antes de probar checkout o login admin.
-
----
-
-## 6. Comandos Clave
-
+## Comandos
 ```bash
-# Instalar dependencias
-pnpm install
-
-# Dev server (con Turbopack)
-pnpm dev
-
-# Migración de DB (después de cambiar schema.prisma)
-pnpm prisma migrate dev --name <nombre-descriptivo>
-
-# Regenerar tipos de Prisma (después de migrate o cambios de schema)
-pnpm prisma generate
-
-# Ver DB en browser
-pnpm prisma studio
-
-# Build de producción
-pnpm build
+pnpm dev                                 # Dev server
+pnpm prisma migrate dev --name <nombre>  # Migración
+pnpm prisma generate                     # Regenerar tipos
+pnpm build                               # Build producción
 ```

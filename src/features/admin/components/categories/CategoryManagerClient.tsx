@@ -151,7 +151,14 @@ export function CategoryManagerClient({ categories: initial }: CategoryManagerCl
         open={dialog.type !== "closed"}
         onOpenChange={(open) => !open && setDialog({ type: "closed" })}
         mode={dialog.type === "edit" ? "edit" : "create"}
-        defaultValues={dialog.type === "edit" ? dialog.category : undefined}
+        defaultValues={
+          dialog.type === "edit"
+            ? {
+                ...dialog.category,
+                description: dialog.category.description ?? undefined,
+              }
+            : undefined
+        }
         onSuccess={dialog.type === "edit" ? handleUpdated : handleCreated}
       />
 

@@ -9,8 +9,8 @@ const brands = [
 ];
 
 export function BrandsCarousel() {
-  // 4 copies so content always exceeds viewport width, animating -25% (= 1 copy) for seamless loop
-  const allBrands = [...brands, ...brands, ...brands, ...brands];
+  // 2 copies, animating -50% (= 1 copy) for seamless loop
+  const allBrands = [...brands, ...brands];
 
   return (
     <section className="bg-bg-secondary overflow-hidden py-10">

@@ -1,5 +1,3 @@
-"use client";
-
 const WHATSAPP_NUMBER = "5491100000000"; // Placeholder — update with real number
 const WHATSAPP_MESSAGE =
   "Hola! Me interesa conocer más sobre sus productos y servicios de purificación de agua.";

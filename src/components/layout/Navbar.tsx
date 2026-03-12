@@ -8,7 +8,11 @@ import { ShoppingCart, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/features/cart/store/cartStore";
-import { CartDrawer } from "./CartDrawer";
+import dynamic from "next/dynamic";
+const CartDrawer = dynamic(
+  () => import("./CartDrawer").then((m) => ({ default: m.CartDrawer })),
+  { ssr: false }
+);
 import { cn } from "@/lib/utils";
 
 const navLinks = [
@@ -22,7 +26,9 @@ export function Navbar() {
   const [cartOpen, setCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
-  const totalItems = useCartStore((s) => s.totalItems());
+  const totalItems = useCartStore((s) =>
+    s.items.reduce((sum, i) => sum + i.quantity, 0)
+  );
 
   const isTransparentPage = pathname === "/" || pathname === "/servicio-tecnico";
   const isTransparent = isTransparentPage && !scrolled;

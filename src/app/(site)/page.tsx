@@ -1,12 +1,18 @@
 import { Suspense } from "react";
+import dynamic from "next/dynamic";
 import { Skeleton } from "@/components/ui/skeleton";
 import { HeroSection } from "@/features/home/components/HeroSection";
 import { AboutSection } from "@/features/home/components/AboutSection";
 import { BrandsCarousel } from "@/features/home/components/BrandsCarousel";
 import { ServicesSection } from "@/features/home/components/ServicesSection";
 import { FeaturedProducts } from "@/features/home/components/FeaturedProducts";
-import { FAQSection } from "@/features/home/components/FAQSection";
 import { MiniBanner } from "@/features/home/components/MiniBanner";
+
+const FAQSection = dynamic(
+  () => import("@/features/home/components/FAQSection").then((m) => ({ default: m.FAQSection }))
+);
+
+export const revalidate = 3600;
 
 function FeaturedProductsSkeleton() {
   return (
