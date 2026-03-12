@@ -15,7 +15,7 @@ export const createCategory = action
   .schema(categorySchema)
   .action(async ({ parsedInput }) => {
     const cat = await prisma.category.create({ data: parsedInput });
-    return { id: cat.id };
+    return { id: cat.id, name: cat.name, slug: cat.slug };
   });
 
 export const updateCategory = action
@@ -23,7 +23,7 @@ export const updateCategory = action
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
     const cat = await prisma.category.update({ where: { id }, data });
-    return { id: cat.id };
+    return { id: cat.id, name: cat.name, slug: cat.slug };
   });
 
 export const deleteCategory = action

@@ -9,6 +9,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
+import { StatusBadge } from "@/components/shared/StatusBadge";
+import { EmptyState } from "@/components/shared/EmptyState";
 import Link from "next/link";
 import { Plus } from "lucide-react";
 import type { Metadata } from "next";
@@ -57,14 +59,7 @@ export default async function AdminProductsPage() {
           </TableHeader>
           <TableBody>
             {products.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={6}
-                  className="py-10 text-center text-muted-foreground"
-                >
-                  No hay productos cargados
-                </TableCell>
-              </TableRow>
+              <EmptyState colSpan={6} message="No hay productos cargados" />
             ) : (
               products.map((product) => (
                 <TableRow key={product.id}>
@@ -73,16 +68,10 @@ export default async function AdminProductsPage() {
                   <TableCell>{formatPrice(product.price)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
-                    <span
-                      className={[
-                        "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium border",
-                        product.active
-                          ? "bg-emerald-100 text-emerald-800 border-emerald-200"
-                          : "bg-muted text-muted-foreground border-border",
-                      ].join(" ")}
-                    >
-                      {product.active ? "Activo" : "Inactivo"}
-                    </span>
+                    <StatusBadge
+                      variant={product.active ? "active" : "inactive"}
+                      label={product.active ? "Activo" : "Inactivo"}
+                    />
                   </TableCell>
                   <TableCell>
                     <Button asChild variant="outline" size="sm">

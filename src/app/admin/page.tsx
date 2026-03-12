@@ -1,24 +1,23 @@
 import { prisma } from "@/lib/prisma/client";
 import { Card, CardContent } from "@/components/ui/card";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
-import { Package, ShoppingBag, Wrench, TrendingUp } from "lucide-react";
+import { Package, ShoppingBag, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Dashboard" };
 
 async function getDashboardStats() {
-  const [totalOrders, totalProducts, pendingTechnicalRequests, revenue] =
+  const [totalOrders, totalProducts, revenue] =
     await Promise.all([
       prisma.order.count(),
       prisma.product.count({ where: { active: true } }),
-      prisma.technicalServiceRequest.count({ where: { status: "PENDING" } }),
       prisma.order.aggregate({
         where: { status: { in: ["PAID", "PROCESSING", "SHIPPED", "DELIVERED"] } },
         _sum: { total: true },
       }),
     ]);
 
-  return { totalOrders, totalProducts, pendingTechnicalRequests, revenue };
+  return { totalOrders, totalProducts, revenue };
 }
 
 export default async function AdminDashboardPage() {
@@ -51,13 +50,6 @@ export default async function AdminDashboardPage() {
       icon: Package,
       description: "En el catálogo",
       urgent: false,
-    },
-    {
-      title: "Servicio técnico pendiente",
-      value: stats.pendingTechnicalRequests.toString(),
-      icon: Wrench,
-      description: "Solicitudes sin atender",
-      urgent: true,
     },
   ];
 

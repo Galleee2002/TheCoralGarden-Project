@@ -1,5 +1,5 @@
 import { getCategories } from "@/features/products/actions/getCategories";
-import { ProductForm } from "@/features/admin/components/ProductForm";
+import { ProductFormTabs } from "@/features/admin/components/products/ProductFormTabs";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import type { Metadata } from "next";
 
@@ -14,8 +14,8 @@ export default async function NewProductPage() {
         title="Nuevo producto"
         description="Agregá un nuevo producto al catálogo"
       />
-      <div className="max-w-2xl rounded-card border border-border/50 bg-card p-6 shadow-sm">
-        <ProductForm categories={categories} mode="create" />
+      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+        <ProductFormTabs categories={categories} mode="create" />
       </div>
     </div>
   );

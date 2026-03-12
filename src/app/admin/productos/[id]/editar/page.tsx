@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma/client";
 import { getCategories } from "@/features/products/actions/getCategories";
-import { ProductForm } from "@/features/admin/components/ProductForm";
+import { ProductFormTabs } from "@/features/admin/components/products/ProductFormTabs";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import type { Metadata } from "next";
 
@@ -27,8 +27,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         title="Editar producto"
         description={`Modificando: ${product.name}`}
       />
-      <div className="max-w-2xl rounded-card border border-border/50 bg-card p-6 shadow-sm">
-        <ProductForm
+      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+        <ProductFormTabs
           categories={categories}
           mode="edit"
           defaultValues={{
@@ -38,6 +38,8 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
             description: product.description,
             price: Number(product.price),
             stock: product.stock,
+            images: product.images,
+            specifications: product.specifications,
             categoryId: product.categoryId,
             featured: product.featured,
             active: product.active,

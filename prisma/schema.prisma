@@ -70,20 +70,6 @@ model OrderItem {
   unitPrice   Decimal @db.Decimal(10, 2)
 }
 
-model TechnicalServiceRequest {
-  id               String                  @id @default(cuid())
-  name             String
-  email            String
-  phone            String
-  equipmentBrand   String
-  useCase          TechnicalServiceUseCase
-  issueDescription String
-  status           TechnicalServiceStatus  @default(PENDING)
-  adminNotes       String?
-  createdAt        DateTime                @default(now())
-  updatedAt        DateTime                @updatedAt
-}
-
 enum OrderStatus {
   PENDING
   PAID
@@ -93,17 +79,3 @@ enum OrderStatus {
   CANCELLED
 }
 
-enum TechnicalServiceUseCase {
-  ACUARISMO
-  CULTIVO_INDOOR
-  DOMESTICO
-  COMERCIAL
-  INDUSTRIAL
-}
-
-enum TechnicalServiceStatus {
-  PENDING
-  CONTACTED
-  IN_PROGRESS
-  RESOLVED
-}

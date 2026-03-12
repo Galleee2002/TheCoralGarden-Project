@@ -388,7 +388,6 @@ No duplicarlos ni volver a montarlos en páginas individuales.
 ### Página admin (CRUD)
 *Ejemplo: `/admin/productos`, `/admin/ordenes`*
 
-1. Recibo wireframe
 2. **Backend:**
    - Server Actions de lectura (listar) y mutación (crear/editar/eliminar)
    - Verificar que el middleware de auth cubra la ruta

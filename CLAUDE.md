@@ -35,7 +35,7 @@
 | Admin Login          | `features/admin`               | `/admin/login`                    |
 | Admin Órdenes        | `features/admin`               | `/admin/ordenes`                  |
 | Admin Productos      | `features/admin`               | `/admin/productos`                |
-| Admin Servicio Téc.  | `features/admin`               | `/admin/servicio-tecnico`         |
+| Admin Categorías     | `features/admin`               | `/admin/categorias`               |
 | Admin Configuración  | `features/admin`               | `/admin/configuracion`            |
 
 ## Páginas — estructura de componentes
@@ -59,6 +59,9 @@ Breadcrumb → grid 2 cols: `ProductGallery` (aspect-[4/3], max 3 thumbnails) | 
 - **Mobile**: header con hamburger → `AdminMobileNav` (Sheet drawer) usando `AdminSidebarNav` internamente
 - **`AdminPageHeader`** (`src/components/shared/`): header estándar para páginas admin (title, description?, action?)
 - Sidebar tiene logout (`/api/auth/logout`) y link "Ver sitio" (nueva pestaña)
+- **Shared UI admin:** `ConfirmDialog`, `EmptyState`, `StatusBadge` en `src/components/shared/`
+- **Componentes admin por subfolder:** `categories/`, `orders/`, `products/`, `settings/` dentro de `src/features/admin/components/`
+- **ProductForm** refactorizado en tabs: `ProductFormTabs` + `ProductTabBasic`, `ProductTabPricing`, `ProductTabSpecs`, `ProductTabMedia`
 
 ## Frontend — convenciones clave
 
@@ -135,7 +138,7 @@ Tokens `@theme inline` → clases Tailwind: `bg-bg-secondary`, `bg-card-dark`, `
 ## SiteSetting — Configuración del sitio
 - Tabla key-value en Prisma. Claves: `hero_banner_url`, `about_gallery_1/2/3`, `service_venta_image`, `service_postventa_image`, `service_reparacion_image`
 - Actions: `getSetting(key)` / `upsertSetting({key, value})` en `src/features/admin/actions/settingActions.ts`
-- UI: `HeroBannerForm.tsx`, `SettingImageForm.tsx` en admin
+- UI: `SettingImageCard.tsx` en `src/features/admin/components/settings/`
 
 ## Pagos — MercadoPago
 - Flujo: `createOrder` → `createMercadoPagoPreference` → redirect MP Checkout Pro
@@ -146,10 +149,10 @@ Tokens `@theme inline` → clases Tailwind: `bg-bg-secondary`, `bg-card-dark`, `
 - `src/middleware.ts` → redirige a `/admin/login` sin sesión, redirige a `/admin` si ya autenticado
 
 ## Estado del proyecto
-- **Backend: COMPLETADO** — 6 modelos Prisma, 3 enums, 18+ Server Actions, webhook MP, auth middleware
+- **Backend: COMPLETADO** — 5 modelos Prisma (TechnicalServiceRequest eliminado), 1 enum, 18+ Server Actions, webhook MP, auth middleware
 - **`/productos` + `[slug]`: COMPLETADO** — SearchBar, paginación, galería, favoritos, carrito
 - **`/sobre-nosotros`: COMPLETADO** — AboutHero + SpecialtiesSection (framer-motion accordion)
-- **`/servicio-tecnico`: COMPLETADO** — Hero + AttentionSection + ContactCards
-- **Admin: COMPLETADO** — Sidebar responsive, active links, AdminMobileNav, AdminPageHeader
+- **`/servicio-tecnico`: COMPLETADO** — Hero + AttentionSection + ContactCards (sin gestión admin)
+- **Admin: COMPLETADO** — Sidebar responsive, active links, AdminMobileNav, AdminPageHeader, `/admin/categorias`, ProductForm con tabs
 - **Imágenes: COMPLETADO** — Cloudinary, ImageUploader, MultiImageUploader
 - **Pendiente real:** Reemplazar número WhatsApp placeholder (`5491100000000`) en `WhatsAppButton.tsx` y en `ContactCards.tsx`

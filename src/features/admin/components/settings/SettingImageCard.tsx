@@ -8,46 +8,59 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { X } from "lucide-react";
 
-interface HeroBannerFormProps {
+interface SettingImageCardProps {
+  settingKey: string;
   currentUrl: string | null;
+  label: string;
+  aspectClass?: string;
+  description?: string;
 }
 
-export function HeroBannerForm({ currentUrl }: HeroBannerFormProps) {
+export function SettingImageCard({
+  settingKey,
+  currentUrl,
+  label,
+  aspectClass = "aspect-video",
+  description,
+}: SettingImageCardProps) {
   const [url, setUrl] = useState<string | null>(currentUrl);
   const [saving, setSaving] = useState(false);
 
   const handleUpload = async (newUrl: string) => {
     setUrl(newUrl);
     setSaving(true);
-    const result = await upsertSetting({ key: "hero_banner_url", value: newUrl });
+    const result = await upsertSetting({ key: settingKey, value: newUrl });
     setSaving(false);
     if (result?.data) {
-      toast.success("Banner actualizado");
+      toast.success("Imagen actualizada");
     } else {
-      toast.error("Error al guardar el banner");
+      toast.error("Error al guardar la imagen");
     }
   };
 
   const handleRemove = async () => {
     setSaving(true);
-    const result = await upsertSetting({ key: "hero_banner_url", value: "" });
+    const result = await upsertSetting({ key: settingKey, value: "" });
     setSaving(false);
     if (result?.data) {
       setUrl(null);
-      toast.success("Banner eliminado");
+      toast.success("Imagen eliminada");
     } else {
-      toast.error("Error al eliminar el banner");
+      toast.error("Error al eliminar la imagen");
     }
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
+      {description && (
+        <p className="text-xs text-muted-foreground">{description}</p>
+      )}
       {url ? (
-        <div className="space-y-3">
-          <div className="relative h-48 w-full overflow-hidden rounded-lg border">
-            <Image src={url} alt="Hero banner" fill className="object-cover" />
+        <>
+          <div className={`relative w-full overflow-hidden rounded-lg border ${aspectClass}`}>
+            <Image src={url} alt={label} fill className="object-cover" />
           </div>
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2">
             <ImageUploader onUpload={handleUpload} label="Cambiar imagen" />
             <Button
               type="button"
@@ -56,16 +69,18 @@ export function HeroBannerForm({ currentUrl }: HeroBannerFormProps) {
               disabled={saving}
             >
               <X className="mr-2 h-4 w-4" />
-              Eliminar banner
+              Eliminar
             </Button>
           </div>
-        </div>
+        </>
       ) : (
         <div className="space-y-2">
-          <div className="flex h-48 w-full items-center justify-center rounded-lg border border-dashed text-muted-foreground">
-            Sin imagen — se mostrará el degradado por defecto
+          <div
+            className={`flex w-full items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground ${aspectClass}`}
+          >
+            Sin imagen
           </div>
-          <ImageUploader onUpload={handleUpload} label="Subir imagen de banner" />
+          <ImageUploader onUpload={handleUpload} label={`Subir ${label}`} />
         </div>
       )}
       {saving && <p className="text-sm text-muted-foreground">Guardando...</p>}

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import {
   LayoutDashboard,
   Package,
-  Wrench,
   ShoppingBag,
+  Tag,
   Settings,
   ExternalLink,
   LogOut,
@@ -18,7 +18,7 @@ const adminLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
   { href: "/admin/productos", label: "Productos", icon: Package },
-  { href: "/admin/servicio-tecnico", label: "Servicio Técnico", icon: Wrench },
+  { href: "/admin/categorias", label: "Categorías", icon: Tag },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 
