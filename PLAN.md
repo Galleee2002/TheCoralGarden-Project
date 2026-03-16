@@ -36,11 +36,35 @@
 ### 🔧 Fix urgente
 - [ ] Reemplazar placeholder WhatsApp (`5491100000000`) en `WhatsAppButton.tsx` y `ContactCards.tsx`
 
-### 🚀 Deploy
-- [ ] Configurar variables de entorno en producción (Vercel u hosting elegido)
-- [ ] Setear `NEXT_PUBLIC_BASE_URL` real para webhook de MercadoPago
-- [ ] Credenciales MP reales (`MERCADOPAGO_ACCESS_TOKEN`, `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY`)
-- [ ] Probar flujo completo de checkout con MP en staging
+### 🚀 Deploy — Checklist Vercel
+
+#### Pre-deploy (local)
+- [x] `.env.example` creado con todas las variables requeridas
+- [ ] `pnpm build` pasa sin errores en local
+
+#### Variables de entorno en Vercel Dashboard
+Ir a: Project → Settings → Environment Variables
+
+| Variable | Descripción |
+|---|---|
+| `DATABASE_URL` | Supabase pooler URL (puerto 6543, `?pgbouncer=true&connection_limit=1`) |
+| `NEXT_PUBLIC_SUPABASE_URL` | URL del proyecto Supabase |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Anon key de Supabase |
+| `MERCADOPAGO_ACCESS_TOKEN` | Access token **de producción** de MP |
+| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | Public key **de producción** de MP |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Nombre del cloud en Cloudinary |
+| `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` | Upload preset público de Cloudinary |
+| `NEXT_PUBLIC_BASE_URL` | URL real del sitio (ej: `https://thecoralgardenok.vercel.app`) |
+
+#### MercadoPago — Webhook
+- [ ] En panel MP, registrar webhook: `https://[dominio]/api/webhooks/mp`
+- [ ] Seleccionar evento: `payment` → `payment.updated`
+
+#### Post-deploy
+- [ ] Verificar que el admin login funciona (`/admin/login`)
+- [ ] Verificar subida de imágenes con Cloudinary
+- [ ] Probar flujo completo de checkout con MP en producción
+- [ ] Reemplazar número WhatsApp placeholder
 
 ---
 

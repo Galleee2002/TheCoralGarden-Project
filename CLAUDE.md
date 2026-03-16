@@ -155,4 +155,24 @@ Tokens `@theme inline` → clases Tailwind: `bg-bg-secondary`, `bg-card-dark`, `
 - **`/servicio-tecnico`: COMPLETADO** — Hero + AttentionSection + ContactCards (sin gestión admin)
 - **Admin: COMPLETADO** — Sidebar responsive, active links, AdminMobileNav, AdminPageHeader, `/admin/categorias`, ProductForm con tabs
 - **Imágenes: COMPLETADO** — Cloudinary, ImageUploader, MultiImageUploader
+- **Deploy: PREPARADO** — `.env.example` creado, checklist en `PLAN.md`
 - **Pendiente real:** Reemplazar número WhatsApp placeholder (`5491100000000`) en `WhatsAppButton.tsx` y en `ContactCards.tsx`
+
+## Deploy — Variables de entorno
+
+Template en `.env.example`. Todas las variables requeridas para producción:
+
+| Variable | Tipo | Fuente |
+|---|---|---|
+| `DATABASE_URL` | Server | Supabase → Settings → Database (pooler, puerto 6543) |
+| `NEXT_PUBLIC_SUPABASE_URL` | Public | Supabase → Settings → API |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Public | Supabase → Settings → API |
+| `MERCADOPAGO_ACCESS_TOKEN` | Server secret | MP Developer Panel |
+| `NEXT_PUBLIC_MERCADOPAGO_PUBLIC_KEY` | Public | MP Developer Panel |
+| `NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME` | Public | Cloudinary Console |
+| `NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET` | Public | Cloudinary → Settings → Upload presets |
+| `NEXT_PUBLIC_BASE_URL` | Public | URL del sitio en producción |
+
+### Notas Vercel + Prisma
+- `DATABASE_URL` debe usar el **pooler** de Supabase (puerto 6543) con `?pgbouncer=true&connection_limit=1` para funcionar en serverless
+- Webhook MP: registrar `https://[dominio]/api/webhooks/mp` en el panel de MercadoPago con evento `payment.updated`
