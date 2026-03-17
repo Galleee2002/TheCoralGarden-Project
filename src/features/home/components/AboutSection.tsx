@@ -70,7 +70,7 @@ export async function AboutSection() {
               />
             )}
             <div className="absolute inset-0 flex flex-col items-start justify-end bg-gradient-to-t from-black/60 to-transparent p-6">
-              <p className="mb-3 text-lg font-medium text-white">
+              <p className="mb-3 text-sm font-medium text-white md:text-base lg:text-lg">
                 Desarrollamos soluciones de filtración y ósmosis inversa para
                 sistemas que requieren máxima estabilidad y calidad.{" "}
               </p>
