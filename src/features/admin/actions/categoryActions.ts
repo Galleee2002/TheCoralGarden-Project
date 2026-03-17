@@ -29,6 +29,10 @@ export const updateCategory = action
 export const deleteCategory = action
   .schema(z.object({ id: z.string() }))
   .action(async ({ parsedInput }) => {
+    await prisma.product.updateMany({
+      where: { categoryId: parsedInput.id },
+      data: { categoryId: null },
+    });
     await prisma.category.delete({ where: { id: parsedInput.id } });
     return { success: true };
   });

@@ -31,7 +31,7 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
           src={images[selected]}
           alt={name}
           fill
-          className="object-cover"
+          className="object-contain"
           priority
         />
       </div>
@@ -46,11 +46,11 @@ export function ProductGallery({ images, name }: ProductGalleryProps) {
               className={cn(
                 "relative h-24 flex-1 overflow-hidden rounded-lg border-2 transition-all",
                 i === selected
-                  ? "border-btn-primary"
-                  : "border-transparent hover:border-btn-primary/50",
+                  ? "border-card-light"
+                  : "border-transparent hover:border-card-light",
               )}
             >
-              <Image src={img} alt={`${name} ${i + 1}`} fill className="object-cover" />
+              <Image src={img} alt={`${name} ${i + 1}`} fill className="object-contain" />
             </button>
           ))}
         </div>

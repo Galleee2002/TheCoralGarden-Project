@@ -36,9 +36,10 @@ export function ProductInfo({
   const isFavorite = useFavoritesStore((s) => s.isFavorite(id));
 
   const formatPrice = (p: number) =>
+    "$ " +
     new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(p);
 
   const handleBuyNow = () => {
@@ -73,7 +74,7 @@ export function ProductInfo({
       <hr className="border-border/40" />
 
       {/* Description */}
-      <h2 className="font-heading text-xl font-bold">
+      <h2 className="font-heading text-2xl font-bold">
         Descripción del producto
       </h2>
       <p className="text-muted-foreground text-base leading-relaxed">
@@ -83,10 +84,10 @@ export function ProductInfo({
       {/* Specifications */}
       {specifications.length > 0 && (
         <div className="flex flex-col gap-3">
-          <h2 className="font-heading text-xl font-bold">Especificaciones</h2>
-          <div className="border-border/30 grid grid-cols-2 gap-3 rounded-lg border p-4">
+          <h2 className="font-heading text-2xl font-bold">Especificaciones</h2>
+          <div className="grid grid-cols-2 gap-3">
             {specifications.map((spec, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
+              <div key={i} className="border-border/30 flex items-center gap-2 rounded-lg border p-3 text-sm">
                 <CheckCircle2 className="text-text-primary h-4 w-4 shrink-0" />
                 <span>{spec}</span>
               </div>

@@ -53,20 +53,19 @@ export function ProductCard({
           </div>
         </CardHeader>
 
-        <CardContent className="flex flex-1 flex-col gap-2 p-4">
-          <h3 className="font-heading text-xl font-bold leading-tight text-text-primary md:text-2xl">
+        <CardContent className="flex flex-1 flex-col p-4">
+          <h3 className="font-heading text-lg font-bold leading-tight text-text-primary md:text-xl">
             {name}
           </h3>
           {description && (
-            <p className="line-clamp-2 text-sm text-text-primary/70">
+            <p className="mt-1.5 line-clamp-2 text-sm leading-relaxed text-text-primary/60">
               {description}
             </p>
           )}
-          <span className="mt-auto text-sm text-text-primary/60">
-            Precio:{" "}
-            <span className="font-bold text-text-primary">{formatPrice(price)}</span>
-          </span>
-          <div className="flex items-center justify-center gap-2 rounded-button bg-btn-primary px-4 py-2 text-sm font-medium text-text-secondary">
+          <p className="mt-auto pt-4 text-2xl font-bold text-btn-primary">
+            {formatPrice(price)}
+          </p>
+          <div className="mt-3 flex items-center justify-center gap-2 rounded-button bg-btn-primary px-4 py-2.5 text-sm font-medium text-text-secondary">
             Ver más <ChevronRight className="h-4 w-4" />
           </div>
         </CardContent>

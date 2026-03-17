@@ -14,7 +14,7 @@ export async function getOrders({
 }: GetOrdersParams = {}) {
   const where = status ? { status } : {};
 
-  const [orders, total] = await Promise.all([
+  const [rawOrders, total] = await Promise.all([
     prisma.order.findMany({
       where,
       include: { items: true },
@@ -24,6 +24,17 @@ export async function getOrders({
     }),
     prisma.order.count({ where }),
   ]);
+
+  const orders = rawOrders.map((order) => ({
+    ...order,
+    subtotal: order.subtotal.toNumber(),
+    shippingCost: order.shippingCost.toNumber(),
+    total: order.total.toNumber(),
+    items: order.items.map((item) => ({
+      ...item,
+      unitPrice: item.unitPrice.toNumber(),
+    })),
+  }));
 
   return { orders, total, totalPages: Math.ceil(total / pageSize) };
 }

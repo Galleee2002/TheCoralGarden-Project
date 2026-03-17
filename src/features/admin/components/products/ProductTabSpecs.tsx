@@ -5,6 +5,7 @@ import {
   FormControl,
   FormField,
   FormItem,
+  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -18,11 +19,20 @@ export function ProductTabSpecs() {
     name: "specifications",
   });
 
+  const rootError = form.formState.errors.specifications?.root?.message as string | undefined;
+  const arrayError = !Array.isArray(form.formState.errors.specifications)
+    ? (form.formState.errors.specifications as { message?: string } | undefined)?.message
+    : undefined;
+  const specsError = rootError ?? arrayError;
+
   return (
     <div className="space-y-4">
       <p className="text-sm text-muted-foreground">
         Agregá las especificaciones técnicas del producto. Cada ítem aparecerá como un punto en la página de detalle.
       </p>
+      {specsError && (
+        <p className="text-sm font-medium text-destructive">{specsError}</p>
+      )}
 
       <div className="space-y-2">
         {fields.map((field, index) => (

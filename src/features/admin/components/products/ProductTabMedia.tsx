@@ -21,17 +21,20 @@ export function ProductTabMedia() {
   const previewImages = images.slice(1, 4); // max 3 previews
 
   const setMainImage = (url: string) => {
-    form.setValue("images", [url, ...images.slice(1)], { shouldValidate: true });
+    const current = (form.getValues("images") as string[]) ?? [];
+    form.setValue("images", [url, ...current.slice(1)], { shouldValidate: true });
   };
 
   const removeMainImage = () => {
-    form.setValue("images", images.slice(1), { shouldValidate: true });
+    const current = (form.getValues("images") as string[]) ?? [];
+    form.setValue("images", current.slice(1), { shouldValidate: true });
   };
 
   const addPreview = (url: string) => {
-    const previews = images.slice(1, 4);
+    const current = (form.getValues("images") as string[]) ?? [];
+    const previews = current.slice(1, 4);
     if (previews.length >= 3) return;
-    const main = images[0];
+    const main = current[0];
     const next = main ? [main, ...previews, url] : [...previews, url];
     form.setValue("images", next, { shouldValidate: true });
   };
@@ -123,6 +126,8 @@ export function ProductTabMedia() {
             </FormControl>
             <FormMessage />
           </FormItem>
+
+          <FormMessage />
 
           {/* Preview images */}
           <FormItem>

@@ -27,7 +27,7 @@ type Order = {
   customerName: string;
   customerEmail: string;
   status: OrderStatus;
-  total: number | { toString(): string };
+  total: number;
   createdAt: Date;
 };
 
@@ -35,8 +35,8 @@ interface OrdersTableProps {
   orders: Order[];
 }
 
-const formatPrice = (p: number | { toString(): string }) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(Number(p));
+const formatPrice = (p: number) =>
+  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(p);
 
 const formatDate = (d: Date) =>
   new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" }).format(d);

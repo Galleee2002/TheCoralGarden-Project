@@ -123,15 +123,9 @@ export function CategoryManagerClient({ categories: initial }: CategoryManagerCl
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-destructive hover:bg-destructive hover:text-destructive-foreground"
+                        className="text-destructive hover:bg-destructive hover:text-white hover:border-destructive [&>svg]:hover:text-white"
                         onClick={() =>
                           setDeleteTarget({ id: cat.id, name: cat.name })
-                        }
-                        disabled={cat._count.products > 0}
-                        title={
-                          cat._count.products > 0
-                            ? "No se puede eliminar: tiene productos asociados"
-                            : undefined
                         }
                       >
                         <Trash2 className="mr-1.5 h-3.5 w-3.5" />

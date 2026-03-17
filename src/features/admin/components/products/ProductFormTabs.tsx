@@ -21,8 +21,10 @@ const formSchema = z.object({
   description: z.string().min(10, "Mínimo 10 caracteres"),
   price: z.number().positive("Debe ser mayor a 0"),
   stock: z.number().int().min(0, "No puede ser negativo"),
-  images: z.array(z.string().url()).default([]),
-  specifications: z.array(z.string()).default([]),
+  images: z.array(z.string().url()).min(1, "Agregá al menos una imagen principal"),
+  specifications: z
+    .array(z.string().min(1, "La especificación no puede estar vacía"))
+    .min(1, "Agregá al menos una especificación"),
   categoryId: z.string().min(1, "Seleccioná una categoría"),
   featured: z.boolean(),
   active: z.boolean(),
@@ -104,21 +106,46 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
         mode === "create" ? "Producto creado exitosamente" : "Producto actualizado",
       );
       router.push("/admin/productos");
-      router.refresh();
     } else {
       toast.error("Error al guardar el producto");
     }
   };
+
+  const errors = form.formState.errors;
+  const basicHasError = !!(errors.name || errors.slug || errors.description || errors.categoryId);
+  const pricingHasError = !!(errors.price || errors.stock);
+  const mediaHasError = !!errors.images;
+  const specsHasError = !!errors.specifications;
 
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Tabs defaultValue="basico">
           <TabsList>
-            <TabsTrigger value="basico">Básico</TabsTrigger>
-            <TabsTrigger value="precios">Precios</TabsTrigger>
-            <TabsTrigger value="media">Imágenes</TabsTrigger>
-            <TabsTrigger value="specs">Especificaciones</TabsTrigger>
+            <TabsTrigger value="basico" className="relative">
+              Básico
+              {basicHasError && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="precios" className="relative">
+              Precios
+              {pricingHasError && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="media" className="relative">
+              Imágenes
+              {mediaHasError && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
+            </TabsTrigger>
+            <TabsTrigger value="specs" className="relative">
+              Especificaciones
+              {specsHasError && (
+                <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
+              )}
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="basico" className="mt-6">
