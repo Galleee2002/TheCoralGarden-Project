@@ -67,6 +67,7 @@ function toSlug(name: string) {
 export function ProductFormTabs({ categories, mode, defaultValues }: ProductFormTabsProps) {
   const router = useRouter();
   const [categoryList, setCategoryList] = useState<CategoryOption[]>(categories);
+  const [activeTab, setActiveTab] = useState("basico");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -106,6 +107,15 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
         mode === "create" ? "Producto creado exitosamente" : "Producto actualizado",
       );
       router.push("/admin/productos");
+    } else if (result?.serverError) {
+      const isSlugError = result.serverError.toLowerCase().includes("slug");
+      if (isSlugError) {
+        form.setError("slug", { message: result.serverError });
+        setActiveTab("basico");
+      }
+      toast.error(result.serverError);
+    } else if (result?.validationErrors) {
+      toast.error("Error de validación en el servidor");
     } else {
       toast.error("Error al guardar el producto");
     }
@@ -120,7 +130,7 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <Tabs defaultValue="basico">
+        <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList>
             <TabsTrigger value="basico" className="relative">
               Básico

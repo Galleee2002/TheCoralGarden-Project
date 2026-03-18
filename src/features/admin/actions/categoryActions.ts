@@ -3,6 +3,7 @@
 import { action } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma/client";
 import { z } from "zod";
+import { revalidatePath } from "next/cache";
 
 const categorySchema = z.object({
   name: z.string().min(2),
@@ -15,6 +16,7 @@ export const createCategory = action
   .schema(categorySchema)
   .action(async ({ parsedInput }) => {
     const cat = await prisma.category.create({ data: parsedInput });
+    revalidatePath("/admin", "layout");
     return { id: cat.id, name: cat.name, slug: cat.slug };
   });
 
@@ -23,6 +25,7 @@ export const updateCategory = action
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
     const cat = await prisma.category.update({ where: { id }, data });
+    revalidatePath("/admin", "layout");
     return { id: cat.id, name: cat.name, slug: cat.slug };
   });
 
@@ -33,5 +36,6 @@ export const deleteCategory = action
       where: { categoryId: parsedInput.id },
     });
     await prisma.category.delete({ where: { id: parsedInput.id } });
+    revalidatePath("/admin", "layout");
     return { success: true };
   });

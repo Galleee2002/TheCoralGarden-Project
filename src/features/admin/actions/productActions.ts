@@ -3,6 +3,8 @@
 import { action } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma/client";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
+import { revalidatePath } from "next/cache";
 
 const productSchema = z.object({
   name: z.string().min(2),
@@ -20,21 +22,38 @@ const productSchema = z.object({
 export const createProduct = action
   .schema(productSchema)
   .action(async ({ parsedInput }) => {
-    const product = await prisma.product.create({ data: parsedInput });
-    return { id: product.id };
+    try {
+      const product = await prisma.product.create({ data: parsedInput });
+      revalidatePath("/admin", "layout");
+      return { id: product.id };
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        throw new Error("El slug ya existe. Cambiá el nombre del producto o editá el slug manualmente.");
+      }
+      throw e;
+    }
   });
 
 export const updateProduct = action
   .schema(productSchema.extend({ id: z.string() }))
   .action(async ({ parsedInput }) => {
     const { id, ...data } = parsedInput;
-    const product = await prisma.product.update({ where: { id }, data });
-    return { id: product.id };
+    try {
+      const product = await prisma.product.update({ where: { id }, data });
+      revalidatePath("/admin", "layout");
+      return { id: product.id };
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") {
+        throw new Error("El slug ya existe. Editá el slug manualmente para que sea único.");
+      }
+      throw e;
+    }
   });
 
 export const deleteProduct = action
   .schema(z.object({ id: z.string() }))
   .action(async ({ parsedInput }) => {
     await prisma.product.delete({ where: { id: parsedInput.id } });
+    revalidatePath("/admin", "layout");
     return { success: true };
   });
