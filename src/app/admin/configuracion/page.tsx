@@ -1,5 +1,6 @@
 import { getSetting } from "@/features/admin/actions/settingActions";
 import { SettingImageCard } from "@/features/admin/components/settings/SettingImageCard";
+import { SettingSlideCard } from "@/features/admin/components/settings/SettingSlideCard";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Metadata } from "next";
@@ -15,6 +16,12 @@ export default async function ConfiguracionPage() {
     serviceVenta,
     servicePostventa,
     serviceReparacion,
+    slide2Image,
+    slide2Title,
+    slide2Description,
+    slide3Image,
+    slide3Title,
+    slide3Description,
   ] = await Promise.all([
     getSetting("hero_banner_url"),
     getSetting("about_gallery_1"),
@@ -23,6 +30,12 @@ export default async function ConfiguracionPage() {
     getSetting("service_venta_image"),
     getSetting("service_postventa_image"),
     getSetting("service_reparacion_image"),
+    getSetting("hero_slide2_image"),
+    getSetting("hero_slide2_title"),
+    getSetting("hero_slide2_description"),
+    getSetting("hero_slide3_image"),
+    getSetting("hero_slide3_title"),
+    getSetting("hero_slide3_description"),
   ]);
 
   return (
@@ -39,20 +52,55 @@ export default async function ConfiguracionPage() {
           <TabsTrigger value="servicios">Servicios</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="apariencia">
+        <TabsContent value="apariencia" className="space-y-6">
+          {/* Slide 1 */}
           <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
             <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
               <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
-              Banner principal (Hero)
+              Hero — Slide 1
             </h2>
             <p className="mb-4 text-sm text-muted-foreground">
-              Imagen de fondo del hero de la página de inicio.
+              Imagen de fondo del primer slide. El título y las características son fijos.
             </p>
             <SettingImageCard
               settingKey="hero_banner_url"
               currentUrl={heroBannerUrl}
-              label="imagen de banner"
+              label="imagen slide 1"
               aspectClass="aspect-video"
+            />
+          </div>
+
+          {/* Slide 2 */}
+          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
+              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+              Hero — Slide 2
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Imagen, título y descripción del segundo slide del hero.
+            </p>
+            <SettingSlideCard
+              slideIndex={2}
+              currentImage={slide2Image}
+              currentTitle={slide2Title}
+              currentDescription={slide2Description}
+            />
+          </div>
+
+          {/* Slide 3 */}
+          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
+              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+              Hero — Slide 3
+            </h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              Imagen, título y descripción del tercer slide del hero.
+            </p>
+            <SettingSlideCard
+              slideIndex={3}
+              currentImage={slide3Image}
+              currentTitle={slide3Title}
+              currentDescription={slide3Description}
             />
           </div>
         </TabsContent>

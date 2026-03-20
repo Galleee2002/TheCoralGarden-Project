@@ -69,7 +69,7 @@ export async function ServicesSection() {
                 href="/servicio-tecnico"
                 className={`rounded-button relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider uppercase transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
               >
-                Conoce mas
+                Conocé más
               </Link>
               {serviceImages[i] && (
                 <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
@@ -91,12 +91,12 @@ export async function ServicesSection() {
             {/* Text content */}
             <div className="flex-1">
               <h3 className="font-heading mb-3 text-2xl font-bold text-white">
-                Reparacion y mantenimiento
+                Reparación y mantenimiento
               </h3>
               <p className="mb-6 leading-relaxed text-white/70">
-                Servicio tecnico especializado en reparacion y mantenimiento de
-                equipos de osmosis inversa y purificacion de agua. Disponible
-                24/7 los 365 dias del ano.
+                Servicio técnico especializado en reparación y mantenimiento de
+                equipos de ósmosis inversa y purificación de agua. Disponible
+                24/7 los 365 días del año.
               </p>
             </div>
             {/* Button — bottom-left */}
@@ -111,7 +111,7 @@ export async function ServicesSection() {
               <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
                 <Image
                   src={reparacionImage}
-                  alt="Reparacion y mantenimiento"
+                  alt="Reparación y mantenimiento"
                   fill
                   className="object-cover"
                 />

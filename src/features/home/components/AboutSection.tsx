@@ -30,7 +30,7 @@ export async function AboutSection() {
               The Coral Garden
             </h2>
             <p className="text-text-primary mb-4 text-base font-bold">
-              Especialistas en purificacion y tratamiento de agua.
+              Especialistas en purificación y tratamiento de agua.
             </p>
             <p className="text-text-primary/70 mb-6 text-base leading-relaxed">
               Somos un equipo pequeño con una gran misión: concientizar sobre la
@@ -40,7 +40,7 @@ export async function AboutSection() {
               sin tabúes, con transparencia y pasión.
             </p>
             <Button variant="default" size="lg" asChild>
-              <Link href="/sobre-nosotros">Conoce mas</Link>
+              <Link href="/sobre-nosotros">Conocé más</Link>
             </Button>
           </div>
         </div>
@@ -75,7 +75,7 @@ export async function AboutSection() {
                 sistemas que requieren máxima estabilidad y calidad.{" "}
               </p>
               <Button variant="default" size="lg" asChild>
-                <Link href="/productos">Ver mas</Link>
+                <Link href="/productos">Ver más</Link>
               </Button>
             </div>
           </div>

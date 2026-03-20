@@ -29,7 +29,7 @@ export function TechnicalServiceHero() {
           href="#contacto"
           className="rounded-button inline-flex items-center border-2 border-text-secondary px-8 py-3 text-sm font-medium tracking-wider text-text-secondary uppercase transition-colors hover:bg-text-secondary/10"
         >
-          Contactanos →
+          Contáctanos →
         </Link>
       </div>
     </section>

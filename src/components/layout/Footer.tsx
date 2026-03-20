@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 const quickLinks = [
   { href: "/", label: "Inicio" },
   { href: "/productos", label: "Productos" },
-  { href: "/servicio-tecnico", label: "Servicio tecnico" },
+  { href: "/servicio-tecnico", label: "Servicio técnico" },
   { href: "/sobre-nosotros", label: "Sobre nosotros" },
   { href: "/#faq", label: "Preguntas frecuentes" },
 ];
@@ -13,7 +13,7 @@ const quickLinks = [
 const serviceLinks = [
   { href: "/servicio-tecnico", label: "Venta y asesoramiento" },
   { href: "/servicio-tecnico", label: "Servicio post venta" },
-  { href: "/servicio-tecnico", label: "Reparacion y mantenimiento" },
+  { href: "/servicio-tecnico", label: "Reparación y mantenimiento" },
 ];
 
 export function Footer() {
@@ -50,7 +50,7 @@ export function Footer() {
           {/* Column 2: Quick links */}
           <div>
             <h3 className="mb-4 text-sm font-bold uppercase tracking-wider text-white/50">
-              Links rapidos
+              Links rápidos
             </h3>
             <ul className="flex flex-col gap-2">
               {quickLinks.map((link) => (

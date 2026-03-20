@@ -1,6 +1,6 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { adminAction as action } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma/client";
 import { OrderStatus } from "@/types/enums";
 import { z } from "zod";

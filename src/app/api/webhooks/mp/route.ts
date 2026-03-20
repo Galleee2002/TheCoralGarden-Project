@@ -1,6 +1,41 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { MercadoPagoConfig, Payment } from "mercadopago";
+import crypto from "crypto";
+
+function verifyMPSignature(
+  request: NextRequest,
+  dataId: string | undefined,
+): boolean {
+  const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
+  if (!secret) return false;
+
+  const xSignature = request.headers.get("x-signature");
+  const xRequestId = request.headers.get("x-request-id");
+  if (!xSignature || !xRequestId) return false;
+
+  // Parse "ts=<timestamp>,v1=<hash>"
+  let ts: string | undefined;
+  let v1: string | undefined;
+  for (const part of xSignature.split(",")) {
+    const [key, val] = part.split("=");
+    if (key === "ts") ts = val;
+    if (key === "v1") v1 = val;
+  }
+  if (!ts || !v1) return false;
+
+  const manifest = `id:${dataId ?? ""};request-id:${xRequestId};ts:${ts};`;
+  const hmac = crypto.createHmac("sha256", secret);
+  hmac.update(manifest);
+  const computed = hmac.digest("hex");
+
+  // Constant-time comparison to prevent timing attacks
+  if (computed.length !== v1.length) return false;
+  return crypto.timingSafeEqual(
+    Buffer.from(computed, "utf8"),
+    Buffer.from(v1, "utf8"),
+  );
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -9,6 +44,10 @@ export async function POST(request: NextRequest) {
       action?: string;
       data?: { id?: string };
     };
+
+    if (!verifyMPSignature(request, body.data?.id)) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
 
     if (body.type !== "payment" && body.action !== "payment.updated") {
       return NextResponse.json({ received: true });

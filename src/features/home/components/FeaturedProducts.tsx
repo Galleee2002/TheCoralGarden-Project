@@ -20,7 +20,7 @@ export async function FeaturedProducts() {
               Productos destacados
             </h2>
             <p className="mt-3 text-base text-white/60">
-              Los mas elegidos por nuestros clientes
+              Los más elegidos por nuestros clientes
             </p>
           </div>
           <Link

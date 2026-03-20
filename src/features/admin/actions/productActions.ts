@@ -1,6 +1,6 @@
 "use server";
 
-import { action } from "@/lib/safe-action";
+import { adminAction as action } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma/client";
 import { z } from "zod";
 import { Prisma } from "@prisma/client";
