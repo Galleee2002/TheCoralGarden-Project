@@ -16,7 +16,7 @@ const services = [
   {
     title: "Servicio post venta",
     description:
-      "Acompanamiento continuo despues de tu compra. Mantenimiento preventivo y soporte tecnico garantizado.",
+      "Acompañamiento continuo después de tu compra. Mantenimiento preventivo y soporte técnico garantizado.",
     bg: "bg-card-light",
     text: "text-text-primary",
     textMuted: "text-text-primary/70",
