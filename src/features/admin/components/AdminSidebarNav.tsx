@@ -10,6 +10,7 @@ import {
   Settings,
   ExternalLink,
   LogOut,
+  CalendarDays,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -19,6 +20,7 @@ const adminLinks = [
   { href: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
   { href: "/admin/productos", label: "Productos", icon: Package },
   { href: "/admin/categorias", label: "Categorías", icon: Tag },
+  { href: "/admin/ferias", label: "Ferias", icon: CalendarDays },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
 ];
 

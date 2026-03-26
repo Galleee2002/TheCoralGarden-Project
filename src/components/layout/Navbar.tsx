@@ -8,6 +8,7 @@ import { ShoppingCart, Heart, User, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useCartStore } from "@/features/cart/store/cartStore";
+import { useFavoritesStore } from "@/features/favorites/store/favoritesStore";
 import dynamic from "next/dynamic";
 const CartDrawer = dynamic(
   () => import("./CartDrawer").then((m) => ({ default: m.CartDrawer })),
@@ -17,6 +18,7 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/productos", label: "PRODUCTOS" },
+  { href: "/ferias", label: "FERIAS" },
   { href: "/servicio-tecnico", label: "SERVICIO TÉCNICO" },
   { href: "/sobre-nosotros", label: "SOBRE NOSOTROS" },
 ];
@@ -29,6 +31,7 @@ export function Navbar() {
   const totalItems = useCartStore((s) =>
     s.items.reduce((sum, i) => sum + i.quantity, 0)
   );
+  const totalFavorites = useFavoritesStore((s) => s.items.length);
 
   const isTransparentPage = pathname === "/" || pathname === "/servicio-tecnico";
   const isTransparent = isTransparentPage && !scrolled;
@@ -95,14 +98,27 @@ export function Navbar() {
               variant="ghost"
               size="icon"
               className={cn(
-                "hidden sm:inline-flex",
+                "relative hidden sm:inline-flex",
                 isTransparent
                   ? "text-white hover:bg-white/10"
                   : "text-white hover:bg-white/10"
               )}
               aria-label="Favoritos"
+              asChild
             >
-              <Heart className="h-5 w-5" />
+              <Link href="/favoritos">
+                <Heart className="h-5 w-5" />
+                {totalFavorites > 0 && (
+                  <Badge
+                    className={cn(
+                      "absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full p-0 text-[10px]",
+                      "bg-text-secondary text-bg-secondary"
+                    )}
+                  >
+                    {totalFavorites > 99 ? "99+" : totalFavorites}
+                  </Badge>
+                )}
+              </Link>
             </Button>
 
             <Button

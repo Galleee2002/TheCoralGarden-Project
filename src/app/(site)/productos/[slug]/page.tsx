@@ -79,7 +79,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
           <div className="mt-20">
             {/* Section header */}
             <div className="mb-6 flex flex-col gap-2">
-              <div className="flex items-end justify-between">
+              <div className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
                 <h2 className="font-heading text-[40px] leading-none md:text-[64px]">
                   PRODUCTOS RELACIONADOS
                 </h2>
