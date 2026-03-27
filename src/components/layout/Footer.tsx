@@ -38,7 +38,7 @@ export function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 <Mail className="h-4 w-4 shrink-0 text-text-secondary" />
-                <span>info@thecoralgarden.com.ar</span>
+                <Link href="mailto:Thecoral_purificadores@outlook.es" className="hover:text-white transition-colors">Thecoral_purificadores@outlook.es</Link>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0 text-text-secondary" />
