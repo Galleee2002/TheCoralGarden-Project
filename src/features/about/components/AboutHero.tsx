@@ -8,7 +8,7 @@ export function AboutHero() {
           {/* Imagen */}
           <div className="relative aspect-[3/4] overflow-hidden rounded-card lg:aspect-auto lg:min-h-[600px]">
             <Image
-              src="/DUEÑOS.png"
+              src="/profile-coral-garden.jpeg"
               alt="Fundadores de The Coral Garden"
               fill
               className="object-cover"
