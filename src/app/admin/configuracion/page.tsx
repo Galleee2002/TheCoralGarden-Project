@@ -10,6 +10,8 @@ export const metadata: Metadata = { title: "Admin — Configuración" };
 export default async function ConfiguracionPage() {
   const [
     heroBannerUrl,
+    slide1Title,
+    slide1Features,
     aboutGallery1,
     aboutGallery2,
     aboutGallery3,
@@ -19,11 +21,15 @@ export default async function ConfiguracionPage() {
     slide2Image,
     slide2Title,
     slide2Description,
+    slide2Features,
     slide3Image,
     slide3Title,
     slide3Description,
+    slide3Features,
   ] = await Promise.all([
     getSetting("hero_banner_url"),
+    getSetting("hero_slide1_title"),
+    getSetting("hero_slide1_features"),
     getSetting("about_gallery_1"),
     getSetting("about_gallery_2"),
     getSetting("about_gallery_3"),
@@ -33,9 +39,11 @@ export default async function ConfiguracionPage() {
     getSetting("hero_slide2_image"),
     getSetting("hero_slide2_title"),
     getSetting("hero_slide2_description"),
+    getSetting("hero_slide2_features"),
     getSetting("hero_slide3_image"),
     getSetting("hero_slide3_title"),
     getSetting("hero_slide3_description"),
+    getSetting("hero_slide3_features"),
   ]);
 
   return (
@@ -60,13 +68,14 @@ export default async function ConfiguracionPage() {
               Hero — Slide 1
             </h2>
             <p className="mb-4 text-sm text-muted-foreground">
-              Imagen de fondo del primer slide. El título y las características son fijos.
+              Imagen, título y características del primer slide del hero.
             </p>
-            <SettingImageCard
-              settingKey="hero_banner_url"
-              currentUrl={heroBannerUrl}
-              label="imagen slide 1"
-              aspectClass="aspect-video"
+            <SettingSlideCard
+              slideIndex={1}
+              currentImage={heroBannerUrl}
+              currentTitle={slide1Title}
+              currentDescription={null}
+              currentFeatures={slide1Features}
             />
           </div>
 
@@ -77,13 +86,14 @@ export default async function ConfiguracionPage() {
               Hero — Slide 2
             </h2>
             <p className="mb-4 text-sm text-muted-foreground">
-              Imagen, título y descripción del segundo slide del hero.
+              Imagen, título y contenido del segundo slide del hero.
             </p>
             <SettingSlideCard
               slideIndex={2}
               currentImage={slide2Image}
               currentTitle={slide2Title}
               currentDescription={slide2Description}
+              currentFeatures={slide2Features}
             />
           </div>
 
@@ -94,13 +104,14 @@ export default async function ConfiguracionPage() {
               Hero — Slide 3
             </h2>
             <p className="mb-4 text-sm text-muted-foreground">
-              Imagen, título y descripción del tercer slide del hero.
+              Imagen, título y contenido del tercer slide del hero.
             </p>
             <SettingSlideCard
               slideIndex={3}
               currentImage={slide3Image}
               currentTitle={slide3Title}
               currentDescription={slide3Description}
+              currentFeatures={slide3Features}
             />
           </div>
         </TabsContent>

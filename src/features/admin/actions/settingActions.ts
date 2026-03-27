@@ -2,6 +2,7 @@
 
 import { adminAction as action } from "@/lib/safe-action";
 import { prisma } from "@/lib/prisma/client";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 export const getSetting = async (key: string): Promise<string | null> => {
@@ -17,5 +18,6 @@ export const upsertSetting = action
       update: { value: parsedInput.value },
       create: { key: parsedInput.key, value: parsedInput.value },
     });
+    revalidatePath("/");
     return { success: true };
   });
