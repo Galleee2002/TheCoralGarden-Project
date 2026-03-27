@@ -17,7 +17,7 @@ export async function AboutSection() {
           {/* Photo */}
           <div className="rounded-card relative aspect-[4/3] overflow-hidden">
             <Image
-              src="/img-aboutus.jpeg"
+              src="/profile-coral-garden.jpeg"
               alt="Fundadores de The Coral Garden"
               fill
               className="object-cover"
