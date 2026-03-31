@@ -48,7 +48,7 @@ export function ContactCards() {
               para encontrar la mejor solución para tu equipo.
             </p>
             <Link
-              href="mailto:contacto@thecoralgarden.com"
+              href="mailto:Thecoral_purificadores@outlook.es"
               className="rounded-button bg-btn-primary px-6 py-3 text-sm font-medium tracking-wider text-text-secondary uppercase transition-colors hover:bg-btn-primary-hover"
             >
               Conocé más →
