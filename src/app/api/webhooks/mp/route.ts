@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import crypto from "crypto";
+import { sendOrderConfirmationEmail } from "@/lib/resend/send-order-confirmation";
 
 function verifyMPSignature(
   request: NextRequest,
@@ -90,13 +91,29 @@ export async function POST(request: NextRequest) {
 
     const newStatus = statusMap[mpStatus ?? ""] ?? "PENDING";
 
-    await prisma.order.update({
+    const updatedOrder = await prisma.order.update({
       where: { id: orderId },
       data: {
         status: newStatus,
         mpPaymentId: String(paymentId),
       },
+      include: { items: true },
     });
+
+    if (newStatus === "PAID") {
+      sendOrderConfirmationEmail({
+        customerName: updatedOrder.customerName,
+        customerEmail: updatedOrder.customerEmail,
+        items: updatedOrder.items.map((item) => ({
+          productName: item.productName,
+          quantity: item.quantity,
+          unitPrice: Number(item.unitPrice),
+        })),
+        shippingCost: Number(updatedOrder.shippingCost),
+        total: Number(updatedOrder.total),
+        orderId: updatedOrder.id,
+      }).catch((err) => console.error("[Order Email Error]", err));
+    }
 
     return NextResponse.json({ received: true });
   } catch (error) {

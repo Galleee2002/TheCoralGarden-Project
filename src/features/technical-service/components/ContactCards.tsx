@@ -24,7 +24,7 @@ export function ContactCards() {
               los 365 días del año para atender tu consulta.
             </p>
             <Link
-              href="https://wa.me/5491100000000"
+              href="https://wa.me/5491136647107"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-button bg-btn-primary px-6 py-3 text-sm font-medium tracking-wider text-text-secondary uppercase transition-colors hover:bg-btn-primary-hover"

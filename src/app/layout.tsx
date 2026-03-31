@@ -38,6 +38,10 @@ export const metadata: Metadata = {
     default: "TheCoralGarden | Soluciones en Purificación de Agua",
     template: "%s | TheCoralGarden",
   },
+  icons: {
+    icon: [{ url: "/LOGO.svg", type: "image/svg+xml" }],
+    shortcut: ["/LOGO.svg"],
+  },
   description:
     "Equipos de purificación y tratamiento de agua para acuarismo, cultivo indoor, uso doméstico, comercial e industrial. Servicio técnico 24/7 especializado en ósmosis inversa.",
   keywords: [

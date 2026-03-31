@@ -18,7 +18,6 @@ import { cn } from "@/lib/utils";
 
 const navLinks = [
   { href: "/productos", label: "PRODUCTOS" },
-  { href: "/ferias", label: "FERIAS" },
   { href: "/servicio-tecnico", label: "SERVICIO TÉCNICO" },
   { href: "/sobre-nosotros", label: "SOBRE NOSOTROS" },
 ];
