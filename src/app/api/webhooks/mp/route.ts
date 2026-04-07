@@ -91,16 +91,65 @@ export async function POST(request: NextRequest) {
 
     const newStatus = statusMap[mpStatus ?? ""] ?? "PENDING";
 
-    const updatedOrder = await prisma.order.update({
+    const existingOrder = await prisma.order.findUnique({
       where: { id: orderId },
-      data: {
-        status: newStatus,
-        mpPaymentId: String(paymentId),
-      },
       include: { items: true },
     });
 
-    if (newStatus === "PAID") {
+    if (!existingOrder) {
+      return NextResponse.json({ received: true });
+    }
+
+    if (newStatus === "PAID" && existingOrder.status !== "PAID") {
+      await prisma.$transaction(async (tx) => {
+        for (const item of existingOrder.items) {
+          const updatedProducts = await tx.product.updateMany({
+            where: {
+              id: item.productId,
+              stock: {
+                gte: item.quantity,
+              },
+            },
+            data: {
+              stock: {
+                decrement: item.quantity,
+              },
+            },
+          });
+
+          if (updatedProducts.count === 0) {
+            throw new Error(`Stock insuficiente para ${item.productName}`);
+          }
+        }
+
+        await tx.order.update({
+          where: { id: orderId },
+          data: {
+            status: newStatus,
+            mpPaymentId: String(paymentId),
+          },
+        });
+      });
+    } else {
+      await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          status: newStatus,
+          mpPaymentId: String(paymentId),
+        },
+      });
+    }
+
+    const updatedOrder = await prisma.order.findUnique({
+      where: { id: orderId },
+      include: { items: true },
+    });
+
+    if (!updatedOrder) {
+      return NextResponse.json({ received: true });
+    }
+
+    if (newStatus === "PAID" && existingOrder.status !== "PAID") {
       sendOrderConfirmationEmail({
         customerName: updatedOrder.customerName,
         customerEmail: updatedOrder.customerEmail,

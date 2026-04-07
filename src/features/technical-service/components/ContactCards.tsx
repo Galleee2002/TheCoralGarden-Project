@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export function ContactCards() {
   return (
@@ -11,9 +12,11 @@ export function ContactCards() {
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* WhatsApp Card */}
           <div className="flex flex-col items-start rounded-card border-2 border-border p-8">
-            <img
+            <Image
               src="/whatsapp-icon.svg"
               alt="WhatsApp"
+              width={48}
+              height={48}
               className="mb-4 h-12 w-12"
             />
             <h3 className="font-heading mb-3 text-2xl font-black text-text-primary md:text-3xl">
@@ -35,9 +38,11 @@ export function ContactCards() {
 
           {/* Gmail Card */}
           <div className="flex flex-col items-start rounded-card border-2 border-border p-8">
-            <img
+            <Image
               src="/gmail-icon.svg"
               alt="Gmail"
+              width={48}
+              height={48}
               className="mb-4 h-12 w-12"
             />
             <h3 className="font-heading mb-3 text-2xl font-black text-text-primary md:text-3xl">

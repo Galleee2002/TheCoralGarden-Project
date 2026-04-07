@@ -68,6 +68,7 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
   const router = useRouter();
   const [categoryList, setCategoryList] = useState<CategoryOption[]>(categories);
   const [activeTab, setActiveTab] = useState("basico");
+  const productId = defaultValues?.id;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -97,10 +98,15 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
   };
 
   const onSubmit = async (values: FormValues) => {
+    if (mode === "edit" && !productId) {
+      toast.error("No se encontró el producto a editar");
+      return;
+    }
+
     const result =
       mode === "create"
         ? await createProduct(values)
-        : await updateProduct({ ...values, id: defaultValues?.id! });
+        : await updateProduct({ ...values, id: productId as string });
 
     if (result?.data) {
       toast.success(

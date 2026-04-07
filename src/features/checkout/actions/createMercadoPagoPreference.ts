@@ -30,13 +30,26 @@ export const createMercadoPagoPreference = action
     const result = await preference.create({
       body: {
         external_reference: order.id,
-        items: order.items.map((item) => ({
-          id: item.productId,
-          title: item.productName,
-          quantity: item.quantity,
-          unit_price: Number(item.unitPrice),
-          currency_id: "ARS",
-        })),
+        items: [
+          ...order.items.map((item) => ({
+            id: item.productId,
+            title: item.productName,
+            quantity: item.quantity,
+            unit_price: Number(item.unitPrice),
+            currency_id: "ARS",
+          })),
+          ...(Number(order.shippingCost) > 0
+            ? [
+                {
+                  id: "shipping",
+                  title: "Costo de envío",
+                  quantity: 1,
+                  unit_price: Number(order.shippingCost),
+                  currency_id: "ARS" as const,
+                },
+              ]
+            : []),
+        ],
         payer: {
           name: order.customerName,
           email: order.customerEmail,

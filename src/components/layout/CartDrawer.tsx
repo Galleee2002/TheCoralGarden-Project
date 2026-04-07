@@ -7,7 +7,6 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/features/cart/store/cartStore";
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
@@ -76,6 +75,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                           size="icon"
                           className="h-7 w-7 shrink-0 text-muted-foreground hover:text-destructive"
                           onClick={() => removeItem(item.productId)}
+                          aria-label={`Eliminar ${item.name} del carrito`}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -90,6 +90,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                             onClick={() =>
                               updateQuantity(item.productId, item.quantity - 1)
                             }
+                            aria-label={`Restar una unidad de ${item.name}`}
                           >
                             <Minus className="h-3.5 w-3.5" />
                           </Button>
@@ -103,6 +104,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                             onClick={() =>
                               updateQuantity(item.productId, item.quantity + 1)
                             }
+                            aria-label={`Sumar una unidad de ${item.name}`}
                           >
                             <Plus className="h-3.5 w-3.5" />
                           </Button>

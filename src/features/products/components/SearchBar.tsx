@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams } from "next/navigation";
 import { useRef } from "react";
 import { Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 export function SearchBar() {
   const router = useRouter();
@@ -23,6 +24,9 @@ export function SearchBar() {
 
   return (
     <div className="relative flex w-full max-w-full items-center md:max-w-xs">
+      <label htmlFor="products-search" className="sr-only">
+        Buscar productos
+      </label>
       <button
         onClick={navigate}
         className="text-text-primary/50 hover:text-text-primary absolute left-3"
@@ -31,13 +35,17 @@ export function SearchBar() {
       >
         <Search className="h-4 w-4" />
       </button>
-      <input
+      <Input
+        id="products-search"
+        name="q"
         ref={inputRef}
         type="text"
         defaultValue={searchParams.get("q") ?? ""}
-        placeholder="Buscar productos..."
+        aria-label="Buscar productos"
+        autoComplete="off"
+        placeholder="Buscar productos…"
         onKeyDown={(e) => e.key === "Enter" && navigate()}
-        className="bg-card-light text-text-primary placeholder:text-text-primary/50 focus:ring-btn-primary/30 w-full rounded-lg py-2 pr-4 pl-9 text-sm focus:ring-2 focus:outline-none"
+        className="bg-card-light text-text-primary placeholder:text-text-primary/50 focus:ring-btn-primary/30 w-full rounded-lg py-2 pr-4 pl-9 text-sm focus:ring-2"
       />
     </div>
   );

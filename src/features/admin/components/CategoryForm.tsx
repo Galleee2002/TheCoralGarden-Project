@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { z } from "zod";
 import {
@@ -37,6 +37,7 @@ interface CategoryFormProps {
 
 export function CategoryForm({ defaultValues, mode }: CategoryFormProps) {
   const router = useRouter();
+  const categoryId = defaultValues?.id;
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -49,10 +50,15 @@ export function CategoryForm({ defaultValues, mode }: CategoryFormProps) {
   });
 
   const onSubmit = async (values: FormValues) => {
+    if (mode === "edit" && !categoryId) {
+      toast.error("No se encontró la categoría a editar");
+      return;
+    }
+
     const result =
       mode === "create"
         ? await createCategory(values)
-        : await updateCategory({ ...values, id: defaultValues?.id! });
+        : await updateCategory({ ...values, id: categoryId as string });
 
     if (result?.data) {
       toast.success(
@@ -65,7 +71,10 @@ export function CategoryForm({ defaultValues, mode }: CategoryFormProps) {
     }
   };
 
-  const imageUrl = form.watch("imageUrl");
+  const imageUrl = useWatch({
+    control: form.control,
+    name: "imageUrl",
+  });
 
   return (
     <Form {...form}>

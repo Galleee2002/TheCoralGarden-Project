@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/safe-action";
 import type { OrderStatus } from "@/types/enums";
 
 interface GetOrdersParams {
@@ -12,6 +13,8 @@ export async function getOrders({
   page = 1,
   pageSize = 20,
 }: GetOrdersParams = {}) {
+  await requireAdmin();
+
   const where = status ? { status } : {};
 
   const [rawOrders, total] = await Promise.all([

@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/safe-action";
 import { Card, CardContent } from "@/components/ui/card";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Package, ShoppingBag, TrendingUp } from "lucide-react";
@@ -7,6 +8,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Admin — Dashboard" };
 
 async function getDashboardStats() {
+  await requireAdmin();
+
   const [totalOrders, totalProducts, revenue] =
     await Promise.all([
       prisma.order.count(),

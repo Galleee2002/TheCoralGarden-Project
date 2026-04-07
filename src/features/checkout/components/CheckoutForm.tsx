@@ -74,11 +74,8 @@ export function CheckoutForm() {
         ...values,
         items: items.map((item) => ({
           productId: item.productId,
-          productName: item.name,
           quantity: item.quantity,
-          unitPrice: item.price,
         })),
-        shippingCost: SHIPPING_COST,
       });
 
       if (!orderResult?.data?.orderId) {
@@ -147,6 +144,8 @@ export function CheckoutForm() {
                       <Input
                         type="email"
                         placeholder="juan@email.com"
+                        autoComplete="email"
+                        spellCheck={false}
                         {...field}
                       />
                     </FormControl>
@@ -161,7 +160,13 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Teléfono</FormLabel>
                     <FormControl>
-                      <Input placeholder="+54 9 11 ..." {...field} />
+                      <Input
+                        type="tel"
+                        inputMode="tel"
+                        autoComplete="tel"
+                        placeholder="+54 9 11…"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -174,7 +179,11 @@ export function CheckoutForm() {
                   <FormItem className="sm:col-span-2">
                     <FormLabel>Calle y número</FormLabel>
                     <FormControl>
-                      <Input placeholder="Av. Corrientes 1234" {...field} />
+                      <Input
+                        autoComplete="street-address"
+                        placeholder="Av. Corrientes 1234"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -187,7 +196,11 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Ciudad</FormLabel>
                     <FormControl>
-                      <Input placeholder="Buenos Aires" {...field} />
+                      <Input
+                        autoComplete="address-level2"
+                        placeholder="Buenos Aires"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -200,7 +213,11 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Provincia</FormLabel>
                     <FormControl>
-                      <Input placeholder="Buenos Aires" {...field} />
+                      <Input
+                        autoComplete="address-level1"
+                        placeholder="Buenos Aires"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -213,7 +230,12 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Código postal</FormLabel>
                     <FormControl>
-                      <Input placeholder="1001" {...field} />
+                      <Input
+                        autoComplete="postal-code"
+                        inputMode="numeric"
+                        placeholder="1001"
+                        {...field}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

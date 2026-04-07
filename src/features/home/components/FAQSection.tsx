@@ -64,7 +64,7 @@ export function FAQSection() {
           <p className="mt-8 text-center text-white/70">
             ¿Tenés más preguntas?{" "}
             <a
-              href="https://wa.me/5491100000000"
+              href="https://wa.me/5491136647107"
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold text-text-secondary hover:underline"

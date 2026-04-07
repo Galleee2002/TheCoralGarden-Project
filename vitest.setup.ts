@@ -2,6 +2,39 @@ import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import React from "react";
 
+const storageFactory = () => {
+  let store = new Map<string, string>();
+
+  return {
+    getItem: (key: string) => store.get(key) ?? null,
+    setItem: (key: string, value: string) => {
+      store.set(key, value);
+    },
+    removeItem: (key: string) => {
+      store.delete(key);
+    },
+    clear: () => {
+      store = new Map<string, string>();
+    },
+    key: (index: number) => Array.from(store.keys())[index] ?? null,
+    get length() {
+      return store.size;
+    },
+  };
+};
+
+const localStorageMock = storageFactory();
+
+Object.defineProperty(window, "localStorage", {
+  value: localStorageMock,
+  writable: true,
+});
+
+Object.defineProperty(globalThis, "localStorage", {
+  value: localStorageMock,
+  writable: true,
+});
+
 // Mock next/navigation (no Next.js runtime in Vitest)
 vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/"),
@@ -12,8 +45,8 @@ vi.mock("next/navigation", () => ({
 // Mock next/image (avoid optimization errors)
 vi.mock("next/image", () => ({
   default: (props: React.ImgHTMLAttributes<HTMLImageElement>) => {
-    const { fill: _fill, ...rest } = props as React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean };
-    // eslint-disable-next-line @next/next/no-img-element
+    const rest = { ...props } as React.ImgHTMLAttributes<HTMLImageElement>;
+    delete (rest as React.ImgHTMLAttributes<HTMLImageElement> & { fill?: boolean }).fill;
     return React.createElement("img", rest);
   },
 }));
@@ -32,4 +65,5 @@ vi.mock("next/link", () => ({
 // Clear mocks between tests
 afterEach(() => {
   vi.clearAllMocks();
+  localStorageMock.clear();
 });

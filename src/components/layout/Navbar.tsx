@@ -42,12 +42,6 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isTransparentPage]);
-
-  // Close mobile menu on route change
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   return (
     <>
       <header
@@ -196,6 +190,7 @@ export function Navbar() {
                 <Link
                   key={link.href}
                   href={link.href}
+                  onClick={() => setMobileOpen(false)}
                   className={cn(
                     "py-3 text-sm font-bold tracking-wider transition-colors",
                     "text-white/90 hover:text-white"
@@ -207,6 +202,7 @@ export function Navbar() {
               <div className="mt-2 flex gap-2 border-t border-white/10 pt-4">
                 <Link
                   href="/admin"
+                  onClick={() => setMobileOpen(false)}
                   className={cn(
                     "flex items-center gap-2 text-sm font-medium",
                     "text-white/70"

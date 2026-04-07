@@ -6,10 +6,10 @@ import { z } from "zod";
 
 const orderItemSchema = z.object({
   productId: z.string(),
-  productName: z.string(),
   quantity: z.number().int().min(1),
-  unitPrice: z.number().positive(),
 });
+
+const SHIPPING_COST = 0;
 
 const createOrderSchema = z.object({
   customerName: z.string().min(2, "Nombre requerido"),
@@ -20,17 +20,55 @@ const createOrderSchema = z.object({
   customerProvince: z.string().min(2, "Provincia requerida"),
   customerZip: z.string().min(3, "Código postal requerido"),
   items: z.array(orderItemSchema).min(1, "El carrito está vacío"),
-  shippingCost: z.number().min(0),
 });
 
 export const createOrder = action
   .schema(createOrderSchema)
   .action(async ({ parsedInput }) => {
-    const subtotal = parsedInput.items.reduce(
+    const productIds = [...new Set(parsedInput.items.map((item) => item.productId))];
+    const products = await prisma.product.findMany({
+      where: {
+        id: { in: productIds },
+        active: true,
+      },
+      select: {
+        id: true,
+        name: true,
+        price: true,
+        stock: true,
+      },
+    });
+
+    if (products.length !== productIds.length) {
+      throw new Error("Uno o más productos ya no están disponibles.");
+    }
+
+    const productMap = new Map(products.map((product) => [product.id, product]));
+
+    const items = parsedInput.items.map((item) => {
+      const product = productMap.get(item.productId);
+
+      if (!product) {
+        throw new Error("Uno o más productos ya no están disponibles.");
+      }
+
+      if (product.stock < item.quantity) {
+        throw new Error(`No hay stock suficiente para ${product.name}.`);
+      }
+
+      return {
+        productId: product.id,
+        productName: product.name,
+        quantity: item.quantity,
+        unitPrice: Number(product.price),
+      };
+    });
+
+    const subtotal = items.reduce(
       (sum, item) => sum + item.unitPrice * item.quantity,
       0,
     );
-    const total = subtotal + parsedInput.shippingCost;
+    const total = subtotal + SHIPPING_COST;
 
     const order = await prisma.order.create({
       data: {
@@ -42,10 +80,10 @@ export const createOrder = action
         customerProvince: parsedInput.customerProvince,
         customerZip: parsedInput.customerZip,
         subtotal,
-        shippingCost: parsedInput.shippingCost,
+        shippingCost: SHIPPING_COST,
         total,
         items: {
-          create: parsedInput.items.map((item) => ({
+          create: items.map((item) => ({
             productId: item.productId,
             productName: item.productName,
             quantity: item.quantity,

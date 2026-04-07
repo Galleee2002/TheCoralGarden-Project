@@ -1,4 +1,5 @@
 import { getSetting } from "@/features/admin/actions/settingActions";
+import { requireAdmin } from "@/lib/safe-action";
 import { SettingImageCard } from "@/features/admin/components/settings/SettingImageCard";
 import { SettingSlideCard } from "@/features/admin/components/settings/SettingSlideCard";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
@@ -8,6 +9,8 @@ import type { Metadata } from "next";
 export const metadata: Metadata = { title: "Admin — Configuración" };
 
 export default async function ConfiguracionPage() {
+  await requireAdmin();
+
   const [
     heroBannerUrl,
     slide1Title,

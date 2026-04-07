@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import { useState } from "react";
+import { useReducedMotion } from "framer-motion";
 import { cn } from "@/lib/utils";
 
 const specialties = [
@@ -33,15 +34,16 @@ const specialties = [
 
 export function SpecialtiesSection() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const prefersReducedMotion = useReducedMotion();
 
   return (
     <section className="bg-bg-primary overflow-hidden py-section-mobile md:py-section">
       <div className="container mx-auto px-4">
         <motion.h2 
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={prefersReducedMotion ? false : { opacity: 0, y: 20 }}
+          whileInView={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={prefersReducedMotion ? undefined : { duration: 0.6 }}
           className="font-heading mb-10 text-[48px] uppercase leading-none text-text-primary md:mb-14 md:text-[64px]"
         >
           NUESTRAS ESPECIALIDADES
@@ -61,12 +63,13 @@ export function SpecialtiesSection() {
                 specialty.bg
               )}
             >
-              <img
+              <motion.img
                 src={specialty.image}
                 alt={specialty.label}
                 loading="lazy"
                 decoding="async"
                 className="absolute inset-0 h-full w-full object-cover mix-blend-overlay opacity-60"
+                animate={prefersReducedMotion ? undefined : { opacity: 0.6 }}
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-8">
@@ -87,12 +90,23 @@ export function SpecialtiesSection() {
             const isHovered = hoveredIndex === i;
             
             return (
-              <motion.div
+              <motion.button
                 key={specialty.id}
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
+                onFocus={() => setHoveredIndex(i)}
+                onBlur={() => setHoveredIndex(null)}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    setHoveredIndex((current) => (current === i ? null : i));
+                  }
+                }}
+                type="button"
+                aria-pressed={isHovered}
+                aria-label={`Mostrar detalle de ${specialty.label}`}
                 className={cn(
-                  "relative flex h-full cursor-pointer flex-col overflow-hidden rounded-card transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)]",
+                  "relative flex h-full cursor-pointer flex-col overflow-hidden rounded-card text-left transition-all duration-700 ease-[cubic-bezier(0.32,0.72,0,1)] focus-visible:ring-2 focus-visible:ring-white/80 focus-visible:ring-offset-2 focus-visible:ring-offset-bg-primary",
                   isHovered ? "flex-[3]" : "flex-1"
                 )}
                 layout
@@ -108,12 +122,16 @@ export function SpecialtiesSection() {
                     loading="lazy"
                     decoding="async"
                     className="absolute inset-0 h-full w-full object-cover"
-                    animate={{
-                      scale: isHovered ? 1.05 : 1.1,
-                      opacity: isHovered ? 0.6 : 0.4,
-                      filter: isHovered ? "grayscale(0%)" : "grayscale(30%)",
-                    }}
-                    transition={{ duration: 0.7 }}
+                    animate={
+                      prefersReducedMotion
+                        ? undefined
+                        : {
+                            scale: isHovered ? 1.05 : 1.1,
+                            opacity: isHovered ? 0.6 : 0.4,
+                            filter: isHovered ? "grayscale(0%)" : "grayscale(30%)",
+                          }
+                    }
+                    transition={prefersReducedMotion ? undefined : { duration: 0.7 }}
                   />
                   <div className={cn(
                     "absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-500",
@@ -155,11 +173,15 @@ export function SpecialtiesSection() {
                       x: isHovered ? 0 : -40,
                       opacity: isHovered ? 1 : 0,
                     }}
-                    transition={{ 
-                      duration: 0.6, 
-                      ease: [0.32, 0.72, 0, 1],
-                      delay: isHovered ? 0.2 : 0 
-                    }}
+                    transition={
+                      prefersReducedMotion
+                        ? undefined
+                        : {
+                            duration: 0.6,
+                            ease: [0.32, 0.72, 0, 1],
+                            delay: isHovered ? 0.2 : 0,
+                          }
+                    }
                     className="max-w-xl"
                   >
                     <div className="mb-6 flex items-center gap-4">
@@ -177,13 +199,13 @@ export function SpecialtiesSection() {
                       {specialty.description}
                     </p>
                     
-                    <motion.button
-                      whileHover={{ x: 10 }}
+                    <motion.span
+                      whileHover={prefersReducedMotion ? undefined : { x: 10 }}
                       className="font-body mt-10 flex items-center gap-3 text-xs font-bold uppercase tracking-[0.2em] text-white group"
                     >
-                      Saber más 
+                      Ver detalle
                       <span className="h-[1px] w-8 bg-white transition-all group-hover:w-12" />
-                    </motion.button>
+                    </motion.span>
                   </motion.div>
                 </div>
                 
@@ -193,9 +215,9 @@ export function SpecialtiesSection() {
                   animate={{
                     borderColor: isHovered ? "rgba(255,255,255,0.1)" : "rgba(255,255,255,0)",
                   }}
-                  transition={{ duration: 0.5 }}
+                  transition={prefersReducedMotion ? undefined : { duration: 0.5 }}
                 />
-              </motion.div>
+              </motion.button>
             );
           })}
         </div>

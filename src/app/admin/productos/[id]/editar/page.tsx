@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma/client";
+import { requireAdmin } from "@/lib/safe-action";
 import { getCategories } from "@/features/products/actions/getCategories";
 import { ProductFormTabs } from "@/features/admin/components/products/ProductFormTabs";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
@@ -12,6 +13,8 @@ interface EditProductPageProps {
 }
 
 export default async function EditProductPage({ params }: EditProductPageProps) {
+  await requireAdmin();
+
   const { id } = await params;
 
   const [product, categories] = await Promise.all([
