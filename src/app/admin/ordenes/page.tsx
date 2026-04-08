@@ -14,7 +14,7 @@ export default async function AdminOrdersPage() {
       <div
         role="region"
         aria-label="Tabla de órdenes"
-        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
+        className="rounded-card border border-border/50 p-3 shadow-sm sm:p-4 lg:overflow-x-auto"
       >
         <OrdersTable orders={orders} />
       </div>

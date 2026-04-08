@@ -130,6 +130,7 @@ export function CategoryDialog({
                   <FormLabel>Nombre</FormLabel>
                   <FormControl>
                     <Input
+                      className="min-h-11"
                       placeholder="Filtros de agua"
                       {...field}
                       onChange={(e) => {
@@ -152,7 +153,7 @@ export function CategoryDialog({
                 <FormItem>
                   <FormLabel>Slug (URL)</FormLabel>
                   <FormControl>
-                    <Input placeholder="filtros-de-agua" {...field} />
+                    <Input className="min-h-11" placeholder="filtros-de-agua" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -169,23 +170,28 @@ export function CategoryDialog({
                     <span className="text-muted-foreground">(opcional)</span>
                   </FormLabel>
                   <FormControl>
-                    <Textarea rows={3} placeholder="Descripción breve..." {...field} />
+                    <Textarea rows={3} className="min-h-24" placeholder="Descripción breve..." {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
 
-            <div className="flex justify-end gap-2 pt-2">
+            <div className="flex flex-col gap-2 pt-2 sm:flex-row sm:justify-end">
               <Button
                 type="button"
                 variant="outline"
                 onClick={() => onOpenChange(false)}
                 disabled={form.formState.isSubmitting}
+                className="min-h-11 w-full sm:w-auto"
               >
                 Cancelar
               </Button>
-              <Button type="submit" disabled={form.formState.isSubmitting}>
+              <Button
+                type="submit"
+                disabled={form.formState.isSubmitting}
+                className="min-h-11 w-full sm:w-auto"
+              >
                 {form.formState.isSubmitting && (
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 )}

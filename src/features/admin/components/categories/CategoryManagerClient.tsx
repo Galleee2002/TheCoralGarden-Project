@@ -77,67 +77,126 @@ export function CategoryManagerClient({ categories: initial }: CategoryManagerCl
   return (
     <>
       <div className="mb-4 flex justify-end">
-        <Button onClick={() => setDialog({ type: "create" })}>
-          <Plus className="mr-2 h-4 w-4" />
+        <Button
+          onClick={() => setDialog({ type: "create" })}
+          className="min-h-11 w-full sm:w-auto"
+        >
+          <Plus className="h-4 w-4" />
           Nueva categoría
         </Button>
       </div>
 
-      <div
-        role="region"
-        aria-label="Tabla de categorías"
-        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
-      >
-        <Table>
-          <TableHeader className="bg-muted/30">
-            <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Slug</TableHead>
-              <TableHead>Descripción</TableHead>
-              <TableHead>Productos</TableHead>
-              <TableHead>Acciones</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {categories.length === 0 ? (
-              <EmptyState colSpan={5} message="No hay categorías cargadas" />
-            ) : (
-              categories.map((cat) => (
-                <TableRow key={cat.id}>
-                  <TableCell className="font-medium">{cat.name}</TableCell>
-                  <TableCell className="text-muted-foreground">{cat.slug}</TableCell>
-                  <TableCell className="max-w-[240px] truncate text-muted-foreground">
-                    {cat.description ?? "—"}
-                  </TableCell>
-                  <TableCell>{cat._count.products}</TableCell>
-                  <TableCell>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setDialog({ type: "edit", category: cat })}
-                      >
-                        <Pencil className="mr-1.5 h-3.5 w-3.5" />
-                        Editar
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:bg-destructive hover:text-white hover:border-destructive [&>svg]:hover:text-white"
-                        onClick={() =>
-                          setDeleteTarget({ id: cat.id, name: cat.name })
-                        }
-                      >
-                        <Trash2 className="mr-1.5 h-3.5 w-3.5" />
-                        Eliminar
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+      <div role="region" aria-label="Categorías">
+        <div className="space-y-3 lg:hidden">
+          {categories.length === 0 ? (
+            <div className="rounded-card border border-border/50 bg-card p-6 text-center text-muted-foreground shadow-sm">
+              No hay categorías cargadas
+            </div>
+          ) : (
+            categories.map((cat) => (
+              <article
+                key={cat.id}
+                className="rounded-card border border-border/50 bg-card p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-text-primary break-words">
+                      {cat.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground break-words">
+                      {cat.slug}
+                    </p>
+                  </div>
+                  <span className="rounded-full border border-border bg-card-light px-2.5 py-1 text-xs font-semibold text-text-primary">
+                    {cat._count.products} prod.
+                  </span>
+                </div>
+
+                <div className="mt-4 rounded-dropdown bg-card-light p-3 text-sm">
+                  <p className="text-xs font-medium text-muted-foreground">Descripción</p>
+                  <p className="mt-1 text-text-primary break-words">
+                    {cat.description ?? "Sin descripción"}
+                  </p>
+                </div>
+
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Button
+                    variant="outline"
+                    className="min-h-11 flex-1 justify-center"
+                    onClick={() => setDialog({ type: "edit", category: cat })}
+                  >
+                    <Pencil className="h-4 w-4" />
+                    Editar
+                  </Button>
+                  <Button
+                    variant="outline"
+                    className="min-h-11 flex-1 justify-center border-destructive/50 text-destructive hover:bg-destructive hover:text-white hover:border-destructive [&>svg]:hover:text-white"
+                    onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                    Eliminar
+                  </Button>
+                </div>
+              </article>
+            ))
+          )}
+        </div>
+
+        <div className="hidden lg:block overflow-x-auto rounded-card border border-border/50 shadow-sm">
+          <Table className="min-w-[940px]">
+            <TableHeader className="bg-muted/30">
+              <TableRow>
+                <TableHead className="w-[18%]" noWrap={false}>Nombre</TableHead>
+                <TableHead className="w-[18%]" noWrap={false}>Slug</TableHead>
+                <TableHead className="w-[34%]" noWrap={false}>Descripción</TableHead>
+                <TableHead className="w-[10%]">Productos</TableHead>
+                <TableHead className="w-[20%] text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {categories.length === 0 ? (
+                <EmptyState colSpan={5} message="No hay categorías cargadas" />
+              ) : (
+                categories.map((cat) => (
+                  <TableRow key={cat.id}>
+                    <TableCell className="font-medium" noWrap={false}>
+                      {cat.name}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground" noWrap={false}>
+                      {cat.slug}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground" noWrap={false}>
+                      <p className="line-clamp-2 max-w-[360px]">{cat.description ?? "—"}</p>
+                    </TableCell>
+                    <TableCell>{cat._count.products}</TableCell>
+                    <TableCell>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-9"
+                          onClick={() => setDialog({ type: "edit", category: cat })}
+                        >
+                          <Pencil className="mr-1.5 h-3.5 w-3.5" />
+                          Editar
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="min-h-9 text-destructive hover:bg-destructive hover:text-white hover:border-destructive [&>svg]:hover:text-white"
+                          onClick={() => setDeleteTarget({ id: cat.id, name: cat.name })}
+                        >
+                          <Trash2 className="mr-1.5 h-3.5 w-3.5" />
+                          Eliminar
+                        </Button>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
+        </div>
       </div>
 
       {/* Create/Edit dialog */}

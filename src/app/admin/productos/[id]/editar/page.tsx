@@ -30,7 +30,7 @@ export default async function EditProductPage({ params }: EditProductPageProps) 
         title="Editar producto"
         description={`Modificando: ${product.name}`}
       />
-      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+      <div className="rounded-card border border-border/50 bg-card p-4 shadow-sm sm:p-6">
         <ProductFormTabs
           categories={categories}
           mode="edit"

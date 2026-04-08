@@ -83,8 +83,9 @@ export function ProductTabMedia() {
                           <button
                             type="button"
                             onClick={() => open()}
-                            className="rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
+                            className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
                             title="Reemplazar imagen"
+                            aria-label="Reemplazar imagen principal"
                           >
                             <RefreshCw className="h-3 w-3" />
                           </button>
@@ -93,8 +94,9 @@ export function ProductTabMedia() {
                       <button
                         type="button"
                         onClick={removeMainImage}
-                        className="rounded-full bg-black/60 p-1 text-white transition-colors hover:bg-black/80"
+                        className="inline-flex min-h-9 min-w-9 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
                         title="Quitar imagen"
+                        aria-label="Quitar imagen principal"
                       >
                         <X className="h-3 w-3" />
                       </button>
@@ -115,7 +117,12 @@ export function ProductTabMedia() {
                     options={{ maxFiles: 1, resourceType: "image" }}
                   >
                     {({ open }) => (
-                      <Button type="button" variant="outline" onClick={() => open()}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => open()}
+                        className="min-h-11"
+                      >
                         <ImagePlus className="mr-2 h-4 w-4" />
                         Subir imagen principal
                       </Button>
@@ -150,7 +157,8 @@ export function ProductTabMedia() {
                         <button
                           type="button"
                           onClick={() => removePreview(i)}
-                          className="absolute right-1 top-1 rounded-full bg-black/60 p-0.5 text-white transition-colors hover:bg-black/80"
+                          className="absolute right-1 top-1 inline-flex min-h-8 min-w-8 items-center justify-center rounded-full bg-black/60 text-white transition-colors hover:bg-black/80"
+                          aria-label={`Quitar imagen preview ${i + 1}`}
                         >
                           <X className="h-3 w-3" />
                         </button>
@@ -174,7 +182,12 @@ export function ProductTabMedia() {
                     options={{ maxFiles: 1, resourceType: "image" }}
                   >
                     {({ open }) => (
-                      <Button type="button" variant="outline" onClick={() => open()}>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => open()}
+                        className="min-h-11"
+                      >
                         <ImagePlus className="mr-2 h-4 w-4" />
                         Agregar imagen preview
                         {previewImages.length > 0 && (

@@ -9,7 +9,7 @@ interface AdminPageHeaderProps {
 export function AdminPageHeader({ title, description, action }: AdminPageHeaderProps) {
   return (
     <>
-      <div className="mb-8 flex items-start justify-between gap-4">
+      <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <h1 className="font-heading text-3xl font-black text-text-primary leading-tight">
             {title}
@@ -18,7 +18,7 @@ export function AdminPageHeader({ title, description, action }: AdminPageHeaderP
             <p className="mt-1 text-sm text-muted-foreground">{description}</p>
           )}
         </div>
-        {action && <div className="shrink-0">{action}</div>}
+        {action && <div className="w-full sm:w-auto shrink-0">{action}</div>}
       </div>
       <Separator className="mb-6" />
     </>

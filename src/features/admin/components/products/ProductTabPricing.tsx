@@ -27,6 +27,7 @@ export function ProductTabPricing() {
                   type="number"
                   min={0}
                   step={0.01}
+                  className="min-h-11"
                   {...field}
                   onChange={(e) => field.onChange(e.target.valueAsNumber)}
                 />
@@ -45,6 +46,7 @@ export function ProductTabPricing() {
                 <Input
                   type="number"
                   min={0}
+                  className="min-h-11"
                   {...field}
                   onChange={(e) => field.onChange(e.target.valueAsNumber)}
                 />

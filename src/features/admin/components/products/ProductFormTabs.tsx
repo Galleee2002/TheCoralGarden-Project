@@ -132,31 +132,33 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
   const pricingHasError = !!(errors.price || errors.stock);
   const mediaHasError = !!errors.images;
   const specsHasError = !!errors.specifications;
+  const tabTriggerClassName =
+    "relative min-h-11 shrink-0 rounded-card px-3 data-[state=active]:rounded-card";
 
   return (
     <FormProvider {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList>
-            <TabsTrigger value="basico" className="relative">
+          <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap rounded-card bg-card-light p-1">
+            <TabsTrigger value="basico" className={tabTriggerClassName}>
               Básico
               {basicHasError && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
               )}
             </TabsTrigger>
-            <TabsTrigger value="precios" className="relative">
+            <TabsTrigger value="precios" className={tabTriggerClassName}>
               Precios
               {pricingHasError && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
               )}
             </TabsTrigger>
-            <TabsTrigger value="media" className="relative">
+            <TabsTrigger value="media" className={tabTriggerClassName}>
               Imágenes
               {mediaHasError && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
               )}
             </TabsTrigger>
-            <TabsTrigger value="specs" className="relative">
+            <TabsTrigger value="specs" className={tabTriggerClassName}>
               Especificaciones
               {specsHasError && (
                 <span className="absolute right-1 top-1 h-2 w-2 rounded-full bg-destructive" />
@@ -185,14 +187,23 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
           </TabsContent>
         </Tabs>
 
-        <div className="flex gap-4 border-t pt-4">
-          <Button type="submit" disabled={form.formState.isSubmitting}>
+        <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row sm:gap-4">
+          <Button
+            type="submit"
+            disabled={form.formState.isSubmitting}
+            className="min-h-11 w-full sm:w-auto"
+          >
             {form.formState.isSubmitting && (
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
             )}
             {mode === "create" ? "Crear producto" : "Guardar cambios"}
           </Button>
-          <Button type="button" variant="outline" onClick={() => router.back()}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => router.back()}
+            className="min-h-11 w-full sm:w-auto"
+          >
             Cancelar
           </Button>
         </div>

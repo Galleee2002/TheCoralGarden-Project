@@ -98,13 +98,13 @@ export function ProductTabBasic({
         name="categoryId"
         render={({ field }) => (
           <FormItem>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <FormLabel>Categoría</FormLabel>
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="h-auto py-0 text-xs text-muted-foreground hover:text-text-primary"
+                className="min-h-11 px-2 text-xs text-muted-foreground hover:text-text-primary"
                 onClick={() => setDialogOpen(true)}
               >
                 <Plus className="mr-1 h-3 w-3" />
@@ -130,18 +130,18 @@ export function ProductTabBasic({
         )}
       />
 
-      <div className="flex gap-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:gap-6">
         <FormField
           control={form.control}
           name="featured"
           render={({ field }) => (
-            <FormItem className="flex items-center gap-2">
+            <FormItem className="flex min-h-11 items-center gap-2">
               <FormControl>
                 <input
                   type="checkbox"
                   checked={field.value}
                   onChange={field.onChange}
-                  className="h-4 w-4 accent-primary"
+                  className="h-5 w-5 accent-primary"
                 />
               </FormControl>
               <FormLabel className="!mt-0">Destacado</FormLabel>
@@ -152,13 +152,13 @@ export function ProductTabBasic({
           control={form.control}
           name="active"
           render={({ field }) => (
-            <FormItem className="flex items-center gap-2">
+            <FormItem className="flex min-h-11 items-center gap-2">
               <FormControl>
                 <input
                   type="checkbox"
                   checked={field.value}
                   onChange={field.onChange}
-                  className="h-4 w-4 accent-primary"
+                  className="h-5 w-5 accent-primary"
                 />
               </FormControl>
               <FormLabel className="!mt-0">Activo</FormLabel>

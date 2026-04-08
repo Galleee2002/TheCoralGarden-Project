@@ -14,7 +14,7 @@ export default async function NewProductPage() {
         title="Nuevo producto"
         description="Agregá un nuevo producto al catálogo"
       />
-      <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+      <div className="rounded-card border border-border/50 bg-card p-4 shadow-sm sm:p-6">
         <ProductFormTabs categories={categories} mode="create" />
       </div>
     </div>

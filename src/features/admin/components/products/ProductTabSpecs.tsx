@@ -45,15 +45,17 @@ export function ProductTabSpecs() {
                   <FormControl>
                     <Input
                       placeholder={`Especificación ${index + 1}`}
+                      className="min-h-11"
                       {...inputField}
                     />
                   </FormControl>
                   <Button
                     type="button"
                     variant="outline"
-                    size="icon"
+                    size="icon-sm"
+                    className="min-h-11 min-w-[44px]"
                     onClick={() => remove(index)}
-                    aria-label="Eliminar especificación"
+                    aria-label={`Eliminar especificación ${index + 1}`}
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -69,6 +71,7 @@ export function ProductTabSpecs() {
         type="button"
         variant="outline"
         size="sm"
+        className="min-h-11"
         onClick={() => append("")}
       >
         <Plus className="mr-2 h-4 w-4" />

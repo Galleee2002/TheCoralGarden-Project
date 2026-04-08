@@ -16,7 +16,7 @@ import { DeleteProductButton } from "@/features/admin/components/products/Delete
 import { ProductCategoryFilter } from "@/features/admin/components/products/ProductCategoryFilter";
 import { Suspense } from "react";
 import Link from "next/link";
-import { Plus } from "lucide-react";
+import { Plus, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Productos" };
@@ -44,9 +44,9 @@ export default async function AdminProductsPage({
         title="Productos"
         description="Catálogo de productos de la tienda"
         action={
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto min-h-11">
             <Link href="/admin/productos/nuevo">
-              <Plus className="mr-2 h-4 w-4" />
+              <Plus className="h-4 w-4" />
               Nuevo producto
             </Link>
           </Button>
@@ -60,20 +60,82 @@ export default async function AdminProductsPage({
         />
       </Suspense>
 
+      <div className="lg:hidden space-y-3">
+        {products.length === 0 ? (
+          <div className="rounded-card border border-border/50 bg-card p-6 text-center text-muted-foreground shadow-sm">
+            No hay productos cargados
+          </div>
+        ) : (
+          products.map((product) => (
+            <article
+              key={product.id}
+              className="rounded-card border border-border/50 bg-card p-4 shadow-sm"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <h3 className="text-base font-semibold text-text-primary break-words">
+                    {product.name}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground break-words">
+                    {product.category.name}
+                  </p>
+                </div>
+                <StatusBadge
+                  variant={product.active ? "active" : "inactive"}
+                  label={product.active ? "Activo" : "Inactivo"}
+                />
+              </div>
+
+              <div className="mt-4 grid grid-cols-2 gap-3 rounded-dropdown bg-card-light p-3 text-sm">
+                <div>
+                  <p className="text-muted-foreground">Precio</p>
+                  <p className="font-semibold text-text-primary">
+                    {formatPrice(product.price)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-muted-foreground">Stock</p>
+                  <p className="font-semibold text-text-primary">{product.stock}</p>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2">
+                <Button
+                  asChild
+                  variant="outline"
+                  className="min-h-11 flex-1 justify-center"
+                >
+                  <Link href={`/admin/productos/${product.id}/editar`}>
+                    Editar
+                    <ChevronRight className="h-4 w-4" />
+                  </Link>
+                </Button>
+                <DeleteProductButton
+                  productId={product.id}
+                  productName={product.name}
+                  showLabel
+                  className="min-h-11 flex-1 justify-center border border-destructive/40 bg-destructive/5 hover:bg-destructive/10"
+                />
+              </div>
+            </article>
+          ))
+        )}
+      </div>
+
       <div
         role="region"
         aria-label="Tabla de productos"
-        className="overflow-x-auto rounded-card border border-border/50 shadow-sm"
+        className="hidden lg:block overflow-x-auto rounded-card border border-border/50 shadow-sm"
       >
-        <Table>
+        <Table className="min-w-[860px]">
           <TableHeader className="bg-muted/30">
             <TableRow>
-              <TableHead>Nombre</TableHead>
-              <TableHead>Categoría</TableHead>
-              <TableHead>Precio</TableHead>
-              <TableHead>Stock</TableHead>
-              <TableHead>Estado</TableHead>
-              <TableHead>Acciones</TableHead>
+              <TableHead className="w-[28%]" noWrap={false}>Nombre</TableHead>
+              <TableHead className="w-[18%]" noWrap={false}>Categoría</TableHead>
+              <TableHead className="w-[16%]">Precio</TableHead>
+              <TableHead className="w-[10%]">Stock</TableHead>
+              <TableHead className="w-[12%]">Estado</TableHead>
+              <TableHead className="w-[16%] text-right">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -82,8 +144,10 @@ export default async function AdminProductsPage({
             ) : (
               products.map((product) => (
                 <TableRow key={product.id}>
-                  <TableCell className="font-medium">{product.name}</TableCell>
-                  <TableCell>{product.category.name}</TableCell>
+                  <TableCell className="font-medium" noWrap={false}>
+                    {product.name}
+                  </TableCell>
+                  <TableCell noWrap={false}>{product.category.name}</TableCell>
                   <TableCell>{formatPrice(product.price)}</TableCell>
                   <TableCell>{product.stock}</TableCell>
                   <TableCell>
@@ -93,8 +157,8 @@ export default async function AdminProductsPage({
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button asChild variant="outline" size="sm">
+                    <div className="flex items-center justify-end gap-2">
+                      <Button asChild variant="outline" size="sm" className="min-h-9">
                         <Link href={`/admin/productos/${product.id}/editar`}>
                           Editar
                         </Link>
