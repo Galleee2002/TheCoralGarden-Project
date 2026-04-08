@@ -4,6 +4,7 @@ import { SettingImageCard } from "@/features/admin/components/settings/SettingIm
 import { SettingSlideCard } from "@/features/admin/components/settings/SettingSlideCard";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HERO_SETTING_KEYS } from "@/lib/constants/hero-settings";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Configuración" };
@@ -12,7 +13,8 @@ export default async function ConfiguracionPage() {
   await requireAdmin();
 
   const [
-    heroBannerUrl,
+    heroSlide1Image,
+    heroBannerUrlLegacy,
     slide1Title,
     slide1Features,
     aboutGallery1,
@@ -30,24 +32,27 @@ export default async function ConfiguracionPage() {
     slide3Description,
     slide3Features,
   ] = await Promise.all([
-    getSetting("hero_banner_url"),
-    getSetting("hero_slide1_title"),
-    getSetting("hero_slide1_features"),
+    getSetting(HERO_SETTING_KEYS.slide1Image),
+    getSetting(HERO_SETTING_KEYS.slide1ImageLegacy),
+    getSetting(HERO_SETTING_KEYS.slide1Title),
+    getSetting(HERO_SETTING_KEYS.slide1Features),
     getSetting("about_gallery_1"),
     getSetting("about_gallery_2"),
     getSetting("about_gallery_3"),
     getSetting("service_venta_image"),
     getSetting("service_postventa_image"),
     getSetting("service_reparacion_image"),
-    getSetting("hero_slide2_image"),
-    getSetting("hero_slide2_title"),
-    getSetting("hero_slide2_description"),
-    getSetting("hero_slide2_features"),
-    getSetting("hero_slide3_image"),
-    getSetting("hero_slide3_title"),
-    getSetting("hero_slide3_description"),
-    getSetting("hero_slide3_features"),
+    getSetting(HERO_SETTING_KEYS.slide2Image),
+    getSetting(HERO_SETTING_KEYS.slide2Title),
+    getSetting(HERO_SETTING_KEYS.slide2Description),
+    getSetting(HERO_SETTING_KEYS.slide2Features),
+    getSetting(HERO_SETTING_KEYS.slide3Image),
+    getSetting(HERO_SETTING_KEYS.slide3Title),
+    getSetting(HERO_SETTING_KEYS.slide3Description),
+    getSetting(HERO_SETTING_KEYS.slide3Features),
   ]);
+
+  const slide1Image = heroSlide1Image || heroBannerUrlLegacy;
 
   return (
     <div className="space-y-6">
@@ -75,7 +80,7 @@ export default async function ConfiguracionPage() {
             </p>
             <SettingSlideCard
               slideIndex={1}
-              currentImage={heroBannerUrl}
+              currentImage={slide1Image}
               currentTitle={slide1Title}
               currentDescription={null}
               currentFeatures={slide1Features}

@@ -1,5 +1,6 @@
 import { unstable_noStore as noStore } from "next/cache";
 import { getSetting } from "@/features/admin/actions/settingActions";
+import { HERO_SETTING_KEYS } from "@/lib/constants/hero-settings";
 import { HeroSlider } from "./HeroSlider";
 
 const DEFAULT_SLIDE1_TITLE = "Purificadores de agua";
@@ -12,7 +13,8 @@ const DEFAULT_SLIDE1_FEATURES = [
 export async function HeroSection() {
   noStore();
   const [
-    heroBannerUrl,
+    heroSlide1Image,
+    heroBannerUrlLegacy,
     slide1Title,
     slide1Features,
     slide2Image,
@@ -24,18 +26,21 @@ export async function HeroSection() {
     slide3Description,
     slide3Features,
   ] = await Promise.all([
-    getSetting("hero_banner_url"),
-    getSetting("hero_slide1_title"),
-    getSetting("hero_slide1_features"),
-    getSetting("hero_slide2_image"),
-    getSetting("hero_slide2_title"),
-    getSetting("hero_slide2_description"),
-    getSetting("hero_slide2_features"),
-    getSetting("hero_slide3_image"),
-    getSetting("hero_slide3_title"),
-    getSetting("hero_slide3_description"),
-    getSetting("hero_slide3_features"),
+    getSetting(HERO_SETTING_KEYS.slide1Image),
+    getSetting(HERO_SETTING_KEYS.slide1ImageLegacy),
+    getSetting(HERO_SETTING_KEYS.slide1Title),
+    getSetting(HERO_SETTING_KEYS.slide1Features),
+    getSetting(HERO_SETTING_KEYS.slide2Image),
+    getSetting(HERO_SETTING_KEYS.slide2Title),
+    getSetting(HERO_SETTING_KEYS.slide2Description),
+    getSetting(HERO_SETTING_KEYS.slide2Features),
+    getSetting(HERO_SETTING_KEYS.slide3Image),
+    getSetting(HERO_SETTING_KEYS.slide3Title),
+    getSetting(HERO_SETTING_KEYS.slide3Description),
+    getSetting(HERO_SETTING_KEYS.slide3Features),
   ]);
+
+  const slide1Image = heroSlide1Image || heroBannerUrlLegacy;
 
   const parseFeatures = (raw: string | null) =>
     raw && raw.trim().length > 0
@@ -48,7 +53,7 @@ export async function HeroSection() {
 
   const slides = [
     {
-      image: heroBannerUrl,
+      image: slide1Image,
       title: slide1Title ?? DEFAULT_SLIDE1_TITLE,
       features: parsedSlide1Features,
     },
