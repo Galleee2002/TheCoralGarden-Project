@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ChevronRight, PackageSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { formatPrice } from "@/lib/format-price";
 
 export interface ProductCardProps {
   id: string;
@@ -22,12 +23,6 @@ export function ProductCard({
   description,
   stock,
 }: ProductCardProps) {
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(p);
-
   return (
     <Link href={`/productos/${slug}`} className="group">
       <Card className="flex h-full flex-col overflow-hidden rounded-card border border-border/30 shadow-sm transition-shadow hover:shadow-md">

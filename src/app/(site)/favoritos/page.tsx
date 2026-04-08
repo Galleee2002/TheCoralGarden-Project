@@ -8,16 +8,11 @@ import { Heart, Trash2, ShoppingCart, PackageSearch } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { toast } from "sonner";
+import { formatPrice } from "@/lib/format-price";
 
 export default function FavoritosPage() {
   const { items, toggleFavorite } = useFavoritesStore();
   const addItem = useCartStore((s) => s.addItem);
-
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(p);
 
   if (items.length === 0) {
     return (

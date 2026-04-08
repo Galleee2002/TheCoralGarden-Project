@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { formatPrice } from "@/lib/format-price";
 
 interface ProductCardSimpleProps {
   name: string;
@@ -18,12 +19,6 @@ export function ProductCardSimple({
   image,
   description,
 }: ProductCardSimpleProps) {
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(p);
-
   return (
     <Link href={`/productos/${slug}`} className="group block">
       <div className="overflow-hidden rounded-card bg-card-default transition-shadow hover:shadow-lg">

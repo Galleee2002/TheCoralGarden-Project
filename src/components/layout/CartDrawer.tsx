@@ -11,6 +11,7 @@ import { useCartStore } from "@/features/cart/store/cartStore";
 import { Minus, Plus, ShoppingCart, Trash2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from "@/lib/format-price";
 
 interface CartDrawerProps {
   open: boolean;
@@ -19,12 +20,6 @@ interface CartDrawerProps {
 
 export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const { items, removeItem, updateQuantity, subtotal } = useCartStore();
-
-  const formatPrice = (price: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(price);
 
   return (
     <Sheet open={open} onOpenChange={onClose}>

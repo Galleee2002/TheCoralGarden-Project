@@ -18,6 +18,7 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Plus, ChevronRight } from "lucide-react";
 import type { Metadata } from "next";
+import { formatPrice } from "@/lib/format-price";
 
 export const metadata: Metadata = { title: "Admin — Productos" };
 
@@ -31,12 +32,6 @@ export default async function AdminProductsPage({
     getProducts({ activeOnly: false, pageSize: 100, categorySlug: category }),
     getCategories(),
   ]);
-
-  const formatPrice = (p: number | { toString(): string }) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(Number(p));
 
   return (
     <div>
@@ -135,7 +130,7 @@ export default async function AdminProductsPage({
               <TableHead className="w-[16%]">Precio</TableHead>
               <TableHead className="w-[10%]">Stock</TableHead>
               <TableHead className="w-[12%]">Estado</TableHead>
-              <TableHead className="w-[16%] text-right">Acciones</TableHead>
+              <TableHead className="w-[16%]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -157,7 +152,7 @@ export default async function AdminProductsPage({
                     />
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center justify-end gap-2">
+                    <div className="flex items-center gap-2">
                       <Button asChild variant="outline" size="sm" className="min-h-9">
                         <Link href={`/admin/productos/${product.id}/editar`}>
                           Editar

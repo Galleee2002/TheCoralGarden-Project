@@ -1,3 +1,5 @@
+import { formatPrice } from "@/lib/format-price";
+
 type OrderItem = {
   productName: string;
   quantity: number;
@@ -12,13 +14,6 @@ type OrderEmailData = {
   total: number;
   orderId: string;
 };
-
-function formatPrice(price: number): string {
-  return new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  }).format(price);
-}
 
 export function buildOrderConfirmationHtml(data: OrderEmailData): string {
   const shortId = data.orderId.slice(-8).toUpperCase();

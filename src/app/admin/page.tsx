@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Package, ShoppingBag, TrendingUp } from "lucide-react";
 import type { Metadata } from "next";
+import { formatPrice } from "@/lib/format-price";
 
 export const metadata: Metadata = { title: "Admin — Dashboard" };
 
@@ -26,12 +27,6 @@ async function getDashboardStats() {
 export default async function AdminDashboardPage() {
   const stats = await getDashboardStats();
 
-  const formatCurrency = (value: number | null) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(value ?? 0);
-
   const cards = [
     {
       title: "Total órdenes",
@@ -42,7 +37,7 @@ export default async function AdminDashboardPage() {
     },
     {
       title: "Ingresos",
-      value: formatCurrency(Number(stats.revenue._sum.total)),
+      value: formatPrice(Number(stats.revenue._sum.total)),
       icon: TrendingUp,
       description: "Pagos confirmados",
       urgent: false,

@@ -7,6 +7,7 @@ import { useFavoritesStore } from "@/features/favorites/store/favoritesStore";
 import { CheckCircle2, Heart, ShoppingCart } from "lucide-react";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { formatPrice } from "@/lib/format-price";
 
 interface ProductInfoProps {
   id: string;
@@ -34,13 +35,6 @@ export function ProductInfo({
   const addItem = useCartStore((s) => s.addItem);
   const toggleFavorite = useFavoritesStore((s) => s.toggleFavorite);
   const isFavorite = useFavoritesStore((s) => s.isFavorite(id));
-
-  const formatPrice = (p: number) =>
-    "$ " +
-    new Intl.NumberFormat("es-AR", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(p);
 
   const handleBuyNow = () => {
     addItem({ productId: id, name, price, image: image ?? "", slug });

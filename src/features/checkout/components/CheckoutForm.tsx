@@ -22,6 +22,7 @@ import { toast } from "sonner";
 import { Loader2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from "@/lib/format-price";
 
 const formSchema = z.object({
   customerName: z.string().min(2, "Nombre requerido"),
@@ -55,12 +56,6 @@ export function CheckoutForm() {
   });
 
   const total = subtotal() + SHIPPING_COST;
-
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(p);
 
   const onSubmit = async (values: FormValues) => {
     if (items.length === 0) {

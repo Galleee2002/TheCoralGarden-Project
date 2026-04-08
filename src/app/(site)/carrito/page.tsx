@@ -6,16 +6,11 @@ import { Separator } from "@/components/ui/separator";
 import { Minus, Plus, Trash2, ShoppingBag } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { formatPrice } from "@/lib/format-price";
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, subtotal, clearCart } =
     useCartStore();
-
-  const formatPrice = (p: number) =>
-    new Intl.NumberFormat("es-AR", {
-      style: "currency",
-      currency: "ARS",
-    }).format(p);
 
   if (items.length === 0) {
     return (

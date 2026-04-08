@@ -12,6 +12,7 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import type { OrderStatus } from "@/types/enums";
+import { formatPrice } from "@/lib/format-price";
 
 const orderStatusVariant: Record<OrderStatus, { variant: Parameters<typeof StatusBadge>[0]["variant"]; label: string }> = {
   PENDING:    { variant: "pending",    label: "Pendiente" },
@@ -34,9 +35,6 @@ type Order = {
 interface OrdersTableProps {
   orders: Order[];
 }
-
-const formatPrice = (p: number) =>
-  new Intl.NumberFormat("es-AR", { style: "currency", currency: "ARS" }).format(p);
 
 const formatDate = (d: Date) =>
   new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" }).format(d);
