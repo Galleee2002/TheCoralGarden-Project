@@ -22,10 +22,7 @@ export async function getProducts({
       category: { slug: categorySlug },
     }),
     ...(query && {
-      OR: [
-        { name: { contains: query, mode: "insensitive" } },
-        { description: { contains: query, mode: "insensitive" } },
-      ],
+      name: { contains: query, mode: "insensitive" },
     }),
   };
 

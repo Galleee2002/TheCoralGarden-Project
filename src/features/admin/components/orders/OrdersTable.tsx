@@ -11,6 +11,7 @@ import {
 import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { OrderStatusSelect } from "./OrderStatusSelect";
+import { DeleteOrderButton } from "./DeleteOrderButton";
 import type { OrderStatus } from "@/types/enums";
 import { formatPrice } from "@/lib/format-price";
 
@@ -69,12 +70,19 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 </div>
 
                 <div className="mt-4 rounded-dropdown bg-card-light p-3">
-                  <p className="text-xs font-medium text-muted-foreground">Estado</p>
-                  <OrderStatusSelect
-                    orderId={order.id}
-                    currentStatus={order.status}
-                    triggerClassName="mt-2 min-h-11 w-full bg-background"
-                  />
+                  <p className="text-xs font-medium text-muted-foreground">Gestión</p>
+                  <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                    <OrderStatusSelect
+                      orderId={order.id}
+                      currentStatus={order.status}
+                      triggerClassName="min-h-11 w-full bg-background sm:flex-1"
+                    />
+                    <DeleteOrderButton
+                      orderId={order.id}
+                      customerName={order.customerName}
+                      className="w-full justify-center sm:w-auto sm:px-4"
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-3 rounded-dropdown bg-card-light p-3 text-sm">
@@ -96,17 +104,18 @@ export function OrdersTable({ orders }: OrdersTableProps) {
       <div className="hidden lg:block">
         <Table className="min-w-[980px]">
           <TableHeader className="bg-muted/30">
-            <TableRow>
-              <TableHead className="w-[12%]">ID</TableHead>
-              <TableHead className="w-[28%]" noWrap={false}>Cliente</TableHead>
-              <TableHead className="w-[26%]" noWrap={false}>Estado</TableHead>
-              <TableHead className="w-[14%]">Total</TableHead>
-              <TableHead className="w-[20%]">Fecha</TableHead>
-            </TableRow>
-          </TableHeader>
+              <TableRow>
+                <TableHead className="w-[12%]">ID</TableHead>
+                <TableHead className="w-[25%]" noWrap={false}>Cliente</TableHead>
+                <TableHead className="w-[24%]" noWrap={false}>Estado</TableHead>
+                <TableHead className="w-[14%]">Total</TableHead>
+                <TableHead className="w-[17%]">Fecha</TableHead>
+                <TableHead className="w-[18%] text-right">Acciones</TableHead>
+              </TableRow>
+            </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
-              <EmptyState colSpan={5} message="No hay órdenes todavía" />
+              <EmptyState colSpan={6} message="No hay órdenes todavía" />
             ) : (
               orders.map((order) => {
                 const { variant, label } = orderStatusVariant[order.status];
@@ -134,6 +143,16 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     <TableCell className="font-semibold">{formatPrice(order.total)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDate(order.createdAt)}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex justify-end">
+                        <DeleteOrderButton
+                          orderId={order.id}
+                          customerName={order.customerName}
+                          showLabel={false}
+                          className="px-3"
+                        />
+                      </div>
                     </TableCell>
                   </TableRow>
                 );

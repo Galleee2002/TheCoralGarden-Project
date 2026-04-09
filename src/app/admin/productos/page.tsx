@@ -14,6 +14,7 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { DeleteProductButton } from "@/features/admin/components/products/DeleteProductButton";
 import { ProductCategoryFilter } from "@/features/admin/components/products/ProductCategoryFilter";
+import { ProductSearchBar } from "@/features/admin/components/products/ProductSearchBar";
 import { Suspense } from "react";
 import Link from "next/link";
 import { Plus, ChevronRight } from "lucide-react";
@@ -25,11 +26,16 @@ export const metadata: Metadata = { title: "Admin — Productos" };
 export default async function AdminProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ category?: string }>;
+  searchParams: Promise<{ category?: string; q?: string }>;
 }) {
-  const { category } = await searchParams;
+  const { category, q } = await searchParams;
   const [{ products }, categories] = await Promise.all([
-    getProducts({ activeOnly: false, pageSize: 100, categorySlug: category }),
+    getProducts({
+      activeOnly: false,
+      pageSize: 100,
+      categorySlug: category,
+      query: q,
+    }),
     getCategories(),
   ]);
 
@@ -48,12 +54,19 @@ export default async function AdminProductsPage({
         }
       />
 
-      <Suspense>
-        <ProductCategoryFilter
-          categories={categories}
-          activeSlug={category ?? null}
+      <div className="mb-6 space-y-4">
+        <ProductSearchBar
+          defaultValue={q ?? ""}
+          activeCategory={category ?? null}
         />
-      </Suspense>
+
+        <Suspense>
+          <ProductCategoryFilter
+            categories={categories}
+            activeSlug={category ?? null}
+          />
+        </Suspense>
+      </div>
 
       <div className="lg:hidden space-y-3">
         {products.length === 0 ? (

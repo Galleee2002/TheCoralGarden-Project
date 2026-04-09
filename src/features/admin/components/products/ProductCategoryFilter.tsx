@@ -47,7 +47,7 @@ export function ProductCategoryFilter({
     <div
       role="group"
       aria-label="Filtrar por categoría"
-      className="flex flex-wrap items-center gap-2 py-3"
+      className="flex flex-wrap items-center gap-2 py-1"
     >
       <span className="flex items-center gap-1.5 text-sm text-muted-foreground mr-1 shrink-0">
         <Tag className="h-3.5 w-3.5" />
@@ -59,7 +59,7 @@ export function ProductCategoryFilter({
         onClick={() => handleFilter(null)}
         aria-pressed={activeSlug === null}
         className={cn(
-          "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-button text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+          "inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
           activeSlug === null
             ? "bg-btn-primary text-white shadow-sm"
             : "bg-card-light text-text-primary hover:bg-card-light/70"
@@ -87,7 +87,7 @@ export function ProductCategoryFilter({
             onClick={() => handleFilter(cat.slug)}
             aria-pressed={isActive}
             className={cn(
-              "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-button text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+              "inline-flex min-h-11 items-center gap-1.5 rounded-button px-3 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
               isActive
                 ? "bg-btn-primary text-white shadow-sm"
                 : "bg-card-light text-text-primary hover:bg-card-light/70"
