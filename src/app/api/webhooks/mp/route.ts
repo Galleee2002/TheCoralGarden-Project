@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma/client";
 import { MercadoPagoConfig, Payment } from "mercadopago";
 import crypto from "crypto";
+import { sendOrderAdminNotificationEmail } from "@/lib/resend/send-order-admin-notification";
 import { sendOrderConfirmationEmail } from "@/lib/resend/send-order-confirmation";
 
 function verifyMPSignature(
@@ -150,9 +151,14 @@ export async function POST(request: NextRequest) {
     }
 
     if (newStatus === "PAID" && existingOrder.status !== "PAID") {
-      sendOrderConfirmationEmail({
+      const orderEmailData = {
         customerName: updatedOrder.customerName,
         customerEmail: updatedOrder.customerEmail,
+        customerPhone: updatedOrder.customerPhone,
+        customerStreet: updatedOrder.customerStreet,
+        customerCity: updatedOrder.customerCity,
+        customerProvince: updatedOrder.customerProvince,
+        customerZip: updatedOrder.customerZip,
         items: updatedOrder.items.map((item) => ({
           productName: item.productName,
           quantity: item.quantity,
@@ -161,7 +167,15 @@ export async function POST(request: NextRequest) {
         shippingCost: Number(updatedOrder.shippingCost),
         total: Number(updatedOrder.total),
         orderId: updatedOrder.id,
-      }).catch((err) => console.error("[Order Email Error]", err));
+      };
+
+      sendOrderConfirmationEmail(orderEmailData).catch((err) =>
+        console.error("[Order Email Error]", err),
+      );
+
+      sendOrderAdminNotificationEmail(orderEmailData).catch((err) =>
+        console.error("[Order Admin Email Error]", err),
+      );
     }
 
     return NextResponse.json({ received: true });
