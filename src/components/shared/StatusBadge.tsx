@@ -3,6 +3,9 @@ type StatusVariant =
   | "pending"
   | "active"
   | "inactive"
+  | "archived"
+  | "history"
+  | "blocked"
   | "processing"
   | "shipped"
   | "delivered"
@@ -26,6 +29,9 @@ const variantClasses: Record<StatusVariant, string> = {
   cancelled:   "bg-destructive/10 text-destructive border border-destructive/20",
   active:      "bg-emerald-100 text-emerald-800 border border-emerald-200",
   inactive:    "bg-muted text-muted-foreground border border-border",
+  archived:    "bg-slate-100 text-slate-800 border border-slate-200",
+  history:     "bg-amber-100 text-amber-900 border border-amber-200",
+  blocked:     "bg-red-50 text-red-800 border border-red-200",
   contacted:   "bg-blue-100 text-blue-800 border border-blue-200",
   in_progress: "bg-violet-100 text-violet-800 border border-violet-200",
   resolved:    "bg-emerald-100 text-emerald-800 border border-emerald-200",

@@ -53,7 +53,94 @@ export const updateProduct = action
 export const deleteProduct = action
   .schema(z.object({ id: z.string() }))
   .action(async ({ parsedInput }) => {
+    const product = await prisma.product.findUnique({
+      where: { id: parsedInput.id },
+      select: {
+        id: true,
+        active: true,
+      },
+    });
+
+    if (!product) {
+      throw new Error("No se encontró el producto.");
+    }
+
+    const orderItemCount = await prisma.orderItem.count({
+      where: { productId: parsedInput.id },
+    });
+
+    if (orderItemCount > 0) {
+      if (product.active) {
+        await prisma.product.update({
+          where: { id: parsedInput.id },
+          data: {
+            active: false,
+            featured: false,
+          },
+        });
+      }
+
+      revalidatePath("/admin", "layout");
+
+      return {
+        success: true,
+        result: "archived" as const,
+        message:
+          "El producto tiene compras asociadas. Se archivó para ocultarlo de la tienda sin perder el historial.",
+        reason: "has_order_history" as const,
+        affectedCount: orderItemCount,
+      };
+    }
+
     await prisma.product.delete({ where: { id: parsedInput.id } });
     revalidatePath("/admin", "layout");
-    return { success: true };
+    return {
+      success: true,
+      result: "deleted" as const,
+      message: "Producto eliminado definitivamente.",
+    };
+  });
+
+export const forceDeleteProduct = action
+  .schema(z.object({ id: z.string() }))
+  .action(async ({ parsedInput }) => {
+    const orderIds = await prisma.orderItem.findMany({
+      where: { productId: parsedInput.id },
+      select: { orderId: true },
+      distinct: ["orderId"],
+    });
+
+    const orderIdList = orderIds.map((item) => item.orderId);
+
+    await prisma.$transaction(async (tx) => {
+      if (orderIdList.length > 0) {
+        await tx.orderItem.deleteMany({
+          where: {
+            orderId: { in: orderIdList },
+          },
+        });
+
+        await tx.order.deleteMany({
+          where: {
+            id: { in: orderIdList },
+          },
+        });
+      }
+
+      await tx.product.delete({
+        where: { id: parsedInput.id },
+      });
+    });
+
+    revalidatePath("/admin", "layout");
+
+    return {
+      success: true,
+      result: "force-deleted" as const,
+      message:
+        orderIdList.length > 0
+          ? "Producto y ventas asociadas eliminados de forma permanente."
+          : "Producto eliminado de forma permanente.",
+      affectedOrderCount: orderIdList.length,
+    };
   });

@@ -7,6 +7,7 @@ interface GetProductsParams {
   page?: number;
   pageSize?: number;
   activeOnly?: boolean;
+  includeOrderHistory?: boolean;
 }
 
 export async function getProducts({
@@ -15,6 +16,7 @@ export async function getProducts({
   page = 1,
   pageSize = 12,
   activeOnly = true,
+  includeOrderHistory = false,
 }: GetProductsParams = {}) {
   const where: Prisma.ProductWhereInput = {
     ...(activeOnly && { active: true }),
@@ -29,7 +31,12 @@ export async function getProducts({
   const [products, total] = await Promise.all([
     prisma.product.findMany({
       where,
-      include: { category: { select: { name: true, slug: true } } },
+      include: {
+        category: { select: { name: true, slug: true } },
+        ...(includeOrderHistory
+          ? { _count: { select: { orderItems: true } } }
+          : {}),
+      },
       orderBy: { createdAt: "desc" },
       skip: (page - 1) * pageSize,
       take: pageSize,

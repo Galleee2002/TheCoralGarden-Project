@@ -35,6 +35,7 @@ export default async function AdminProductsPage({
       pageSize: 100,
       categorySlug: category,
       query: q,
+      includeOrderHistory: true,
     }),
     getCategories(),
   ]);
@@ -74,59 +75,89 @@ export default async function AdminProductsPage({
             No hay productos cargados
           </div>
         ) : (
-          products.map((product) => (
-            <article
-              key={product.id}
-              className="rounded-card border border-border/50 bg-card p-4 shadow-sm"
-            >
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <h3 className="text-base font-semibold text-text-primary break-words">
-                    {product.name}
-                  </h3>
-                  <p className="mt-1 text-sm text-muted-foreground break-words">
-                    {product.category.name}
+          products.map((product) => {
+            const hasOrders = (product._count?.orderItems ?? 0) > 0;
+            const isArchived = !product.active && hasOrders;
+
+            return (
+              <article
+                key={product.id}
+                className="rounded-card border border-border/50 bg-card p-4 shadow-sm"
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="text-base font-semibold text-text-primary break-words">
+                      {product.name}
+                    </h3>
+                    <p className="mt-1 text-sm text-muted-foreground break-words">
+                      {product.category.name}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap justify-end gap-2">
+                    <StatusBadge
+                      variant={product.active ? "active" : isArchived ? "archived" : "inactive"}
+                      label={product.active ? "Activo" : isArchived ? "Archivado" : "Inactivo"}
+                    />
+                    {hasOrders ? (
+                      <StatusBadge
+                        variant="history"
+                        label={`${product._count.orderItems} compra${product._count.orderItems === 1 ? "" : "s"}`}
+                      />
+                    ) : null}
+                  </div>
+                </div>
+
+                <div className="mt-4 rounded-dropdown bg-card-light p-3 text-sm">
+                  <p className="text-xs font-medium text-muted-foreground">Disponibilidad de acción</p>
+                  <p className="mt-1 text-text-primary">
+                    {hasOrders
+                      ? isArchived
+                        ? "Este producto ya está archivado para preservar su historial."
+                        : "Este producto se archivará si confirmás la acción."
+                      : "Este producto puede eliminarse definitivamente."}
                   </p>
                 </div>
-                <StatusBadge
-                  variant={product.active ? "active" : "inactive"}
-                  label={product.active ? "Activo" : "Inactivo"}
-                />
-              </div>
 
-              <div className="mt-4 grid grid-cols-2 gap-3 rounded-dropdown bg-card-light p-3 text-sm">
-                <div>
-                  <p className="text-muted-foreground">Precio</p>
-                  <p className="font-semibold text-text-primary">
-                    {formatPrice(product.price)}
-                  </p>
+                <div className="mt-4 grid grid-cols-2 gap-3 rounded-dropdown bg-card-light p-3 text-sm">
+                  <div>
+                    <p className="text-muted-foreground">Precio</p>
+                    <p className="font-semibold text-text-primary">
+                      {formatPrice(product.price)}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Stock</p>
+                    <p className="font-semibold text-text-primary">{product.stock}</p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-muted-foreground">Stock</p>
-                  <p className="font-semibold text-text-primary">{product.stock}</p>
-                </div>
-              </div>
 
-              <div className="mt-4 flex flex-wrap items-center gap-2">
-                <Button
-                  asChild
-                  variant="outline"
-                  className="min-h-11 flex-1 justify-center"
-                >
-                  <Link href={`/admin/productos/${product.id}/editar`}>
-                    Editar
-                    <ChevronRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <DeleteProductButton
-                  productId={product.id}
-                  productName={product.name}
-                  showLabel
-                  className="min-h-11 flex-1 justify-center border border-destructive/40 bg-destructive/5 hover:bg-destructive/10"
-                />
-              </div>
-            </article>
-          ))
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="min-h-11 flex-1 justify-center"
+                  >
+                    <Link href={`/admin/productos/${product.id}/editar`}>
+                      Editar
+                      <ChevronRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <DeleteProductButton
+                    productId={product.id}
+                    productName={product.name}
+                    hasOrders={hasOrders}
+                    isArchived={isArchived}
+                    showLabel
+                    className={
+                      hasOrders
+                        ? "min-h-11 flex-1 justify-center border border-border bg-card-light hover:bg-card-light/70"
+                        : "min-h-11 flex-1 justify-center border border-destructive/40 bg-destructive/5 hover:bg-destructive/10"
+                    }
+                  />
+                </div>
+              </article>
+            );
+          })
         )}
       </div>
 
@@ -135,50 +166,73 @@ export default async function AdminProductsPage({
         aria-label="Tabla de productos"
         className="hidden lg:block overflow-x-auto rounded-card border border-border/50 shadow-sm"
       >
-        <Table className="min-w-[860px]">
+        <Table className="min-w-[980px]">
           <TableHeader className="bg-muted/30">
             <TableRow>
               <TableHead className="w-[28%]" noWrap={false}>Nombre</TableHead>
               <TableHead className="w-[18%]" noWrap={false}>Categoría</TableHead>
               <TableHead className="w-[16%]">Precio</TableHead>
               <TableHead className="w-[10%]">Stock</TableHead>
-              <TableHead className="w-[12%]">Estado</TableHead>
+              <TableHead className="w-[16%]" noWrap={false}>Estado</TableHead>
+              <TableHead className="w-[12%]" noWrap={false}>Acción</TableHead>
               <TableHead className="w-[16%]">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {products.length === 0 ? (
-              <EmptyState colSpan={6} message="No hay productos cargados" />
+              <EmptyState colSpan={7} message="No hay productos cargados" />
             ) : (
-              products.map((product) => (
-                <TableRow key={product.id}>
-                  <TableCell className="font-medium" noWrap={false}>
-                    {product.name}
-                  </TableCell>
-                  <TableCell noWrap={false}>{product.category.name}</TableCell>
-                  <TableCell>{formatPrice(product.price)}</TableCell>
-                  <TableCell>{product.stock}</TableCell>
-                  <TableCell>
-                    <StatusBadge
-                      variant={product.active ? "active" : "inactive"}
-                      label={product.active ? "Activo" : "Inactivo"}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Button asChild variant="outline" size="sm" className="min-h-9">
-                        <Link href={`/admin/productos/${product.id}/editar`}>
-                          Editar
-                        </Link>
-                      </Button>
-                      <DeleteProductButton
-                        productId={product.id}
-                        productName={product.name}
-                      />
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
+              products.map((product) => {
+                const hasOrders = (product._count?.orderItems ?? 0) > 0;
+                const isArchived = !product.active && hasOrders;
+
+                return (
+                  <TableRow key={product.id}>
+                    <TableCell className="font-medium" noWrap={false}>
+                      {product.name}
+                    </TableCell>
+                    <TableCell noWrap={false}>{product.category.name}</TableCell>
+                    <TableCell>{formatPrice(product.price)}</TableCell>
+                    <TableCell>{product.stock}</TableCell>
+                    <TableCell noWrap={false}>
+                      <div className="flex min-w-[180px] flex-wrap gap-2">
+                        <StatusBadge
+                          variant={product.active ? "active" : isArchived ? "archived" : "inactive"}
+                          label={product.active ? "Activo" : isArchived ? "Archivado" : "Inactivo"}
+                        />
+                        {hasOrders ? (
+                          <StatusBadge
+                            variant="history"
+                            label={`${product._count.orderItems} compra${product._count.orderItems === 1 ? "" : "s"}`}
+                          />
+                        ) : null}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-sm text-muted-foreground" noWrap={false}>
+                      {hasOrders
+                        ? isArchived
+                          ? "Archivado"
+                          : "Archivar"
+                        : "Eliminar"}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Button asChild variant="outline" size="sm" className="min-h-9">
+                          <Link href={`/admin/productos/${product.id}/editar`}>
+                            Editar
+                          </Link>
+                        </Button>
+                        <DeleteProductButton
+                          productId={product.id}
+                          productName={product.name}
+                          hasOrders={hasOrders}
+                          isArchived={isArchived}
+                        />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
