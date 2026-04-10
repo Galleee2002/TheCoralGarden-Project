@@ -65,7 +65,7 @@ export const createMercadoPagoPreference = action
           pending: `${baseUrl}/checkout/pending`,
         },
         auto_return: "approved",
-        notification_url: `${baseUrl}/api/webhooks/mp`,
+        notification_url: `${baseUrl}/api/webhooks/mp?source_news=webhooks`,
       },
     });
 

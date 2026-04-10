@@ -1,8 +1,10 @@
 import { formatPrice } from "@/lib/format-price";
+import { ORDER_ADMIN_EMAIL } from "../config";
 import type { OrderEmailData } from "../types";
 
 export function buildOrderConfirmationHtml(data: OrderEmailData): string {
   const shortId = data.orderId.slice(-8).toUpperCase();
+  const supportEmail = ORDER_ADMIN_EMAIL;
 
   const itemsHtml = data.items
     .map(
@@ -110,8 +112,8 @@ export function buildOrderConfirmationHtml(data: OrderEmailData): string {
                   </a>
                   <br />
                   o envianos un mail a
-                  <a href="mailto:contacto@thecoralgarden.com" style="color: #33C2E9; text-decoration: none; font-weight: 600;">
-                    contacto@thecoralgarden.com
+                  <a href="mailto:${supportEmail}" style="color: #33C2E9; text-decoration: none; font-weight: 600;">
+                    ${supportEmail}
                   </a>
                 </p>
               </div>

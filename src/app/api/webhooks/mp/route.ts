@@ -5,6 +5,23 @@ import crypto from "crypto";
 import { sendOrderAdminNotificationEmail } from "@/lib/resend/send-order-admin-notification";
 import { sendOrderConfirmationEmail } from "@/lib/resend/send-order-confirmation";
 
+type MercadoPagoWebhookBody = {
+  type?: string;
+  action?: string;
+  data?: { id?: string };
+};
+
+function getWebhookResourceId(
+  request: NextRequest,
+  body: MercadoPagoWebhookBody,
+): string | undefined {
+  return (
+    request.nextUrl.searchParams.get("data.id") ??
+    request.nextUrl.searchParams.get("id") ??
+    body.data?.id
+  );
+}
+
 function verifyMPSignature(
   request: NextRequest,
   dataId: string | undefined,
@@ -41,13 +58,14 @@ function verifyMPSignature(
 
 export async function POST(request: NextRequest) {
   try {
-    const body = (await request.json()) as {
-      type?: string;
-      action?: string;
-      data?: { id?: string };
-    };
+    const body = (await request.json()) as MercadoPagoWebhookBody;
+    const paymentId = getWebhookResourceId(request, body);
 
-    if (!verifyMPSignature(request, body.data?.id)) {
+    if (!verifyMPSignature(request, paymentId)) {
+      console.error("[MP Webhook Error] Invalid signature", {
+        url: request.url,
+        body,
+      });
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
@@ -55,7 +73,6 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
-    const paymentId = body.data?.id;
     if (!paymentId) {
       return NextResponse.json({ received: true });
     }
@@ -101,6 +118,30 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ received: true });
     }
 
+    const normalizedPaymentId = String(paymentId);
+    const alreadyProcessedSamePayment =
+      existingOrder.mpPaymentId === normalizedPaymentId &&
+      existingOrder.status === newStatus;
+
+    if (alreadyProcessedSamePayment) {
+      return NextResponse.json({ received: true });
+    }
+
+    if (
+      newStatus === "PAID" &&
+      existingOrder.status === "PAID" &&
+      existingOrder.mpPaymentId &&
+      existingOrder.mpPaymentId !== normalizedPaymentId
+    ) {
+      console.warn("[MP Webhook Warning] Ignoring conflicting payment id", {
+        orderId,
+        storedPaymentId: existingOrder.mpPaymentId,
+        incomingPaymentId: normalizedPaymentId,
+      });
+
+      return NextResponse.json({ received: true });
+    }
+
     if (newStatus === "PAID" && existingOrder.status !== "PAID") {
       await prisma.$transaction(async (tx) => {
         for (const item of existingOrder.items) {
@@ -127,16 +168,31 @@ export async function POST(request: NextRequest) {
           where: { id: orderId },
           data: {
             status: newStatus,
-            mpPaymentId: String(paymentId),
+            mpPaymentId: normalizedPaymentId,
           },
         });
       });
     } else {
+      if (
+        newStatus === "PAID" &&
+        existingOrder.status === "PAID" &&
+        !existingOrder.mpPaymentId
+      ) {
+        await prisma.order.update({
+          where: { id: orderId },
+          data: {
+            mpPaymentId: normalizedPaymentId,
+          },
+        });
+
+        return NextResponse.json({ received: true });
+      }
+
       await prisma.order.update({
         where: { id: orderId },
         data: {
           status: newStatus,
-          mpPaymentId: String(paymentId),
+          mpPaymentId: normalizedPaymentId,
         },
       });
     }
