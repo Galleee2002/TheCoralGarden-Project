@@ -81,7 +81,10 @@ export function ProductInfo({
           <h2 className="font-heading text-2xl font-bold">Especificaciones</h2>
           <div className="grid grid-cols-2 gap-3">
             {specifications.map((spec, i) => (
-              <div key={i} className="border-border/30 flex items-center gap-2 rounded-lg border p-3 text-sm">
+              <div
+                key={i}
+                className="border-border/30 bg-card-light flex items-center gap-2 rounded-lg border p-3 text-sm"
+              >
                 <CheckCircle2 className="text-text-primary h-4 w-4 shrink-0" />
                 <span>{spec}</span>
               </div>
