@@ -47,6 +47,21 @@ describe("ProductCard", () => {
     expect(img).toHaveAttribute("alt", "Filtro de Agua");
   });
 
+  it("transforms Cloudinary images for the product catalog", () => {
+    render(
+      <ProductCard
+        {...baseProps}
+        image="https://res.cloudinary.com/demo/image/upload/v123/product.jpg"
+      />
+    );
+
+    const img = screen.getByRole("img");
+    expect(img).toHaveAttribute(
+      "src",
+      "https://res.cloudinary.com/demo/image/upload/f_auto,q_auto,w_800,h_600,c_pad,b_rgb:F8F8F8/v123/product.jpg"
+    );
+  });
+
   it("shows 'Sin stock' badge when stock is 0", () => {
     render(<ProductCard {...baseProps} stock={0} />);
     expect(screen.getByText("Sin stock")).toBeInTheDocument();

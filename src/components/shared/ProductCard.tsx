@@ -4,6 +4,7 @@ import { ChevronRight, PackageSearch } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { formatPrice } from "@/lib/format-price";
+import { getCloudinaryCatalogImageUrl } from "@/lib/cloudinary";
 
 export interface ProductCardProps {
   id: string;
@@ -23,17 +24,20 @@ export function ProductCard({
   description,
   stock,
 }: ProductCardProps) {
+  const imageSrc = image ? getCloudinaryCatalogImageUrl(image) : undefined;
+
   return (
     <Link href={`/productos/${slug}`} className="group">
       <Card className="flex h-full flex-col overflow-hidden rounded-card border border-border/30 shadow-sm transition-shadow hover:shadow-md">
         <CardHeader className="p-0">
-          <div className="relative aspect-square overflow-hidden bg-muted">
-            {image ? (
+          <div className="relative aspect-[4/3] overflow-hidden bg-card-light">
+            {imageSrc ? (
               <Image
-                src={image}
+                src={imageSrc}
                 alt={name}
                 fill
-                className="object-cover transition-transform duration-300 group-hover:scale-105"
+                sizes="(min-width: 1024px) 25vw, (min-width: 768px) 50vw, 100vw"
+                className="object-contain p-3 transition-transform duration-300 group-hover:scale-[1.02]"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center bg-card-light">
