@@ -5,23 +5,27 @@ import { getSetting } from "@/features/admin/actions/settingActions";
 const services = [
   {
     title: "Venta y asesoramiento",
-    description:
-      "Te ayudamos a elegir el equipo ideal para tus necesidades. Asesoramiento personalizado con profesionales especializados.",
     bg: "bg-card-dark",
     text: "text-white",
     textMuted: "text-white/70",
-    borderColor: "border-text-secondary",
-    hoverBg: "hover:bg-text-secondary hover:text-bg-secondary",
+    description:
+      "Te ayudamos a elegir el equipo ideal para tus necesidades. Asesoramiento personalizado con profesionales especializados.",
   },
   {
     title: "Servicio post venta",
-    description:
-      "Acompañamiento continuo después de tu compra. Mantenimiento preventivo y soporte técnico garantizado.",
     bg: "bg-card-light",
     text: "text-text-primary",
     textMuted: "text-text-primary/70",
-    borderColor: "border-btn-primary",
-    hoverBg: "hover:bg-btn-primary hover:text-white",
+    description:
+      "Acompañamiento continuo después de tu compra. Mantenimiento preventivo y soporte técnico garantizado.",
+  },
+  {
+    title: "Reparación y mantenimiento",
+    bg: "bg-[#111C24]",
+    text: "text-white",
+    textMuted: "text-white/70",
+    description:
+      "Servicio técnico especializado en reparación y mantenimiento de equipos de ósmosis inversa y purificación de agua.",
   },
 ];
 
@@ -32,7 +36,10 @@ export async function ServicesSection() {
     getSetting("service_reparacion_image"),
   ]);
 
-  const serviceImages = [ventaImage, postventaImage];
+  const servicesWithImages = services.map((service, index) => ({
+    ...service,
+    image: [ventaImage, postventaImage, reparacionImage][index],
+  }));
 
   return (
     <section className="py-section-mobile md:py-section">
@@ -48,14 +55,26 @@ export async function ServicesSection() {
           </p>
         </div>
 
-        {/* Top 2 cards */}
-        <div className="grid gap-6 sm:grid-cols-2">
-          {services.map((service, i) => (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {servicesWithImages.map((service, index) => (
             <div
               key={service.title}
-              className={`rounded-card relative flex min-h-[260px] flex-col items-center p-8 text-center lg:min-h-[420px] lg:items-start lg:overflow-hidden lg:text-left ${service.bg}`}
+              className={`rounded-card relative flex min-h-[260px] flex-col p-8 text-center lg:min-h-[420px] lg:justify-end lg:overflow-hidden lg:text-left ${service.bg} ${
+                index === 2 ? "lg:col-span-2 lg:mx-auto lg:w-[calc(50%-12px)]" : ""
+              }`}
             >
-              <div className="flex-1">
+              {service.image && (
+                <>
+                  <Image
+                    src={service.image}
+                    alt={service.title}
+                    fill
+                    className="hidden object-cover lg:block"
+                  />
+                  <div className="absolute inset-0 hidden bg-linear-to-t from-black/65 via-black/25 to-white/10 lg:block" />
+                </>
+              )}
+              <div className="relative z-10 flex flex-1 flex-col items-center lg:hidden">
                 <h3
                   className={`font-heading mb-3 text-2xl font-bold ${service.text}`}
                 >
@@ -67,57 +86,12 @@ export async function ServicesSection() {
               </div>
               <Link
                 href="/servicio-tecnico"
-                className={`rounded-button relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider uppercase transition-colors ${service.borderColor} ${service.text} ${service.hoverBg}`}
+                className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary relative z-10 mt-auto inline-flex w-fit self-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider text-white uppercase transition-colors lg:self-start"
               >
                 Conocé más
               </Link>
-              {serviceImages[i] && (
-                <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
-                  <Image
-                    src={serviceImages[i]!}
-                    alt={service.title}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              )}
             </div>
           ))}
-        </div>
-
-        {/* Bottom card — same style as top cards */}
-        <div className="mt-6 flex justify-center">
-          <div className="rounded-card relative flex min-h-[260px] w-full flex-col items-center bg-[#111C24] p-8 text-center sm:w-[calc(50%-12px)] lg:min-h-[420px] lg:items-start lg:overflow-hidden lg:text-left">
-            {/* Text content */}
-            <div className="flex-1">
-              <h3 className="font-heading mb-3 text-2xl font-bold text-white">
-                Reparación y mantenimiento
-              </h3>
-              <p className="mb-6 leading-relaxed text-white/70">
-                Servicio técnico especializado en reparación y mantenimiento de
-                equipos de ósmosis inversa y purificación de agua. Disponible
-                24/7 los 365 días del año.
-              </p>
-            </div>
-            {/* Button — bottom-left */}
-            <Link
-              href="/servicio-tecnico"
-              className="rounded-button border-text-secondary hover:bg-text-secondary hover:text-bg-secondary relative z-10 mt-auto inline-flex w-fit items-center border-2 px-6 py-2.5 text-sm font-medium tracking-wider text-white uppercase transition-colors"
-            >
-              Conoce mas
-            </Link>
-            {/* Image — absolutely positioned bottom-right, only top-left radius */}
-            {reparacionImage && (
-              <div className="absolute right-0 bottom-0 hidden h-[55%] w-[55%] overflow-hidden rounded-tl-lg lg:block">
-                <Image
-                  src={reparacionImage}
-                  alt="Reparación y mantenimiento"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-            )}
-          </div>
         </div>
       </div>
     </section>
