@@ -13,6 +13,9 @@ export const metadata: Metadata = {
   title: "Productos",
   description:
     "Catálogo completo de equipos de purificación y tratamiento de agua.",
+  alternates: {
+    canonical: "/productos",
+  },
 };
 
 interface ProductsPageProps {

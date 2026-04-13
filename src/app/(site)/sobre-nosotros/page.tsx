@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Sobre Nosotros",
   description:
     "Conocé la historia y misión de TheCoralGarden, especialistas en soluciones de purificación de agua.",
+  alternates: {
+    canonical: "/sobre-nosotros",
+  },
 };
 
 export default function AboutPage() {

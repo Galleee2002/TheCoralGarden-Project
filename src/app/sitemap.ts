@@ -1,8 +1,9 @@
 import type { MetadataRoute } from "next";
 import { prisma } from "@/lib/prisma/client";
+import { getSiteUrl } from "@/lib/site-url";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "https://thecoralgarden.com.ar";
+  const baseUrl = getSiteUrl();
 
   // Rutas estáticas
   const staticRoutes: MetadataRoute.Sitemap = [

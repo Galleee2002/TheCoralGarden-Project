@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { Providers } from "@/components/layout/Providers";
 import { Toaster } from "@/components/ui/sonner";
+import { getSiteUrl } from "@/lib/site-url";
 
 // Body: Montserrat Medium (500) y Bold (700)
 const montserrat = Montserrat({
@@ -34,6 +35,7 @@ const leHavre = localFont({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(getSiteUrl()),
   title: {
     default: "TheCoralGarden | Soluciones en Purificación de Agua",
     template: "%s | TheCoralGarden",

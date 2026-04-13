@@ -7,12 +7,19 @@ import { BrandsCarousel } from "@/features/home/components/BrandsCarousel";
 import { ServicesSection } from "@/features/home/components/ServicesSection";
 import { FeaturedProducts } from "@/features/home/components/FeaturedProducts";
 import { MiniBanner } from "@/features/home/components/MiniBanner";
+import type { Metadata } from "next";
 
 const FAQSection = dynamic(
   () => import("@/features/home/components/FAQSection").then((m) => ({ default: m.FAQSection }))
 );
 
 export const revalidate = 3600;
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 function FeaturedProductsSkeleton() {
   return (

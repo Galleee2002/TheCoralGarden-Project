@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Servicio Técnico 24/7",
   description:
     "Servicio técnico especializado en equipos de ósmosis inversa y purificación de agua, disponible 24hs los 365 días del año.",
+  alternates: {
+    canonical: "/servicio-tecnico",
+  },
 };
 
 export default function TechnicalServicePage() {
