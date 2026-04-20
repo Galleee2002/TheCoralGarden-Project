@@ -124,6 +124,7 @@ describe("correo argentino mappers", () => {
         senderName: "The Coral Garden",
         senderEmail: "logistica@example.com",
         senderPhone: "1144445555",
+        senderCellphone: null,
         originStreet: "Florida",
         originStreetNumber: "123",
         originFloor: null,

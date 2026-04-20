@@ -40,22 +40,10 @@ La migracion `prisma/migrations/20260420000000_add_order_shipping_tracking/migra
 
 Ver `.env.example`. Variables clave:
 
-- `CORREO_ARGENTINO_BASE_URL`
-- `CORREO_ARGENTINO_API_USER`
-- `CORREO_ARGENTINO_API_PASSWORD`
-- `CORREO_ARGENTINO_MICORREO_EMAIL`
-- `CORREO_ARGENTINO_MICORREO_PASSWORD`
-- `CORREO_ARGENTINO_ORIGIN_POSTAL_CODE`
+- `SETTINGS_ENCRYPTION_KEY`
 - `CRON_SECRET`
 
-Variables recomendadas:
-
-- `CORREO_ARGENTINO_DEFAULT_PRODUCT_TYPE`
-- `CORREO_ARGENTINO_DEFAULT_WEIGHT`
-- `CORREO_ARGENTINO_DEFAULT_HEIGHT`
-- `CORREO_ARGENTINO_DEFAULT_LENGTH`
-- `CORREO_ARGENTINO_DEFAULT_WIDTH`
-- datos de remitente/origen `CORREO_ARGENTINO_SENDER_*` y `CORREO_ARGENTINO_ORIGIN_*`
+La configuración específica de Correo Argentino se carga desde `/admin/configuracion`, tab `Correo Argentino`, y queda persistida en `SiteSetting`. Los passwords se guardan cifrados usando `SETTINGS_ENCRYPTION_KEY`. Las variables legacy `CORREO_ARGENTINO_*` siguen funcionando como fallback de migración.
 
 ## Operacion admin
 

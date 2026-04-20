@@ -212,7 +212,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (newStatus === "PAID" && existingOrder.status !== "PAID") {
-      if (isCorreoArgentinoConfigured()) {
+      if (await isCorreoArgentinoConfigured()) {
         await importShipmentForOrder(updatedOrder);
       }
 

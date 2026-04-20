@@ -1,3 +1,5 @@
+import { getCorreoArgentinoRuntimeSettings } from "@/lib/correo-argentino/settings";
+
 type CorreoDeliveryType = "D" | "S";
 
 export type CorreoShippingRate = {
@@ -212,41 +214,34 @@ function splitStreetAndNumber(street: string): {
   };
 }
 
-function getBaseUrl() {
-  return (process.env.CORREO_ARGENTINO_BASE_URL ?? "").replace(/\/+$/, "");
-}
-
-function getDefaultDimensions(overrides?: Partial<CorreoDimensions>) {
+function getDefaultDimensions(
+  config: Awaited<ReturnType<typeof getCorreoArgentinoRuntimeSettings>>,
+  overrides?: Partial<CorreoDimensions>
+) {
   return {
-    weight: Math.trunc(
-      overrides?.weight ?? Number(process.env.CORREO_ARGENTINO_DEFAULT_WEIGHT ?? 1000)
-    ),
-    height: Math.trunc(
-      overrides?.height ?? Number(process.env.CORREO_ARGENTINO_DEFAULT_HEIGHT ?? 20)
-    ),
-    width: Math.trunc(
-      overrides?.width ?? Number(process.env.CORREO_ARGENTINO_DEFAULT_WIDTH ?? 20)
-    ),
-    length: Math.trunc(
-      overrides?.length ?? Number(process.env.CORREO_ARGENTINO_DEFAULT_LENGTH ?? 30)
-    ),
+    weight: Math.trunc(overrides?.weight ?? config.defaultWeight),
+    height: Math.trunc(overrides?.height ?? config.defaultHeight),
+    width: Math.trunc(overrides?.width ?? config.defaultWidth),
+    length: Math.trunc(overrides?.length ?? config.defaultLength),
   };
 }
 
-function ensureBaseConfigured() {
-  const baseUrl = getBaseUrl();
-  const apiUser = process.env.CORREO_ARGENTINO_API_USER ?? "";
-  const apiPassword = process.env.CORREO_ARGENTINO_API_PASSWORD ?? "";
-  const email = process.env.CORREO_ARGENTINO_MICORREO_EMAIL ?? "";
-  const password = process.env.CORREO_ARGENTINO_MICORREO_PASSWORD ?? "";
+async function ensureBaseConfigured() {
+  const config = await getCorreoArgentinoRuntimeSettings();
 
-  if (!baseUrl || !apiUser || !apiPassword || !email || !password) {
+  if (
+    !config.baseUrl ||
+    !config.apiUser ||
+    !config.apiPassword ||
+    !config.miCorreoEmail ||
+    !config.miCorreoPassword
+  ) {
     throw new Error(
       "Correo Argentino no configurado: faltan BASE_URL, API_USER, API_PASSWORD, MICORREO_EMAIL o MICORREO_PASSWORD"
     );
   }
 
-  return { baseUrl, apiUser, apiPassword, email, password };
+  return config;
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -276,7 +271,7 @@ async function requestJson<TResponse>(
   init: RequestInit,
   token?: string
 ): Promise<TResponse> {
-  const { baseUrl } = ensureBaseConfigured();
+  const { baseUrl } = await ensureBaseConfigured();
   const headers = new Headers(init.headers);
   headers.set("Content-Type", "application/json");
   if (token) {
@@ -302,7 +297,7 @@ async function requestJson<TResponse>(
 }
 
 async function getCorreoToken() {
-  const { apiUser, apiPassword } = ensureBaseConfigured();
+  const { apiUser, apiPassword } = await ensureBaseConfigured();
   const basicAuth = Buffer.from(`${apiUser}:${apiPassword}`).toString("base64");
   const tokenResponse = await requestJson<unknown>("/token", {
     method: "POST",
@@ -328,14 +323,17 @@ async function getCorreoToken() {
 async function getCorreoAuth(): Promise<CorreoAuth> {
   if (cachedAuth) return cachedAuth;
 
-  const { email, password } = ensureBaseConfigured();
+  const { miCorreoEmail, miCorreoPassword } = await ensureBaseConfigured();
   const token = await getCorreoToken();
 
   const customerResponse = await requestJson<unknown>(
     "/users/validate",
     {
       method: "POST",
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({
+        email: miCorreoEmail,
+        password: miCorreoPassword,
+      }),
     },
     token
   );
@@ -353,7 +351,10 @@ async function getCorreoAuth(): Promise<CorreoAuth> {
   return cachedAuth;
 }
 
-export async function validateUser(payload: { email: string; password: string }) {
+export async function validateUser(payload: {
+  email: string;
+  password: string;
+}) {
   const token = await getCorreoToken();
 
   return requestJson<{ customerId: string; createdAt?: string }>(
@@ -390,7 +391,9 @@ export async function getRates<TPayload extends object>(payload: TPayload) {
   );
 }
 
-export async function importShipping<TPayload extends object>(payload: TPayload) {
+export async function importShipping<TPayload extends object>(
+  payload: TPayload
+) {
   const token = await getCorreoToken();
 
   return requestJson<Record<string, unknown> | null>(
@@ -407,13 +410,15 @@ export function resetCorreoArgentinoAuthCacheForTests() {
   cachedAuth = null;
 }
 
-export function isCorreoArgentinoConfigured() {
+export async function isCorreoArgentinoConfigured() {
+  const config = await getCorreoArgentinoRuntimeSettings();
+
   return Boolean(
-    getBaseUrl() &&
-      process.env.CORREO_ARGENTINO_API_USER &&
-      process.env.CORREO_ARGENTINO_API_PASSWORD &&
-      process.env.CORREO_ARGENTINO_MICORREO_EMAIL &&
-      process.env.CORREO_ARGENTINO_MICORREO_PASSWORD
+    config.baseUrl &&
+    config.apiUser &&
+    config.apiPassword &&
+    config.miCorreoEmail &&
+    config.miCorreoPassword
   );
 }
 
@@ -423,16 +428,17 @@ export async function quoteCorreoArgentinoShipping({
   dimensions,
 }: QuoteShippingInput): Promise<CorreoShippingRate[]> {
   const auth = await getCorreoAuth();
+  const config = await getCorreoArgentinoRuntimeSettings();
   const response = await requestJson<unknown>(
     "/rates",
     {
       method: "POST",
       body: JSON.stringify({
         customerId: auth.customerId,
-        postalCodeOrigin: process.env.CORREO_ARGENTINO_ORIGIN_POSTAL_CODE ?? "",
+        postalCodeOrigin: config.originPostalCode,
         postalCodeDestination,
         ...(deliveredType ? { deliveredType } : {}),
-        dimensions: getDefaultDimensions(dimensions),
+        dimensions: getDefaultDimensions(config, dimensions),
       }),
     },
     auth.token
@@ -495,7 +501,7 @@ export async function getCorreoArgentinoAgencies(
       address:
         streetName && streetNumber
           ? `${streetName} ${streetNumber}`
-          : streetName ?? null,
+          : (streetName ?? null),
       city: asString(address.city),
       provinceCode: asString(address.provinceCode),
       postalCode: asString(address.postalCode),
@@ -507,38 +513,36 @@ export async function importOrderShipmentToCorreoArgentino(
   order: OrderShippingInput
 ) {
   const auth = await getCorreoAuth();
+  const config = await getCorreoArgentinoRuntimeSettings();
   const deliveryType =
     order.shippingDeliveryType === "S" || order.shippingDeliveryType === "D"
       ? order.shippingDeliveryType
-      : ((process.env.CORREO_ARGENTINO_DEFAULT_DELIVERY_TYPE as
-          | CorreoDeliveryType
-          | undefined) ?? "D");
+      : config.defaultDeliveryType === "S"
+        ? "S"
+        : "D";
 
-  const productType =
-    order.shippingProductType ??
-    process.env.CORREO_ARGENTINO_DEFAULT_PRODUCT_TYPE ??
-    "CP";
+  const productType = order.shippingProductType ?? config.defaultProductType;
 
   const fallbackAddress = splitStreetAndNumber(order.customerStreet);
-  const dimensions = getDefaultDimensions();
+  const dimensions = getDefaultDimensions(config);
 
   const payload: CorreoImportShipmentRequest = {
     customerId: auth.customerId,
     extOrderId: order.id,
     orderNumber: order.id.slice(-8).toUpperCase(),
     sender: {
-      name: process.env.CORREO_ARGENTINO_SENDER_NAME ?? null,
-      phone: process.env.CORREO_ARGENTINO_SENDER_PHONE ?? null,
-      cellPhone: process.env.CORREO_ARGENTINO_SENDER_CELLPHONE ?? null,
-      email: process.env.CORREO_ARGENTINO_SENDER_EMAIL ?? null,
+      name: config.senderName || null,
+      phone: config.senderPhone || null,
+      cellPhone: config.senderCellphone || config.senderPhone || null,
+      email: config.senderEmail || null,
       originAddress: {
-        streetName: process.env.CORREO_ARGENTINO_ORIGIN_STREET ?? null,
-        streetNumber: process.env.CORREO_ARGENTINO_ORIGIN_STREET_NUMBER ?? null,
-        floor: process.env.CORREO_ARGENTINO_ORIGIN_FLOOR ?? null,
-        apartment: process.env.CORREO_ARGENTINO_ORIGIN_APARTMENT ?? null,
-        city: process.env.CORREO_ARGENTINO_ORIGIN_CITY ?? null,
-        provinceCode: process.env.CORREO_ARGENTINO_ORIGIN_PROVINCE_CODE ?? null,
-        postalCode: process.env.CORREO_ARGENTINO_ORIGIN_POSTAL_CODE ?? null,
+        streetName: config.originStreet || null,
+        streetNumber: config.originStreetNumber || null,
+        floor: config.originFloor || null,
+        apartment: config.originApartment || null,
+        city: config.originCity || null,
+        provinceCode: config.originProvinceCode || null,
+        postalCode: config.originPostalCode || null,
       },
     },
     recipient: {
@@ -552,11 +556,12 @@ export async function importOrderShipmentToCorreoArgentino(
       productType,
       agency:
         deliveryType === "S"
-          ? order.shippingAgency ?? process.env.CORREO_ARGENTINO_DEFAULT_AGENCY ?? null
+          ? (order.shippingAgency ?? config.defaultAgency) || null
           : null,
       address: {
         streetName: order.customerStreet.trim() || fallbackAddress.streetName,
-        streetNumber: order.customerStreetNumber?.trim() || fallbackAddress.streetNumber,
+        streetNumber:
+          order.customerStreetNumber?.trim() || fallbackAddress.streetNumber,
         floor: order.customerFloor?.trim() ?? "",
         apartment: order.customerApartment?.trim() ?? "",
         city: order.customerCity,
@@ -595,9 +600,7 @@ export async function importOrderShipmentToCorreoArgentino(
 
 function parseCorreoEventDate(value: string | undefined) {
   if (!value) return 0;
-  const match = value.match(
-    /^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$/
-  );
+  const match = value.match(/^(\d{2})-(\d{2})-(\d{4})\s+(\d{2}):(\d{2})$/);
   if (!match) return Date.parse(value) || 0;
   const [, day, month, year, hour, minute] = match;
   return new Date(
@@ -627,7 +630,8 @@ export async function getCorreoArgentinoTracking(shippingId: string) {
   const sortedEvents = [...events].sort(
     (a, b) => parseCorreoEventDate(b.date) - parseCorreoEventDate(a.date)
   );
-  const lastEvent = sortedEvents.length > 0 ? sortedEvents[0]?.event ?? null : null;
+  const lastEvent =
+    sortedEvents.length > 0 ? (sortedEvents[0]?.event ?? null) : null;
 
   return {
     trackingNumber: responseItem?.trackingNumber ?? null,

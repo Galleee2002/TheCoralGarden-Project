@@ -93,28 +93,28 @@ export default async function ConfiguracionPage() {
 
       <Tabs defaultValue="apariencia" className="gap-6">
         <div className="mb-6">
-          <TabsList className="grid h-auto w-full auto-rows-fr grid-cols-1 gap-2 rounded-card border border-border/40 bg-card-light p-2 sm:grid-cols-2 xl:grid-cols-4">
+          <TabsList className="rounded-card border-border/40 bg-card-light grid h-auto w-full auto-rows-fr grid-cols-1 gap-2 border p-2 sm:grid-cols-2 xl:grid-cols-4">
             <TabsTrigger
               value="apariencia"
-              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+              className="text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal data-[state=active]:shadow-none sm:text-base"
             >
               Apariencia
             </TabsTrigger>
             <TabsTrigger
               value="nosotros"
-              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+              className="text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal data-[state=active]:shadow-none sm:text-base"
             >
               Nosotros
             </TabsTrigger>
             <TabsTrigger
               value="servicios"
-              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+              className="text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal data-[state=active]:shadow-none sm:text-base"
             >
               Servicios
             </TabsTrigger>
             <TabsTrigger
               value="correo"
-              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+              className="text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal data-[state=active]:shadow-none sm:text-base"
             >
               Correo Argentino
             </TabsTrigger>
@@ -126,10 +126,12 @@ export default async function ConfiguracionPage() {
             {appearanceSlides.map((slide) => (
               <div
                 key={slide.index}
-                className="rounded-card border border-border/50 bg-card p-6 shadow-sm"
+                className="rounded-card border-border/50 bg-card border p-6 shadow-sm"
               >
-                <div className="mb-5 border-b border-border/50 pb-4">
-                  <h3 className="text-lg font-semibold text-text-primary">{slide.title}</h3>
+                <div className="border-border/50 mb-5 border-b pb-4">
+                  <h3 className="text-text-primary text-lg font-semibold">
+                    {slide.title}
+                  </h3>
                 </div>
                 <SettingSlideCard
                   slideIndex={slide.index}
@@ -144,12 +146,12 @@ export default async function ConfiguracionPage() {
         </TabsContent>
 
         <TabsContent value="nosotros">
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          <div className="rounded-card border-border/50 bg-card border p-6 shadow-sm">
+            <h2 className="text-text-primary mb-1 flex items-center gap-2 text-lg font-semibold">
+              <span className="bg-text-secondary inline-block h-5 w-0.5 rounded-full" />
               Galería &ldquo;Sobre nosotros&rdquo;
             </h2>
-            <p className="mb-6 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-6 text-sm">
               Las 3 fotos verticales debajo del texto principal.
             </p>
             <div className="grid gap-6 sm:grid-cols-3">
@@ -185,17 +187,19 @@ export default async function ConfiguracionPage() {
         </TabsContent>
 
         <TabsContent value="servicios">
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          <div className="rounded-card border-border/50 bg-card border p-6 shadow-sm">
+            <h2 className="text-text-primary mb-1 flex items-center gap-2 text-lg font-semibold">
+              <span className="bg-text-secondary inline-block h-5 w-0.5 rounded-full" />
               Imágenes de servicios
             </h2>
-            <p className="mb-6 text-sm text-muted-foreground">
+            <p className="text-muted-foreground mb-6 text-sm">
               Una imagen por cada tarjeta de servicio.
             </p>
             <div className="grid gap-6 sm:grid-cols-3">
               <div>
-                <p className="mb-2 text-sm font-medium">Venta y asesoramiento</p>
+                <p className="mb-2 text-sm font-medium">
+                  Venta y asesoramiento
+                </p>
                 <SettingImageCard
                   settingKey="service_venta_image"
                   currentUrl={serviceVenta}
@@ -211,7 +215,9 @@ export default async function ConfiguracionPage() {
                 />
               </div>
               <div>
-                <p className="mb-2 text-sm font-medium">Reparación y mantenimiento</p>
+                <p className="mb-2 text-sm font-medium">
+                  Reparación y mantenimiento
+                </p>
                 <SettingImageCard
                   settingKey="service_reparacion_image"
                   currentUrl={serviceReparacion}
@@ -223,20 +229,39 @@ export default async function ConfiguracionPage() {
         </TabsContent>
 
         <TabsContent value="correo">
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+          <div className="rounded-card border-border/50 bg-card border p-6 shadow-sm">
+            <h2 className="text-text-primary mb-1 flex items-center gap-2 text-lg font-semibold">
+              <span className="bg-text-secondary inline-block h-5 w-0.5 rounded-full" />
               Operación de Correo Argentino
             </h2>
-            <p className="mb-6 text-sm text-muted-foreground">
-              Configurá remitente, origen y sincronizá el customerId de MiCorreo.
+            <p className="text-muted-foreground mb-6 text-sm">
+              Configurá credenciales, remitente, origen, defaults de envío y
+              sincronizá el customerId de MiCorreo.
             </p>
             <CorreoArgentinoSettingsCard
               customerId={correoSettings.customerId}
+              apiPasswordConfigured={correoSettings.apiPasswordConfigured}
+              miCorreoPasswordConfigured={
+                correoSettings.miCorreoPasswordConfigured
+              }
               defaultValues={{
+                baseUrl: correoSettings.baseUrl,
+                apiUser: correoSettings.apiUser,
+                apiPassword: "",
+                miCorreoEmail: correoSettings.miCorreoEmail,
+                miCorreoPassword: "",
+                defaultDeliveryType: correoSettings.defaultDeliveryType,
+                defaultProductType: correoSettings.defaultProductType,
+                defaultAgency: correoSettings.defaultAgency,
+                defaultWeight: correoSettings.defaultWeight,
+                defaultHeight: correoSettings.defaultHeight,
+                defaultLength: correoSettings.defaultLength,
+                defaultWidth: correoSettings.defaultWidth,
+                defaultProvinceCode: correoSettings.defaultProvinceCode,
                 senderName: correoSettings.senderName,
                 senderEmail: correoSettings.senderEmail,
                 senderPhone: correoSettings.senderPhone,
+                senderCellphone: correoSettings.senderCellphone,
                 originStreet: correoSettings.originStreet,
                 originStreetNumber: correoSettings.originStreetNumber,
                 originFloor: correoSettings.originFloor ?? "",

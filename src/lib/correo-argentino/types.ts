@@ -107,6 +107,7 @@ export interface CorreoArgentinoShippingSettings {
   senderName: string;
   senderEmail: string;
   senderPhone: string;
+  senderCellphone: string | null;
   originStreet: string;
   originStreetNumber: string;
   originFloor: string | null;

@@ -142,32 +142,36 @@ La operación de Correo Argentino se administra desde `/admin/configuracion`, ta
 
 Ahí se guardan:
 
+- URL base API
+- usuario API
+- password API cifrado
+- email de MiCorreo
+- password de MiCorreo cifrado
+- defaults de envío y dimensiones
 - remitente
 - email del remitente
 - teléfono
+- celular del remitente
 - dirección de origen
 - provincia origen
 - código postal origen
 - `customerId`
 
-El `customerId` no se ingresa manualmente en esta implementación. Se sincroniza usando:
+El `customerId` no se ingresa manualmente en esta implementación. Se sincroniza usando las credenciales de MiCorreo guardadas desde el admin.
 
-- `CORREO_ARGENTINO_MICORREO_EMAIL`
-- `CORREO_ARGENTINO_MICORREO_PASSWORD`
+Los passwords se guardan cifrados en `SiteSetting` y requieren `SETTINGS_ENCRYPTION_KEY` en el entorno server.
 
 La acción admin llama a `/users/validate` y persiste el resultado en `SiteSetting`.
 
 ## Variables de entorno
 
-Estas variables son obligatorias para la integración:
+Para Correo Argentino solo es obligatoria:
 
-- `CORREO_ARGENTINO_BASE_URL`
-- `CORREO_ARGENTINO_API_USER`
-- `CORREO_ARGENTINO_API_PASSWORD`
-- `CORREO_ARGENTINO_MICORREO_EMAIL`
-- `CORREO_ARGENTINO_MICORREO_PASSWORD`
+- `SETTINGS_ENCRYPTION_KEY`
 
 Además siguen siendo necesarias las de Mercado Pago, Supabase, Cloudinary y correo transaccional.
+
+Las variables legacy `CORREO_ARGENTINO_*` siguen funcionando como fallback de migración, pero la operación esperada es configurar Correo desde `/admin/configuracion`.
 
 La referencia mínima quedó en [.env.example](/Users/gaeldev/Desktop/TheCoralGarden-Project/.env.example).
 

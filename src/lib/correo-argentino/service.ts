@@ -1,6 +1,10 @@
 import type { Order } from "@prisma/client";
 import { prisma } from "@/lib/prisma/client";
-import { getRates, importShipping, validateUser } from "@/lib/correo-argentino/client";
+import {
+  getRates,
+  importShipping,
+  validateUser,
+} from "@/lib/correo-argentino/client";
 import {
   buildImportRequest,
   buildQuotePayload,
@@ -9,7 +13,10 @@ import {
   QuoteCartItem,
   selectBestRate,
 } from "@/lib/correo-argentino/mappers";
-import { requireCorreoArgentinoShippingSettings } from "@/lib/correo-argentino/settings";
+import {
+  getCorreoArgentinoRuntimeSettings,
+  requireCorreoArgentinoShippingSettings,
+} from "@/lib/correo-argentino/settings";
 import type {
   CorreoArgentinoImportResult,
   CorreoArgentinoQuotePayload,
@@ -40,7 +47,9 @@ export async function quoteShippingForItems(params: {
     },
   });
 
-  if (products.length !== new Set(params.items.map((item) => item.productId)).size) {
+  if (
+    products.length !== new Set(params.items.map((item) => item.productId)).size
+  ) {
     throw new Error("Uno o más productos ya no están disponibles.");
   }
 
@@ -86,7 +95,8 @@ export async function importOrderShipping(params: {
   if (!params.order.shippingRatePayload) {
     return {
       status: "FAILED",
-      errorMessage: "La orden no tiene una cotización de Correo Argentino asociada.",
+      errorMessage:
+        "La orden no tiene una cotización de Correo Argentino asociada.",
     } satisfies CorreoArgentinoImportResult;
   }
 
@@ -94,7 +104,8 @@ export async function importOrderShipping(params: {
     const settings = await requireCorreoArgentinoShippingSettings();
     const importRequest = buildImportRequest({
       order: params.order,
-      quotePayload: params.order.shippingRatePayload as CorreoArgentinoQuotePayload,
+      quotePayload: params.order
+        .shippingRatePayload as CorreoArgentinoQuotePayload,
       settings,
     });
     const rawResponse = await importShipping(importRequest);
@@ -107,18 +118,20 @@ export async function importOrderShipping(params: {
   } catch (error) {
     return {
       status: "FAILED",
-      errorMessage: error instanceof Error ? error.message : "Error al importar el envío.",
+      errorMessage:
+        error instanceof Error ? error.message : "Error al importar el envío.",
     } satisfies CorreoArgentinoImportResult;
   }
 }
 
 export async function resolveCorreoArgentinoCustomerId() {
-  const email = process.env.CORREO_ARGENTINO_MICORREO_EMAIL;
-  const password = process.env.CORREO_ARGENTINO_MICORREO_PASSWORD;
+  const settings = await getCorreoArgentinoRuntimeSettings();
+  const email = settings.miCorreoEmail;
+  const password = settings.miCorreoPassword;
 
   if (!email || !password) {
     throw new Error(
-      "Faltan las variables CORREO_ARGENTINO_MICORREO_EMAIL y/o CORREO_ARGENTINO_MICORREO_PASSWORD.",
+      "Falta configurar el email y/o password de MiCorreo en Correo Argentino."
     );
   }
 

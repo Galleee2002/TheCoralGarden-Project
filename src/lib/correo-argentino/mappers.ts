@@ -66,17 +66,17 @@ const PROVINCE_NAME_TO_CODE: Record<string, string> = {
   misiones: "N",
   formosa: "P",
   neuquen: "Q",
-  "neuquén": "Q",
+  neuquén: "Q",
   "rio negro": "R",
   "río negro": "R",
   "santa fe": "S",
   tucuman: "T",
-  "tucumán": "T",
+  tucumán: "T",
   chubut: "U",
   "tierra del fuego": "V",
   corrientes: "W",
   cordoba: "X",
-  "córdoba": "X",
+  córdoba: "X",
   jujuy: "Y",
   "santa cruz": "Z",
 };
@@ -93,7 +93,7 @@ export function resolveProvinceCode(value: string) {
 
   if (!code) {
     throw new Error(
-      `No se pudo convertir la provincia "${value}" al código requerido por Correo Argentino.`,
+      `No se pudo convertir la provincia "${value}" al código requerido por Correo Argentino.`
     );
   }
 
@@ -124,14 +124,18 @@ export function buildRateRequest(params: {
   products: ProductWithShippingDimensions[];
   items: QuoteCartItem[];
 }) {
-  const productMap = new Map(params.products.map((product) => [product.id, product]));
+  const productMap = new Map(
+    params.products.map((product) => [product.id, product])
+  );
 
   const dimensions = params.items.reduce(
     (acc, item) => {
       const product = productMap.get(item.productId);
 
       if (!product) {
-        throw new Error("Uno o más productos no están disponibles para cotizar.");
+        throw new Error(
+          "Uno o más productos no están disponibles para cotizar."
+        );
       }
 
       if (
@@ -141,7 +145,7 @@ export function buildRateRequest(params: {
         product.shippingLengthCm <= 0
       ) {
         throw new Error(
-          `El producto "${product.name}" no tiene peso y dimensiones de envío configurados.`,
+          `El producto "${product.name}" no tiene peso y dimensiones de envío configurados.`
         );
       }
 
@@ -152,7 +156,7 @@ export function buildRateRequest(params: {
 
       return acc;
     },
-    { weight: 0, height: 0, width: 0, length: 0 },
+    { weight: 0, height: 0, width: 0, length: 0 }
   );
 
   return {
@@ -168,7 +172,9 @@ export function selectBestRate(rates: CorreoArgentinoRate[]) {
   const homeRates = rates.filter((rate) => rate.deliveredType === "D");
 
   if (homeRates.length === 0) {
-    throw new Error("Correo Argentino no devolvió tarifas válidas para envío a domicilio.");
+    throw new Error(
+      "Correo Argentino no devolvió tarifas válidas para envío a domicilio."
+    );
   }
 
   return [...homeRates].sort((a, b) => {
@@ -213,9 +219,10 @@ export function buildImportRequest(params: {
   quotePayload: CorreoArgentinoQuotePayload;
   settings: CorreoArgentinoShippingSettings;
 }) {
-  const request = params.quotePayload.request as unknown as CorreoArgentinoRateRequest;
-  const selectedRate =
-    params.quotePayload.selectedRate as unknown as CorreoArgentinoQuoteResult;
+  const request = params.quotePayload
+    .request as unknown as CorreoArgentinoRateRequest;
+  const selectedRate = params.quotePayload
+    .selectedRate as unknown as CorreoArgentinoQuoteResult;
   const destinationAddress = splitStreetAddress(params.order.customerStreet);
 
   return {
@@ -225,7 +232,7 @@ export function buildImportRequest(params: {
     sender: {
       name: params.settings.senderName,
       phone: params.settings.senderPhone,
-      cellPhone: params.settings.senderPhone,
+      cellPhone: params.settings.senderCellphone || params.settings.senderPhone,
       email: params.settings.senderEmail,
       originAddress: {
         streetName: params.settings.originStreet,

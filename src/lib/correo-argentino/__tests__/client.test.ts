@@ -8,6 +8,39 @@ import {
   toCorreoProvinceCode,
 } from "../client";
 
+vi.mock("@/lib/correo-argentino/settings", () => ({
+  getCorreoArgentinoRuntimeSettings: vi.fn(async () => ({
+    baseUrl: process.env.CORREO_ARGENTINO_BASE_URL ?? "",
+    apiUser: process.env.CORREO_ARGENTINO_API_USER ?? "",
+    apiPassword: process.env.CORREO_ARGENTINO_API_PASSWORD ?? "",
+    miCorreoEmail: process.env.CORREO_ARGENTINO_MICORREO_EMAIL ?? "",
+    miCorreoPassword: process.env.CORREO_ARGENTINO_MICORREO_PASSWORD ?? "",
+    originPostalCode: process.env.CORREO_ARGENTINO_ORIGIN_POSTAL_CODE ?? "",
+    defaultDeliveryType:
+      process.env.CORREO_ARGENTINO_DEFAULT_DELIVERY_TYPE ?? "D",
+    defaultProductType:
+      process.env.CORREO_ARGENTINO_DEFAULT_PRODUCT_TYPE ?? "CP",
+    defaultAgency: process.env.CORREO_ARGENTINO_DEFAULT_AGENCY ?? "",
+    defaultWeight: Number(process.env.CORREO_ARGENTINO_DEFAULT_WEIGHT ?? 1000),
+    defaultHeight: Number(process.env.CORREO_ARGENTINO_DEFAULT_HEIGHT ?? 20),
+    defaultWidth: Number(process.env.CORREO_ARGENTINO_DEFAULT_WIDTH ?? 20),
+    defaultLength: Number(process.env.CORREO_ARGENTINO_DEFAULT_LENGTH ?? 30),
+    senderName: process.env.CORREO_ARGENTINO_SENDER_NAME ?? "",
+    senderEmail: process.env.CORREO_ARGENTINO_SENDER_EMAIL ?? "",
+    senderPhone: process.env.CORREO_ARGENTINO_SENDER_PHONE ?? "",
+    senderCellphone: process.env.CORREO_ARGENTINO_SENDER_CELLPHONE ?? "",
+    originStreet: process.env.CORREO_ARGENTINO_ORIGIN_STREET ?? "",
+    originStreetNumber: process.env.CORREO_ARGENTINO_ORIGIN_STREET_NUMBER ?? "",
+    originFloor: process.env.CORREO_ARGENTINO_ORIGIN_FLOOR ?? "",
+    originApartment: process.env.CORREO_ARGENTINO_ORIGIN_APARTMENT ?? "",
+    originCity: process.env.CORREO_ARGENTINO_ORIGIN_CITY ?? "",
+    originProvinceCode:
+      process.env.CORREO_ARGENTINO_ORIGIN_PROVINCE_CODE ?? "B",
+    defaultProvinceCode:
+      process.env.CORREO_ARGENTINO_DEFAULT_PROVINCE_CODE ?? "B",
+  })),
+}));
+
 const originalEnv = process.env;
 
 function jsonResponse(data: unknown, init?: ResponseInit) {
