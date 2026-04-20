@@ -65,7 +65,7 @@ export function CorreoArgentinoSettingsCard({
 
   const handleSave = async () => {
     setSaving(true);
-    const result = await upsertCorreoArgentinoSettings({
+    const payload = {
       ...formValues,
       originProvinceCode: formValues.originProvinceCode.toUpperCase(),
       originPostalCode: formValues.originPostalCode.toUpperCase(),
@@ -74,7 +74,8 @@ export function CorreoArgentinoSettingsCard({
       defaultHeight: Number(formValues.defaultHeight),
       defaultLength: Number(formValues.defaultLength),
       defaultWidth: Number(formValues.defaultWidth),
-    } as CorreoArgentinoSettingsInput);
+    } as CorreoArgentinoSettingsInput;
+    const result = await upsertCorreoArgentinoSettings(payload);
     setSaving(false);
 
     if (result?.data) {
@@ -87,7 +88,16 @@ export function CorreoArgentinoSettingsCard({
 
   const handleSyncCustomerId = async () => {
     setSyncing(true);
-    const result = await syncCorreoArgentinoCustomerId({});
+    const result = await syncCorreoArgentinoCustomerId({
+      ...formValues,
+      originProvinceCode: formValues.originProvinceCode.toUpperCase(),
+      originPostalCode: formValues.originPostalCode.toUpperCase(),
+      defaultProvinceCode: formValues.defaultProvinceCode.toUpperCase(),
+      defaultWeight: Number(formValues.defaultWeight),
+      defaultHeight: Number(formValues.defaultHeight),
+      defaultLength: Number(formValues.defaultLength),
+      defaultWidth: Number(formValues.defaultWidth),
+    } as CorreoArgentinoSettingsInput);
     setSyncing(false);
 
     if (result?.data?.customerId) {
