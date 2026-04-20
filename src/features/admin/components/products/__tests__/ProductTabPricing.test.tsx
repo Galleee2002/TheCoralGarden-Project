@@ -1,7 +1,7 @@
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { FormProvider, useForm } from "react-hook-form";
-import { describe, expect, it, vi } from "vitest";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
+import { describe, expect, it } from "vitest";
 import { ProductTabPricing } from "../ProductTabPricing";
 
 type ProductPricingValues = {
@@ -28,24 +28,24 @@ function ProductPricingForm() {
   return (
     <FormProvider {...form}>
       <ProductTabPricing />
+      <WatchedPrice />
     </FormProvider>
   );
 }
 
+function WatchedPrice() {
+  const price = useWatch<ProductPricingValues>({ name: "price" });
+
+  return <output data-testid="price-value">{String(price)}</output>;
+}
+
 describe("ProductTabPricing", () => {
   it("keeps numeric inputs renderable when a value is cleared", async () => {
-    const consoleError = vi.spyOn(console, "error").mockImplementation(() => {});
-
     render(<ProductPricingForm />);
 
     await userEvent.clear(screen.getByRole("spinbutton", { name: /precio/i }));
 
     expect(screen.getByRole("spinbutton", { name: /precio/i })).toHaveValue(null);
-    expect(consoleError).not.toHaveBeenCalledWith(
-      expect.stringContaining("Received NaN for the `value` attribute"),
-      expect.anything(),
-    );
-
-    consoleError.mockRestore();
+    expect(screen.getByTestId("price-value")).not.toHaveTextContent("NaN");
   });
 });

@@ -10,6 +10,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 
+function parseNumberInput(value: string, valueAsNumber: number) {
+  return value === "" || Number.isNaN(valueAsNumber) ? "" : valueAsNumber;
+}
+
+function toNumberInputValue(value: unknown) {
+  if (value === "") return "";
+
+  return typeof value === "number" && !Number.isNaN(value) ? value : "";
+}
+
 export function ProductTabPricing() {
   const form = useFormContext();
 
@@ -29,7 +39,10 @@ export function ProductTabPricing() {
                   step={0.01}
                   className="min-h-11"
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={toNumberInputValue(field.value)}
+                  onChange={(e) =>
+                    field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -48,7 +61,10 @@ export function ProductTabPricing() {
                   min={0}
                   className="min-h-11"
                   {...field}
-                  onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                  value={toNumberInputValue(field.value)}
+                  onChange={(e) =>
+                    field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                  }
                 />
               </FormControl>
               <FormMessage />
@@ -81,7 +97,10 @@ export function ProductTabPricing() {
                     step={1}
                     className="min-h-11"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    value={toNumberInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -101,7 +120,10 @@ export function ProductTabPricing() {
                     step={1}
                     className="min-h-11"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    value={toNumberInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -121,7 +143,10 @@ export function ProductTabPricing() {
                     step={1}
                     className="min-h-11"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    value={toNumberInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                    }
                   />
                 </FormControl>
                 <FormMessage />
@@ -141,7 +166,10 @@ export function ProductTabPricing() {
                     step={1}
                     className="min-h-11"
                     {...field}
-                    onChange={(e) => field.onChange(e.target.valueAsNumber)}
+                    value={toNumberInputValue(field.value)}
+                    onChange={(e) =>
+                      field.onChange(parseNumberInput(e.target.value, e.target.valueAsNumber))
+                    }
                   />
                 </FormControl>
                 <FormMessage />
