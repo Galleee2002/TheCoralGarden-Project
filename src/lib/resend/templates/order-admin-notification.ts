@@ -3,6 +3,7 @@ import type { OrderEmailData } from "../types";
 
 export function buildOrderAdminNotificationHtml(data: OrderEmailData): string {
   const shortId = data.orderId.slice(-8).toUpperCase();
+  const hasTracking = Boolean(data.shippingTrackingNumber);
 
   const itemsHtml = data.items
     .map(
@@ -19,7 +20,7 @@ export function buildOrderAdminNotificationHtml(data: OrderEmailData): string {
         <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; text-align: right; color: #111C24;">
           ${formatPrice(item.unitPrice * item.quantity)}
         </td>
-      </tr>`,
+      </tr>`
     )
     .join("");
 
@@ -66,6 +67,16 @@ export function buildOrderAdminNotificationHtml(data: OrderEmailData): string {
                   <strong>Ciudad:</strong> ${data.customerCity}<br />
                   <strong>Provincia:</strong> ${data.customerProvince}<br />
                   <strong>Código postal:</strong> ${data.customerZip}
+                </p>
+              </div>
+
+              <div style="background-color: #F8F8F8; border-radius: 10px; padding: 20px; margin-bottom: 24px;">
+                <h3 style="margin: 0 0 12px; color: #042F34; font-size: 15px; font-weight: 700;">
+                  Logística
+                </h3>
+                <p style="margin: 0; color: #111C24; font-size: 14px; line-height: 1.8;">
+                  <strong>Carrier:</strong> ${data.shippingCarrier ?? "Correo Argentino"}<br />
+                  <strong>Tracking:</strong> ${hasTracking ? data.shippingTrackingNumber : "Pendiente de sincronización"}
                 </p>
               </div>
 

@@ -16,4 +16,8 @@ export type OrderEmailData = {
   shippingCost: number;
   total: number;
   orderId: string;
+  shippingCarrier?: string | null;
+  shippingProductName?: string | null;
+  shippingDeliveryLabel?: string | null;
+  shippingTrackingNumber?: string | null;
 };

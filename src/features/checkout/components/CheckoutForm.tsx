@@ -15,20 +15,36 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useCartStore } from "@/features/cart/store/cartStore";
 import { createOrder } from "@/features/checkout/actions/createOrder";
 import { createMercadoPagoPreference } from "@/features/checkout/actions/createMercadoPagoPreference";
+import {
+  getShippingAgencies,
+  quoteShipping,
+} from "@/features/checkout/actions/shippingActions";
+import { SHIPPING_DELIVERY_LABEL, ShippingDeliveryType } from "@/types/shipping";
 import { toast } from "sonner";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, MapPin, ShoppingBag, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
+import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   customerName: z.string().min(2, "Nombre requerido"),
   customerEmail: z.string().email("Email inválido"),
   customerPhone: z.string().min(6, "Teléfono requerido"),
-  customerStreet: z.string().min(3, "Dirección requerida"),
+  customerStreet: z.string().min(3, "Calle requerida"),
+  customerStreetNumber: z.string().min(1, "Altura requerida"),
+  customerFloor: z.string().optional(),
+  customerApartment: z.string().optional(),
   customerCity: z.string().min(2, "Ciudad requerida"),
   customerProvince: z.string().min(2, "Provincia requerida"),
   customerZip: z.string().min(3, "Código postal requerido"),
@@ -36,11 +52,32 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-const SHIPPING_COST = 0; // Free shipping or calculated later
+type ShippingRate = {
+  deliveredType: ShippingDeliveryType;
+  productType: string;
+  productName: string;
+  price: number;
+  deliveryTimeMin: string | null;
+  deliveryTimeMax: string | null;
+  validTo: string | null;
+};
+
+type ShippingAgency = {
+  code: string;
+  name: string;
+  address: string | null;
+  city: string | null;
+};
 
 export function CheckoutForm() {
   const { items, subtotal, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [quoting, setQuoting] = useState(false);
+  const [loadingAgencies, setLoadingAgencies] = useState(false);
+  const [rates, setRates] = useState<ShippingRate[]>([]);
+  const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
+  const [agencies, setAgencies] = useState<ShippingAgency[]>([]);
+  const [selectedAgencyCode, setSelectedAgencyCode] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -49,13 +86,72 @@ export function CheckoutForm() {
       customerEmail: "",
       customerPhone: "",
       customerStreet: "",
+      customerStreetNumber: "",
+      customerFloor: "",
+      customerApartment: "",
       customerCity: "",
       customerProvince: "",
       customerZip: "",
     },
   });
 
-  const total = subtotal() + SHIPPING_COST;
+  const shippingCost = selectedRate?.price ?? 0;
+  const total = subtotal() + shippingCost;
+
+  const selectedAgency = agencies.find(
+    (agency) => agency.code === selectedAgencyCode
+  );
+
+  const handleQuote = async () => {
+    const valid = await form.trigger([
+      "customerZip",
+      "customerProvince",
+      "customerStreet",
+      "customerStreetNumber",
+      "customerCity",
+    ]);
+
+    if (!valid) return;
+
+    setQuoting(true);
+    setSelectedRate(null);
+    setSelectedAgencyCode("");
+    setAgencies([]);
+
+    const result = await quoteShipping({
+      customerZip: form.getValues("customerZip"),
+    });
+    setQuoting(false);
+
+    if (result?.data?.rates?.length) {
+      setRates(result.data.rates);
+    } else {
+      setRates([]);
+      toast.error(result?.serverError ?? "No se pudo cotizar el envío");
+    }
+  };
+
+  const handleSelectRate = async (rate: ShippingRate) => {
+    setSelectedRate(rate);
+    setSelectedAgencyCode("");
+
+    if (rate.deliveredType !== ShippingDeliveryType.AGENCY) {
+      return;
+    }
+
+    setLoadingAgencies(true);
+    const result = await getShippingAgencies({
+      customerProvince: form.getValues("customerProvince"),
+    });
+    setLoadingAgencies(false);
+
+    if (result?.data?.agencies?.length) {
+      setAgencies(result.data.agencies);
+    } else {
+      setAgencies([]);
+      toast.error(result?.serverError ?? "No se pudieron cargar sucursales");
+    }
+  };
 
   const onSubmit = async (values: FormValues) => {
     if (items.length === 0) {
@@ -63,10 +159,29 @@ export function CheckoutForm() {
       return;
     }
 
+    if (!selectedRate) {
+      toast.error("Calculá y seleccioná un envío antes de pagar");
+      return;
+    }
+
+    if (
+      selectedRate.deliveredType === ShippingDeliveryType.AGENCY &&
+      !selectedAgency
+    ) {
+      toast.error("Seleccioná una sucursal de Correo Argentino");
+      return;
+    }
+
     setLoading(true);
     try {
       const orderResult = await createOrder({
         ...values,
+        shippingDeliveryType: selectedRate.deliveredType,
+        shippingProductType: selectedRate.productType,
+        shippingProductName: selectedRate.productName,
+        shippingCost: selectedRate.price,
+        shippingAgency: selectedAgency?.code,
+        shippingAgencyName: selectedAgency?.name,
         items: items.map((item) => ({
           productId: item.productId,
           quantity: item.quantity,
@@ -74,7 +189,7 @@ export function CheckoutForm() {
       });
 
       if (!orderResult?.data?.orderId) {
-        toast.error("Error al crear la orden");
+        toast.error(orderResult?.serverError ?? "Error al crear la orden");
         return;
       }
 
@@ -83,7 +198,7 @@ export function CheckoutForm() {
       });
 
       if (!mpResult?.data?.initPoint) {
-        toast.error("Error al procesar el pago");
+        toast.error(mpResult?.serverError ?? "Error al procesar el pago");
         return;
       }
 
@@ -110,11 +225,10 @@ export function CheckoutForm() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      {/* Form */}
       <div className="lg:col-span-2">
         <h2 className="mb-6 text-xl font-semibold">Datos de envío</h2>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
             <div className="grid gap-4 sm:grid-cols-2">
               <FormField
                 control={form.control}
@@ -159,7 +273,7 @@ export function CheckoutForm() {
                         type="tel"
                         inputMode="tel"
                         autoComplete="tel"
-                        placeholder="+54 9 11…"
+                        placeholder="+54 9 11..."
                         {...field}
                       />
                     </FormControl>
@@ -171,14 +285,49 @@ export function CheckoutForm() {
                 control={form.control}
                 name="customerStreet"
                 render={({ field }) => (
-                  <FormItem className="sm:col-span-2">
-                    <FormLabel>Calle y número</FormLabel>
+                  <FormItem>
+                    <FormLabel>Calle</FormLabel>
                     <FormControl>
-                      <Input
-                        autoComplete="street-address"
-                        placeholder="Av. Corrientes 1234"
-                        {...field}
-                      />
+                      <Input autoComplete="address-line1" placeholder="Av. Corrientes" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customerStreetNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Altura</FormLabel>
+                    <FormControl>
+                      <Input inputMode="numeric" placeholder="1234" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customerFloor"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Piso</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Opcional" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="customerApartment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Departamento</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Opcional" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -191,11 +340,7 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Ciudad</FormLabel>
                     <FormControl>
-                      <Input
-                        autoComplete="address-level2"
-                        placeholder="Buenos Aires"
-                        {...field}
-                      />
+                      <Input autoComplete="address-level2" placeholder="Buenos Aires" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -208,11 +353,7 @@ export function CheckoutForm() {
                   <FormItem>
                     <FormLabel>Provincia</FormLabel>
                     <FormControl>
-                      <Input
-                        autoComplete="address-level1"
-                        placeholder="Buenos Aires"
-                        {...field}
-                      />
+                      <Input autoComplete="address-level1" placeholder="Buenos Aires" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -238,20 +379,108 @@ export function CheckoutForm() {
               />
             </div>
 
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full"
-              disabled={loading}
-            >
+            <div className="rounded-card border border-border/50 bg-card-light p-4">
+              <div className="flex flex-col gap-4">
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div>
+                    <h3 className="font-semibold text-text-primary">Correo Argentino</h3>
+                    <p className="text-sm text-muted-foreground">
+                      Cotizá domicilio y sucursal antes de crear la orden.
+                    </p>
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleQuote}
+                    disabled={quoting || loading}
+                  >
+                    {quoting ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Truck className="h-4 w-4" />
+                    )}
+                    Calcular envío
+                  </Button>
+                </div>
+
+                {rates.length > 0 && (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {rates.map((rate) => {
+                      const active =
+                        selectedRate?.deliveredType === rate.deliveredType &&
+                        selectedRate?.productType === rate.productType;
+                      return (
+                        <button
+                          key={`${rate.deliveredType}-${rate.productType}`}
+                          type="button"
+                          onClick={() => handleSelectRate(rate)}
+                          className={cn(
+                            "rounded-card border bg-background p-4 text-left transition",
+                            active
+                              ? "border-btn-primary ring-2 ring-btn-primary/20"
+                              : "border-border/60 hover:border-btn-primary"
+                          )}
+                        >
+                          <span className="flex items-center gap-2 font-semibold text-text-primary">
+                            <MapPin className="h-4 w-4" />
+                            {SHIPPING_DELIVERY_LABEL[rate.deliveredType]}
+                          </span>
+                          <span className="mt-1 block text-sm text-muted-foreground">
+                            {rate.productName}
+                          </span>
+                          <span className="mt-3 block text-lg font-bold text-text-primary">
+                            {formatPrice(rate.price)}
+                          </span>
+                          {rate.deliveryTimeMin && rate.deliveryTimeMax && (
+                            <span className="mt-1 block text-xs text-muted-foreground">
+                              {rate.deliveryTimeMin} a {rate.deliveryTimeMax} días hábiles
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {selectedRate?.deliveredType === ShippingDeliveryType.AGENCY && (
+                  <div className="flex flex-col gap-2">
+                    <FormLabel>Sucursal de retiro</FormLabel>
+                    <Select
+                      value={selectedAgencyCode}
+                      onValueChange={setSelectedAgencyCode}
+                      disabled={loadingAgencies}
+                    >
+                      <SelectTrigger className="bg-background">
+                        <SelectValue
+                          placeholder={
+                            loadingAgencies
+                              ? "Cargando sucursales..."
+                              : "Seleccioná una sucursal"
+                          }
+                        />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {agencies.map((agency) => (
+                          <SelectItem key={agency.code} value={agency.code}>
+                            {agency.name}
+                            {agency.address ? ` - ${agency.address}` : ""}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <Button type="submit" size="lg" className="w-full" disabled={loading}>
               {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Pagar con MercadoPago — {formatPrice(total)}
+              Pagar con MercadoPago - {formatPrice(total)}
             </Button>
           </form>
         </Form>
       </div>
 
-      {/* Order summary */}
       <div>
         <div className="sticky top-24 rounded-xl border bg-card p-6">
           <h2 className="mb-4 text-lg font-semibold">Tu pedido</h2>
@@ -275,7 +504,7 @@ export function CheckoutForm() {
                 <div className="flex flex-1 justify-between text-sm">
                   <div>
                     <p className="font-medium">{item.name}</p>
-                    <p className="text-muted-foreground">× {item.quantity}</p>
+                    <p className="text-muted-foreground">x {item.quantity}</p>
                   </div>
                   <p className="font-semibold">
                     {formatPrice(item.price * item.quantity)}
@@ -291,7 +520,9 @@ export function CheckoutForm() {
           </div>
           <div className="flex justify-between text-muted-foreground">
             <span>Envío</span>
-            <span>{SHIPPING_COST === 0 ? "Gratis" : formatPrice(SHIPPING_COST)}</span>
+            <span>
+              {selectedRate ? formatPrice(selectedRate.price) : "Pendiente"}
+            </span>
           </div>
           <Separator className="my-4" />
           <div className="flex justify-between text-lg font-bold">

@@ -5,6 +5,7 @@ import type { OrderEmailData } from "../types";
 export function buildOrderConfirmationHtml(data: OrderEmailData): string {
   const shortId = data.orderId.slice(-8).toUpperCase();
   const supportEmail = ORDER_ADMIN_EMAIL;
+  const hasTracking = Boolean(data.shippingTrackingNumber);
 
   const itemsHtml = data.items
     .map(
@@ -18,7 +19,7 @@ export function buildOrderConfirmationHtml(data: OrderEmailData): string {
         <td style="padding: 12px 0; border-bottom: 1px solid #E5E7EB; text-align: right; color: #111C24;">
           ${formatPrice(item.unitPrice * item.quantity)}
         </td>
-      </tr>`,
+      </tr>`
     )
     .join("");
 
@@ -95,8 +96,11 @@ export function buildOrderConfirmationHtml(data: OrderEmailData): string {
                   Método de envío
                 </h3>
                 <p style="margin: 0; color: #111C24; font-size: 14px; line-height: 1.5;">
-                  Nos vamos a comunicar con vos para coordinar el envío de tu pedido.
-                  Te contactaremos por WhatsApp o email con los detalles.
+                  ${
+                    hasTracking
+                      ? `Tu pedido fue registrado con ${data.shippingCarrier ?? "Correo Argentino"}. Número de seguimiento: <strong>${data.shippingTrackingNumber}</strong>.`
+                      : "Nos vamos a comunicar con vos para coordinar el envío de tu pedido. Te contactaremos por WhatsApp o email con los detalles."
+                  }
                 </p>
               </div>
 

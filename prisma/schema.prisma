@@ -46,6 +46,9 @@ model Order {
   customerEmail    String
   customerPhone    String
   customerStreet   String
+  customerStreetNumber String?
+  customerFloor    String?
+  customerApartment String?
   customerCity     String
   customerProvince String
   customerZip      String
@@ -54,6 +57,24 @@ model Order {
   total            Decimal     @db.Decimal(10, 2)
   mpPreferenceId   String?
   mpPaymentId      String?
+  shippingCarrier          String?
+  shippingDeliveryType     String?
+  shippingProductType      String?
+  shippingProductName      String?
+  shippingAgency           String?
+  shippingAgencyName       String?
+  shippingDeliveryTimeMin  String?
+  shippingDeliveryTimeMax  String?
+  shippingQuoteValidTo     DateTime?
+  shippingExternalOrderId  String?
+  shippingImportStatus     String?
+  shippingImportError      String?
+  shippingImportedAt       DateTime?
+  shippingTrackingNumber   String?
+  shippingTrackingLastEvent String?
+  shippingTrackingLastSyncAt DateTime?
+  shippingTrackingRaw      Json?
+  shippingEmailSentAt      DateTime?
   items            OrderItem[]
   createdAt        DateTime    @default(now())
   updatedAt        DateTime    @updatedAt

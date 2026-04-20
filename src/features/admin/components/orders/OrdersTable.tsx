@@ -12,7 +12,9 @@ import { StatusBadge } from "@/components/shared/StatusBadge";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { OrderStatusSelect } from "./OrderStatusSelect";
 import { DeleteOrderButton } from "./DeleteOrderButton";
+import { ShippingActions } from "./ShippingActions";
 import type { OrderStatus } from "@/types/enums";
+import { SHIPPING_DELIVERY_LABEL, ShippingImportStatus } from "@/types/shipping";
 import { formatPrice } from "@/lib/format-price";
 
 const orderStatusVariant: Record<OrderStatus, { variant: Parameters<typeof StatusBadge>[0]["variant"]; label: string }> = {
@@ -31,6 +33,15 @@ type Order = {
   status: OrderStatus;
   total: number;
   createdAt: Date;
+  shippingCarrier: string | null;
+  shippingDeliveryType: string | null;
+  shippingProductName: string | null;
+  shippingAgencyName: string | null;
+  shippingImportStatus: string | null;
+  shippingImportError: string | null;
+  shippingTrackingNumber: string | null;
+  shippingTrackingLastEvent: string | null;
+  shippingTrackingLastSyncAt: Date | null;
 };
 
 interface OrdersTableProps {
@@ -39,6 +50,19 @@ interface OrdersTableProps {
 
 const formatDate = (d: Date) =>
   new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" }).format(d);
+
+const shippingStatusVariant = (status: string | null) => {
+  if (status === ShippingImportStatus.IMPORTED) {
+    return { variant: "paid" as const, label: "Importado" };
+  }
+  if (status === ShippingImportStatus.ERROR) {
+    return { variant: "blocked" as const, label: "Error import" };
+  }
+  return { variant: "pending" as const, label: "Pendiente" };
+};
+
+const deliveryLabel = (value: string | null) =>
+  value === "D" || value === "S" ? SHIPPING_DELIVERY_LABEL[value] : "Sin definir";
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   return (
@@ -95,6 +119,31 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     <p className="font-medium text-text-primary">{formatDate(order.createdAt)}</p>
                   </div>
                 </div>
+                <div className="mt-4 rounded-dropdown bg-card-light p-3 text-sm">
+                  <p className="text-xs font-medium text-muted-foreground">Logistica</p>
+                  <div className="mt-2 flex flex-col gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <StatusBadge
+                        variant={shippingStatusVariant(order.shippingImportStatus).variant}
+                        label={shippingStatusVariant(order.shippingImportStatus).label}
+                      />
+                      <span className="text-muted-foreground">
+                        {deliveryLabel(order.shippingDeliveryType)}
+                      </span>
+                    </div>
+                    <p className="text-text-primary">
+                      {order.shippingTrackingNumber ?? "Tracking pendiente"}
+                    </p>
+                    {order.shippingImportError && (
+                      <p className="text-destructive">{order.shippingImportError}</p>
+                    )}
+                    <ShippingActions
+                      orderId={order.id}
+                      canRetryImport={order.shippingImportStatus === ShippingImportStatus.ERROR}
+                      canRefreshTracking={order.shippingImportStatus === ShippingImportStatus.IMPORTED}
+                    />
+                  </div>
+                </div>
               </article>
             );
           })
@@ -108,14 +157,15 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 <TableHead className="w-[12%]">ID</TableHead>
                 <TableHead className="w-[25%]" noWrap={false}>Cliente</TableHead>
                 <TableHead className="w-[24%]" noWrap={false}>Estado</TableHead>
-                <TableHead className="w-[14%]">Total</TableHead>
-                <TableHead className="w-[17%]">Fecha</TableHead>
+                <TableHead className="w-[22%]" noWrap={false}>Logistica</TableHead>
+                <TableHead className="w-[12%]">Total</TableHead>
+                <TableHead className="w-[15%]">Fecha</TableHead>
                 <TableHead className="w-[18%] text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
-              <EmptyState colSpan={6} message="No hay órdenes todavía" />
+              <EmptyState colSpan={7} message="No hay órdenes todavía" />
             ) : (
               orders.map((order) => {
                 const { variant, label } = orderStatusVariant[order.status];
@@ -140,18 +190,66 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                         />
                       </div>
                     </TableCell>
+                    <TableCell noWrap={false}>
+                      <div className="flex min-w-[260px] flex-col gap-2 text-sm">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <StatusBadge
+                            variant={shippingStatusVariant(order.shippingImportStatus).variant}
+                            label={shippingStatusVariant(order.shippingImportStatus).label}
+                          />
+                          <span className="text-muted-foreground">
+                            {deliveryLabel(order.shippingDeliveryType)}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-medium">
+                            {order.shippingProductName ?? "Correo Argentino"}
+                          </p>
+                          {order.shippingAgencyName && (
+                            <p className="text-xs text-muted-foreground">
+                              {order.shippingAgencyName}
+                            </p>
+                          )}
+                          <p className="text-xs text-muted-foreground">
+                            {order.shippingTrackingNumber ?? "Tracking pendiente"}
+                          </p>
+                          {order.shippingTrackingLastEvent && (
+                            <p className="text-xs text-muted-foreground">
+                              Ultimo evento: {order.shippingTrackingLastEvent}
+                            </p>
+                          )}
+                          {order.shippingTrackingLastSyncAt && (
+                            <p className="text-xs text-muted-foreground">
+                              Sync: {formatDate(order.shippingTrackingLastSyncAt)}
+                            </p>
+                          )}
+                          {order.shippingImportError && (
+                            <p className="text-xs text-destructive">
+                              {order.shippingImportError}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    </TableCell>
                     <TableCell className="font-semibold">{formatPrice(order.total)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">
                       {formatDate(order.createdAt)}
                     </TableCell>
                     <TableCell>
                       <div className="flex justify-end">
-                        <DeleteOrderButton
-                          orderId={order.id}
-                          customerName={order.customerName}
-                          showLabel={false}
-                          className="px-3"
-                        />
+                        <div className="flex flex-col items-end gap-2">
+                          <ShippingActions
+                            orderId={order.id}
+                            canRetryImport={order.shippingImportStatus === ShippingImportStatus.ERROR}
+                            canRefreshTracking={order.shippingImportStatus === ShippingImportStatus.IMPORTED}
+                          />
+                          <DeleteOrderButton
+                            orderId={order.id}
+                            customerName={order.customerName}
+                            showLabel={false}
+                            className="px-3"
+                          />
+                        </div>
                       </div>
                     </TableCell>
                   </TableRow>

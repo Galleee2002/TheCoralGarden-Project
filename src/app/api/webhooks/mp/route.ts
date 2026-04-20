@@ -4,6 +4,11 @@ import { MercadoPagoConfig, Payment } from "mercadopago";
 import crypto from "crypto";
 import { sendOrderAdminNotificationEmail } from "@/lib/resend/send-order-admin-notification";
 import { sendOrderConfirmationEmail } from "@/lib/resend/send-order-confirmation";
+import {
+  buildOrderEmailData,
+  importShipmentForOrder,
+} from "@/lib/correo-argentino/order-shipping";
+import { isCorreoArgentinoConfigured } from "@/lib/correo-argentino/client";
 
 type MercadoPagoWebhookBody = {
   type?: string;
@@ -13,7 +18,7 @@ type MercadoPagoWebhookBody = {
 
 function getWebhookResourceId(
   request: NextRequest,
-  body: MercadoPagoWebhookBody,
+  body: MercadoPagoWebhookBody
 ): string | undefined {
   return (
     request.nextUrl.searchParams.get("data.id") ??
@@ -24,7 +29,7 @@ function getWebhookResourceId(
 
 function verifyMPSignature(
   request: NextRequest,
-  dataId: string | undefined,
+  dataId: string | undefined
 ): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
   if (!secret) return false;
@@ -52,7 +57,7 @@ function verifyMPSignature(
   if (computed.length !== v1.length) return false;
   return crypto.timingSafeEqual(
     Buffer.from(computed, "utf8"),
-    Buffer.from(v1, "utf8"),
+    Buffer.from(v1, "utf8")
   );
 }
 
@@ -197,7 +202,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    const updatedOrder = await prisma.order.findUnique({
+    let updatedOrder = await prisma.order.findUnique({
       where: { id: orderId },
       include: { items: true },
     });
@@ -207,31 +212,29 @@ export async function POST(request: NextRequest) {
     }
 
     if (newStatus === "PAID" && existingOrder.status !== "PAID") {
-      const orderEmailData = {
-        customerName: updatedOrder.customerName,
-        customerEmail: updatedOrder.customerEmail,
-        customerPhone: updatedOrder.customerPhone,
-        customerStreet: updatedOrder.customerStreet,
-        customerCity: updatedOrder.customerCity,
-        customerProvince: updatedOrder.customerProvince,
-        customerZip: updatedOrder.customerZip,
-        items: updatedOrder.items.map((item) => ({
-          productName: item.productName,
-          quantity: item.quantity,
-          unitPrice: Number(item.unitPrice),
-        })),
-        shippingCost: Number(updatedOrder.shippingCost),
-        total: Number(updatedOrder.total),
-        orderId: updatedOrder.id,
-      };
+      if (isCorreoArgentinoConfigured()) {
+        await importShipmentForOrder(updatedOrder);
+      }
 
-      sendOrderConfirmationEmail(orderEmailData).catch((err) =>
-        console.error("[Order Email Error]", err),
-      );
+      updatedOrder = await prisma.order.findUnique({
+        where: { id: orderId },
+        include: { items: true },
+      });
 
-      sendOrderAdminNotificationEmail(orderEmailData).catch((err) =>
-        console.error("[Order Admin Email Error]", err),
-      );
+      if (!updatedOrder) {
+        return NextResponse.json({ received: true });
+      }
+
+      const orderEmailData = buildOrderEmailData(updatedOrder);
+
+      await Promise.all([
+        sendOrderConfirmationEmail(orderEmailData).catch((err) =>
+          console.error("[Order Email Error]", err)
+        ),
+        sendOrderAdminNotificationEmail(orderEmailData).catch((err) =>
+          console.error("[Order Admin Email Error]", err)
+        ),
+      ]);
     }
 
     return NextResponse.json({ received: true });
@@ -239,7 +242,7 @@ export async function POST(request: NextRequest) {
     console.error("[MP Webhook Error]", error);
     return NextResponse.json(
       { error: "Webhook processing failed" },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

@@ -4,12 +4,15 @@ import userEvent from "@testing-library/user-event";
 import { CheckoutForm } from "../CheckoutForm";
 import { useCartStore } from "@/features/cart/store/cartStore";
 
-// Mock server actions — we only test form validation here
 vi.mock("@/features/checkout/actions/createOrder", () => ({
   createOrder: vi.fn(),
 }));
 vi.mock("@/features/checkout/actions/createMercadoPagoPreference", () => ({
   createMercadoPagoPreference: vi.fn(),
+}));
+vi.mock("@/features/checkout/actions/shippingActions", () => ({
+  quoteShipping: vi.fn(),
+  getShippingAgencies: vi.fn(),
 }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 
@@ -27,7 +30,9 @@ beforeEach(() => {
 });
 
 async function submitForm() {
-  const submitButton = screen.getByRole("button", { name: /pagar con mercadopago/i });
+  const submitButton = screen.getByRole("button", {
+    name: /pagar con mercadopago/i,
+  });
   await userEvent.click(submitButton);
 }
 
@@ -37,10 +42,14 @@ describe("CheckoutForm", () => {
     expect(screen.getByLabelText(/nombre completo/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/email/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/teléfono/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/calle y número/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/^calle$/i)).toBeInTheDocument();
+    expect(screen.getByLabelText(/altura/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/ciudad/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/provincia/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/código postal/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /calcular envío/i })
+    ).toBeInTheDocument();
   });
 
   it("shows validation errors when submitting empty form", async () => {
@@ -56,10 +65,10 @@ describe("CheckoutForm", () => {
 
   it("shows email format error when email field is empty on submit", async () => {
     render(<CheckoutForm />);
-    // Fill all fields EXCEPT email to isolate the email validation error
     await userEvent.type(screen.getByLabelText(/nombre completo/i), "Juan García");
     await userEvent.type(screen.getByLabelText(/teléfono/i), "1234567");
-    await userEvent.type(screen.getByLabelText(/calle y número/i), "Av. Corrientes 1234");
+    await userEvent.type(screen.getByLabelText(/^calle$/i), "Av. Corrientes");
+    await userEvent.type(screen.getByLabelText(/altura/i), "1234");
     await userEvent.type(screen.getByLabelText(/ciudad/i), "Buenos Aires");
     await userEvent.type(screen.getByLabelText(/provincia/i), "Buenos Aires");
     await userEvent.type(screen.getByLabelText(/código postal/i), "1001");
