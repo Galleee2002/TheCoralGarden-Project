@@ -28,6 +28,10 @@ model Product {
   description String
   price       Decimal     @db.Decimal(10, 2)
   stock       Int         @default(0)
+  shippingWeightGrams Int @default(0)
+  shippingHeightCm   Int @default(0)
+  shippingWidthCm    Int @default(0)
+  shippingLengthCm   Int @default(0)
   images         String[]
   specifications String[]
   featured       Boolean     @default(false)
@@ -54,6 +58,11 @@ model Order {
   customerZip      String
   subtotal         Decimal     @db.Decimal(10, 2)
   shippingCost     Decimal     @db.Decimal(10, 2)
+  shippingMethod   String      @default("correo_argentino_home")
+  shippingQuoteProvider String @default("correo_argentino")
+  shippingQuotedAt DateTime?
+  shippingRatePayload Json?
+  shippingExternalId String?
   total            Decimal     @db.Decimal(10, 2)
   mpPreferenceId   String?
   mpPaymentId      String?
@@ -99,4 +108,3 @@ enum OrderStatus {
   DELIVERED
   CANCELLED
 }
-

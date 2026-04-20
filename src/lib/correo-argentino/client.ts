@@ -164,6 +164,18 @@ const PROVINCE_CODE_MAP: Record<string, string> = {
 
 let cachedAuth: CorreoAuth | null = null;
 
+export class CorreoArgentinoError extends Error {
+  status: number;
+  details?: unknown;
+
+  constructor(message: string, status: number, details?: unknown) {
+    super(message);
+    this.name = "CorreoArgentinoError";
+    this.status = status;
+    this.details = details;
+  }
+}
+
 function stripAccents(value: string) {
   return value
     .normalize("NFD")
@@ -279,20 +291,19 @@ async function requestJson<TResponse>(
   const data = await parseResponse(response);
 
   if (!response.ok) {
-    throw new Error(
-      `Correo Argentino error ${response.status}: ${JSON.stringify(data)}`
+    throw new CorreoArgentinoError(
+      `Correo Argentino error ${response.status}: ${JSON.stringify(data)}`,
+      response.status,
+      data
     );
   }
 
   return data as TResponse;
 }
 
-async function getCorreoAuth(): Promise<CorreoAuth> {
-  if (cachedAuth) return cachedAuth;
-
-  const { apiUser, apiPassword, email, password } = ensureBaseConfigured();
+async function getCorreoToken() {
+  const { apiUser, apiPassword } = ensureBaseConfigured();
   const basicAuth = Buffer.from(`${apiUser}:${apiPassword}`).toString("base64");
-
   const tokenResponse = await requestJson<unknown>("/token", {
     method: "POST",
     headers: { Authorization: `Basic ${basicAuth}` },
@@ -310,6 +321,15 @@ async function getCorreoAuth(): Promise<CorreoAuth> {
   if (!token) {
     throw new Error("Correo Argentino token no recibido");
   }
+
+  return token;
+}
+
+async function getCorreoAuth(): Promise<CorreoAuth> {
+  if (cachedAuth) return cachedAuth;
+
+  const { email, password } = ensureBaseConfigured();
+  const token = await getCorreoToken();
 
   const customerResponse = await requestJson<unknown>(
     "/users/validate",
@@ -331,6 +351,56 @@ async function getCorreoAuth(): Promise<CorreoAuth> {
 
   cachedAuth = { token, customerId };
   return cachedAuth;
+}
+
+export async function validateUser(payload: { email: string; password: string }) {
+  const token = await getCorreoToken();
+
+  return requestJson<{ customerId: string; createdAt?: string }>(
+    "/users/validate",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    token
+  );
+}
+
+export async function getRates<TPayload extends object>(payload: TPayload) {
+  const token = await getCorreoToken();
+
+  return requestJson<{
+    customerId: string;
+    validTo: string;
+    rates: Array<{
+      deliveredType: CorreoDeliveryType;
+      productType: string;
+      productName: string;
+      price: number;
+      deliveryTimeMin: string;
+      deliveryTimeMax: string;
+    }>;
+  }>(
+    "/rates",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    token
+  );
+}
+
+export async function importShipping<TPayload extends object>(payload: TPayload) {
+  const token = await getCorreoToken();
+
+  return requestJson<Record<string, unknown> | null>(
+    "/shipping/import",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+    token
+  );
 }
 
 export function resetCorreoArgentinoAuthCacheForTests() {

@@ -21,6 +21,10 @@ const formSchema = z.object({
   description: z.string().min(10, "Mínimo 10 caracteres"),
   price: z.number().positive("Debe ser mayor a 0"),
   stock: z.number().int().min(0, "No puede ser negativo"),
+  shippingWeightGrams: z.number().int().positive("Ingresá un peso mayor a 0"),
+  shippingHeightCm: z.number().int().positive("Ingresá un alto mayor a 0"),
+  shippingWidthCm: z.number().int().positive("Ingresá un ancho mayor a 0"),
+  shippingLengthCm: z.number().int().positive("Ingresá un largo mayor a 0"),
   images: z.array(z.string().url()).min(1, "Agregá al menos una imagen principal"),
   specifications: z
     .array(z.string().min(1, "La especificación no puede estar vacía"))
@@ -47,6 +51,10 @@ interface ProductFormTabsProps {
     description?: string;
     price?: number;
     stock?: number;
+    shippingWeightGrams?: number;
+    shippingHeightCm?: number;
+    shippingWidthCm?: number;
+    shippingLengthCm?: number;
     images?: string[];
     specifications?: string[];
     categoryId?: string;
@@ -78,6 +86,10 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
       description: defaultValues?.description ?? "",
       price: defaultValues?.price ?? 0,
       stock: defaultValues?.stock ?? 0,
+      shippingWeightGrams: defaultValues?.shippingWeightGrams ?? 0,
+      shippingHeightCm: defaultValues?.shippingHeightCm ?? 0,
+      shippingWidthCm: defaultValues?.shippingWidthCm ?? 0,
+      shippingLengthCm: defaultValues?.shippingLengthCm ?? 0,
       images: defaultValues?.images ?? [],
       specifications: defaultValues?.specifications ?? [],
       categoryId: defaultValues?.categoryId ?? "",
@@ -129,7 +141,14 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
 
   const errors = form.formState.errors;
   const basicHasError = !!(errors.name || errors.slug || errors.description || errors.categoryId);
-  const pricingHasError = !!(errors.price || errors.stock);
+  const pricingHasError = !!(
+    errors.price ||
+    errors.stock ||
+    errors.shippingWeightGrams ||
+    errors.shippingHeightCm ||
+    errors.shippingWidthCm ||
+    errors.shippingLengthCm
+  );
   const mediaHasError = !!errors.images;
   const specsHasError = !!errors.specifications;
   const tabTriggerClassName =

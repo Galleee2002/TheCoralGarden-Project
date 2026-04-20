@@ -2,9 +2,11 @@ import { getSetting } from "@/features/admin/actions/settingActions";
 import { requireAdmin } from "@/lib/safe-action";
 import { SettingImageCard } from "@/features/admin/components/settings/SettingImageCard";
 import { SettingSlideCard } from "@/features/admin/components/settings/SettingSlideCard";
+import { CorreoArgentinoSettingsCard } from "@/features/admin/components/settings/CorreoArgentinoSettingsCard";
 import { AdminPageHeader } from "@/components/shared/AdminPageHeader";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { HERO_SETTING_KEYS } from "@/lib/constants/hero-settings";
+import { getCorreoArgentinoSettings } from "@/lib/correo-argentino/settings";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = { title: "Admin — Configuración" };
@@ -31,6 +33,7 @@ export default async function ConfiguracionPage() {
     slide3Title,
     slide3Description,
     slide3Features,
+    correoSettings,
   ] = await Promise.all([
     getSetting(HERO_SETTING_KEYS.slide1Image),
     getSetting(HERO_SETTING_KEYS.slide1ImageLegacy),
@@ -50,9 +53,36 @@ export default async function ConfiguracionPage() {
     getSetting(HERO_SETTING_KEYS.slide3Title),
     getSetting(HERO_SETTING_KEYS.slide3Description),
     getSetting(HERO_SETTING_KEYS.slide3Features),
+    getCorreoArgentinoSettings(),
   ]);
 
   const slide1Image = heroSlide1Image || heroBannerUrlLegacy;
+  const appearanceSlides = [
+    {
+      index: 1,
+      title: "Slide 1",
+      image: slide1Image,
+      currentTitle: slide1Title,
+      currentDescription: null,
+      currentFeatures: slide1Features,
+    },
+    {
+      index: 2,
+      title: "Slide 2",
+      image: slide2Image,
+      currentTitle: slide2Title,
+      currentDescription: slide2Description,
+      currentFeatures: slide2Features,
+    },
+    {
+      index: 3,
+      title: "Slide 3",
+      image: slide3Image,
+      currentTitle: slide3Title,
+      currentDescription: slide3Description,
+      currentFeatures: slide3Features,
+    },
+  ];
 
   return (
     <div className="space-y-6">
@@ -61,66 +91,55 @@ export default async function ConfiguracionPage() {
         description="Gestioná las imágenes y ajustes globales del sitio"
       />
 
-      <Tabs defaultValue="apariencia">
-        <TabsList className="mb-6">
-          <TabsTrigger value="apariencia">Apariencia</TabsTrigger>
-          <TabsTrigger value="nosotros">Nosotros</TabsTrigger>
-          <TabsTrigger value="servicios">Servicios</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="apariencia" className="gap-6">
+        <div className="mb-6">
+          <TabsList className="grid h-auto w-full auto-rows-fr grid-cols-1 gap-2 rounded-card border border-border/40 bg-card-light p-2 sm:grid-cols-2 xl:grid-cols-4">
+            <TabsTrigger
+              value="apariencia"
+              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+            >
+              Apariencia
+            </TabsTrigger>
+            <TabsTrigger
+              value="nosotros"
+              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+            >
+              Nosotros
+            </TabsTrigger>
+            <TabsTrigger
+              value="servicios"
+              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+            >
+              Servicios
+            </TabsTrigger>
+            <TabsTrigger
+              value="correo"
+              className="h-full w-full rounded-[12px] px-4 py-3 text-center text-sm leading-tight whitespace-normal text-text-primary/70 data-[state=active]:border-border/40 data-[state=active]:bg-background data-[state=active]:text-text-primary data-[state=active]:shadow-none sm:text-base"
+            >
+              Correo Argentino
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="apariencia" className="space-y-6">
-          {/* Slide 1 */}
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
-              Hero — Slide 1
-            </h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Imagen, título y características del primer slide del hero.
-            </p>
-            <SettingSlideCard
-              slideIndex={1}
-              currentImage={slide1Image}
-              currentTitle={slide1Title}
-              currentDescription={null}
-              currentFeatures={slide1Features}
-            />
-          </div>
-
-          {/* Slide 2 */}
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
-              Hero — Slide 2
-            </h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Imagen, título y contenido del segundo slide del hero.
-            </p>
-            <SettingSlideCard
-              slideIndex={2}
-              currentImage={slide2Image}
-              currentTitle={slide2Title}
-              currentDescription={slide2Description}
-              currentFeatures={slide2Features}
-            />
-          </div>
-
-          {/* Slide 3 */}
-          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
-            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
-              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
-              Hero — Slide 3
-            </h2>
-            <p className="mb-4 text-sm text-muted-foreground">
-              Imagen, título y contenido del tercer slide del hero.
-            </p>
-            <SettingSlideCard
-              slideIndex={3}
-              currentImage={slide3Image}
-              currentTitle={slide3Title}
-              currentDescription={slide3Description}
-              currentFeatures={slide3Features}
-            />
+          <div className="space-y-4">
+            {appearanceSlides.map((slide) => (
+              <div
+                key={slide.index}
+                className="rounded-card border border-border/50 bg-card p-6 shadow-sm"
+              >
+                <div className="mb-5 border-b border-border/50 pb-4">
+                  <h3 className="text-lg font-semibold text-text-primary">{slide.title}</h3>
+                </div>
+                <SettingSlideCard
+                  slideIndex={slide.index}
+                  currentImage={slide.image}
+                  currentTitle={slide.currentTitle}
+                  currentDescription={slide.currentDescription}
+                  currentFeatures={slide.currentFeatures}
+                />
+              </div>
+            ))}
           </div>
         </TabsContent>
 
@@ -200,6 +219,33 @@ export default async function ConfiguracionPage() {
                 />
               </div>
             </div>
+          </div>
+        </TabsContent>
+
+        <TabsContent value="correo">
+          <div className="rounded-card border border-border/50 bg-card p-6 shadow-sm">
+            <h2 className="mb-1 flex items-center gap-2 text-lg font-semibold text-text-primary">
+              <span className="inline-block h-5 w-0.5 rounded-full bg-text-secondary" />
+              Operación de Correo Argentino
+            </h2>
+            <p className="mb-6 text-sm text-muted-foreground">
+              Configurá remitente, origen y sincronizá el customerId de MiCorreo.
+            </p>
+            <CorreoArgentinoSettingsCard
+              customerId={correoSettings.customerId}
+              defaultValues={{
+                senderName: correoSettings.senderName,
+                senderEmail: correoSettings.senderEmail,
+                senderPhone: correoSettings.senderPhone,
+                originStreet: correoSettings.originStreet,
+                originStreetNumber: correoSettings.originStreetNumber,
+                originFloor: correoSettings.originFloor ?? "",
+                originApartment: correoSettings.originApartment ?? "",
+                originCity: correoSettings.originCity,
+                originProvinceCode: correoSettings.originProvinceCode,
+                originPostalCode: correoSettings.originPostalCode,
+              }}
+            />
           </div>
         </TabsContent>
       </Tabs>

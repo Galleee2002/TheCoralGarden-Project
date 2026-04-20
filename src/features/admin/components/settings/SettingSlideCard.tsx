@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import Image from "next/image";
-import { X, Save } from "lucide-react";
+import { ImageIcon, Save, Type, X } from "lucide-react";
 
 interface SettingSlideCardProps {
   slideIndex: number;
@@ -72,84 +72,112 @@ export function SettingSlideCard({
   };
 
   return (
-    <div className="space-y-6">
-      {/* Image */}
-      <div className="space-y-3">
-        <p className="text-sm font-medium">Imagen de fondo</p>
+    <div className="grid gap-6 xl:grid-cols-[260px_minmax(0,1fr)]">
+      <section className="space-y-4 rounded-button border border-border/50 bg-bg-primary p-4">
+        <div className="space-y-1">
+          <p className="flex items-center gap-2 text-sm font-semibold text-text-primary">
+            <ImageIcon className="h-4 w-4 text-text-secondary" />
+            Vista previa
+          </p>
+          <p className="text-xs leading-5 text-muted-foreground">
+            La imagen se actualiza por separado para que el cambio sea inmediato.
+          </p>
+        </div>
+
         {image ? (
           <>
-            <div className="relative aspect-video w-full overflow-hidden rounded-lg border">
+            <div className="relative aspect-[5/3] w-full overflow-hidden rounded-button border border-border/60 bg-card">
               <Image src={image} alt={`Slide ${slideIndex}`} fill className="object-cover" />
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid gap-2">
               <ImageUploader onUpload={handleImageUpload} label="Cambiar imagen" />
               <Button
                 type="button"
                 variant="outline"
                 onClick={handleRemoveImage}
                 disabled={saving}
+                className="justify-center"
               >
-                <X className="mr-2 h-4 w-4" />
-                Eliminar
+                <X className="h-4 w-4" />
+                Eliminar imagen
               </Button>
             </div>
           </>
         ) : (
-          <div className="space-y-2">
-            <div className="flex aspect-video w-full items-center justify-center rounded-lg border border-dashed text-sm text-muted-foreground">
-              Sin imagen
+          <div className="space-y-3">
+            <div className="flex aspect-[5/3] w-full items-center justify-center rounded-button border border-dashed border-border bg-card px-4 text-center text-sm text-muted-foreground">
+              Sin imagen cargada
             </div>
             <ImageUploader onUpload={handleImageUpload} label="Subir imagen" />
           </div>
         )}
-      </div>
+      </section>
 
-      {/* Title */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">Título</label>
-        <Input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          placeholder="Título del slide"
-        />
-      </div>
+      <section className="space-y-5 rounded-button border border-border/50 bg-bg-primary p-4">
+        <div className="space-y-1">
+          <p className="flex items-center gap-2 text-sm font-semibold text-text-primary">
+            <Type className="h-4 w-4 text-text-secondary" />
+            Contenido del slide
+          </p>
+          <p className="text-xs leading-5 text-muted-foreground">
+            Completá el título y elegí una sola capa de apoyo: lista de características o
+            descripción breve.
+          </p>
+        </div>
 
-      {/* Features */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Características{" "}
-          <span className="font-normal text-muted-foreground">(una por línea — tiene prioridad sobre la descripción)</span>
-        </label>
-        <Textarea
-          value={features}
-          onChange={(e) => setFeatures(e.target.value)}
-          placeholder={"Agua pura para tu hogar\nServicio técnico 24/7\nEnvíos a todo el país"}
-          rows={4}
-        />
-      </div>
+        <div className="space-y-5">
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Título</label>
+            <Input
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder="Título del slide"
+            />
+          </div>
 
-      {/* Description */}
-      <div className="space-y-2">
-        <label className="text-sm font-medium">
-          Descripción{" "}
-          <span className="font-normal text-muted-foreground">(se usa si no hay características)</span>
-        </label>
-        <Textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Descripción del slide"
-          rows={3}
-        />
-      </div>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">
+              Características
+            </label>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Una por línea. Si completás este campo, se usa en lugar de la descripción.
+            </p>
+            <Textarea
+              value={features}
+              onChange={(e) => setFeatures(e.target.value)}
+              placeholder={"Agua pura para tu hogar\nServicio técnico 24/7\nEnvíos a todo el país"}
+              rows={5}
+            />
+          </div>
 
-      <Button
-        onClick={handleSaveText}
-        disabled={saving}
-        className="bg-btn-primary text-white hover:bg-btn-primary-hover"
-      >
-        <Save className="mr-2 h-4 w-4" />
-        Guardar texto
-      </Button>
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-text-primary">Descripción</label>
+            <p className="text-xs leading-5 text-muted-foreground">
+              Usala solo si no querés mostrar características.
+            </p>
+            <Textarea
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              placeholder="Descripción del slide"
+              rows={4}
+            />
+          </div>
+        </div>
+
+        <div className="flex flex-wrap items-center gap-3 border-t border-border/50 pt-4">
+          <Button
+            onClick={handleSaveText}
+            disabled={saving}
+            className="bg-btn-primary text-white hover:bg-btn-primary-hover"
+          >
+            <Save className="h-4 w-4" />
+            Guardar contenido
+          </Button>
+          <p className="text-xs leading-5 text-muted-foreground">
+            La imagen se guarda al subirla. El texto se guarda con este botón.
+          </p>
+        </div>
+      </section>
     </div>
   );
 }
