@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { z } from "zod";
@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Select,
   SelectContent,
@@ -31,7 +32,7 @@ import {
 } from "@/features/checkout/actions/shippingActions";
 import { SHIPPING_DELIVERY_LABEL, ShippingDeliveryType } from "@/types/shipping";
 import { toast } from "sonner";
-import { Loader2, MapPin, ShoppingBag, Truck } from "lucide-react";
+import { Loader2, MapPin, Search, ShoppingBag, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
@@ -78,6 +79,7 @@ export function CheckoutForm() {
   const [selectedRate, setSelectedRate] = useState<ShippingRate | null>(null);
   const [agencies, setAgencies] = useState<ShippingAgency[]>([]);
   const [selectedAgencyCode, setSelectedAgencyCode] = useState("");
+  const [agencySearch, setAgencySearch] = useState("");
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,6 +103,32 @@ export function CheckoutForm() {
   const selectedAgency = agencies.find(
     (agency) => agency.code === selectedAgencyCode
   );
+
+  const normalizedAgencySearch = agencySearch.trim().toLowerCase();
+  const hasManyAgencies = agencies.length > 50;
+
+  const filteredAgencies = useMemo(() => {
+    if (agencies.length === 0) return [];
+
+    if (!normalizedAgencySearch) {
+      return hasManyAgencies ? agencies.slice(0, 50) : agencies;
+    }
+
+    return agencies
+      .filter((agency) => {
+        const haystack = [
+          agency.name,
+          agency.address ?? "",
+          agency.city ?? "",
+          agency.code,
+        ]
+          .join(" ")
+          .toLowerCase();
+
+        return haystack.includes(normalizedAgencySearch);
+      })
+      .slice(0, 100);
+  }, [agencies, hasManyAgencies, normalizedAgencySearch]);
 
   const handleQuote = async () => {
     const valid = await form.trigger([
@@ -134,6 +162,7 @@ export function CheckoutForm() {
   const handleSelectRate = async (rate: ShippingRate) => {
     setSelectedRate(rate);
     setSelectedAgencyCode("");
+    setAgencySearch("");
 
     if (rate.deliveredType !== ShippingDeliveryType.AGENCY) {
       return;
@@ -445,29 +474,68 @@ export function CheckoutForm() {
                 {selectedRate?.deliveredType === ShippingDeliveryType.AGENCY && (
                   <div className="flex flex-col gap-2">
                     <FormLabel>Sucursal de retiro</FormLabel>
+                    <div className="relative">
+                      <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                      <Input
+                        value={agencySearch}
+                        onChange={(event) => setAgencySearch(event.target.value)}
+                        placeholder="Buscar por nombre, dirección, ciudad o código"
+                        className="bg-background pl-9"
+                      />
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      {filteredAgencies.length} resultado
+                      {filteredAgencies.length === 1 ? "" : "s"}
+                      {normalizedAgencySearch
+                        ? ` para "${agencySearch.trim()}"`
+                        : hasManyAgencies
+                          ? ` de ${agencies.length}. Escribí para acotar.`
+                          : " disponibles"}
+                    </p>
                     <Select
                       value={selectedAgencyCode}
                       onValueChange={setSelectedAgencyCode}
-                      disabled={loadingAgencies}
+                      disabled={loadingAgencies || filteredAgencies.length === 0}
                     >
                       <SelectTrigger className="bg-background">
                         <SelectValue
                           placeholder={
                             loadingAgencies
                               ? "Cargando sucursales..."
-                              : "Seleccioná una sucursal"
+                              : filteredAgencies.length > 0
+                                ? "Seleccioná una sucursal"
+                                : "Sin resultados"
                           }
                         />
                       </SelectTrigger>
-                      <SelectContent>
-                        {agencies.map((agency) => (
-                          <SelectItem key={agency.code} value={agency.code}>
-                            {agency.name}
-                            {agency.address ? ` - ${agency.address}` : ""}
-                          </SelectItem>
-                        ))}
+                      <SelectContent className="w-[var(--radix-select-trigger-width)] min-w-[var(--radix-select-trigger-width)]">
+                        <ScrollArea className="max-h-72">
+                          {filteredAgencies.length > 0 ? (
+                            filteredAgencies.map((agency) => (
+                              <SelectItem key={agency.code} value={agency.code}>
+                                {agency.name}
+                                {agency.address ? ` - ${agency.address}` : ""}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            <div className="px-2 py-3 text-sm text-muted-foreground">
+                              No encontramos sucursales con esa búsqueda.
+                            </div>
+                          )}
+                        </ScrollArea>
                       </SelectContent>
                     </Select>
+                    {selectedAgency && (
+                      <div className="rounded-button border border-border/60 bg-background/70 p-3 text-sm">
+                        <p className="font-medium text-text-primary">{selectedAgency.name}</p>
+                        {selectedAgency.address && (
+                          <p className="text-muted-foreground">{selectedAgency.address}</p>
+                        )}
+                        {selectedAgency.city && (
+                          <p className="text-muted-foreground">{selectedAgency.city}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
