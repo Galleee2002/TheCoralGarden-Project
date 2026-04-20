@@ -4,6 +4,8 @@ import { MercadoPagoConfig, Payment } from "mercadopago";
 import crypto from "crypto";
 import { sendOrderAdminNotificationEmail } from "@/lib/resend/send-order-admin-notification";
 import { sendOrderConfirmationEmail } from "@/lib/resend/send-order-confirmation";
+import { importOrderShipping } from "@/lib/correo-argentino/service";
+import { ShippingImportStatus } from "@/types/enums";
 
 type MercadoPagoWebhookBody = {
   type?: string;
@@ -207,6 +209,31 @@ export async function POST(request: NextRequest) {
     }
 
     if (newStatus === "PAID" && existingOrder.status !== "PAID") {
+      const shippingImportResult = await importOrderShipping({
+        order: updatedOrder,
+      });
+
+      await prisma.order.update({
+        where: { id: orderId },
+        data:
+          shippingImportResult.status === "IMPORTED"
+            ? {
+                shippingImportStatus: ShippingImportStatus.IMPORTED,
+                shippingImportedAt: new Date(),
+                shippingExternalId:
+                  shippingImportResult.externalId ?? updatedOrder.id,
+                shippingTrackingNumber:
+                  shippingImportResult.trackingNumber ?? null,
+                shippingImportError: null,
+              }
+            : {
+                shippingImportStatus: ShippingImportStatus.FAILED,
+                shippingImportError:
+                  shippingImportResult.errorMessage ??
+                  "No se pudo importar el envío en Correo Argentino.",
+              },
+      });
+
       const orderEmailData = {
         customerName: updatedOrder.customerName,
         customerEmail: updatedOrder.customerEmail,

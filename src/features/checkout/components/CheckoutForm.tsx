@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useRef, useState } from "react";
+import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@/lib/zod-resolver";
 import { z } from "zod";
 import {
@@ -18,8 +18,9 @@ import { Separator } from "@/components/ui/separator";
 import { useCartStore } from "@/features/cart/store/cartStore";
 import { createOrder } from "@/features/checkout/actions/createOrder";
 import { createMercadoPagoPreference } from "@/features/checkout/actions/createMercadoPagoPreference";
+import { quoteCorreoArgentinoShipping } from "@/features/checkout/actions/quoteCorreoArgentinoShipping";
 import { toast } from "sonner";
-import { Loader2, ShoppingBag } from "lucide-react";
+import { Loader2, ShoppingBag, Truck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { formatPrice } from "@/lib/format-price";
@@ -35,12 +36,22 @@ const formSchema = z.object({
 });
 
 type FormValues = z.infer<typeof formSchema>;
-
-const SHIPPING_COST = 0; // Free shipping or calculated later
+type ShippingQuote = {
+  price: number;
+  productType: string;
+  productName: string;
+  deliveryTimeMin: string;
+  deliveryTimeMax: string;
+  validTo: string;
+};
 
 export function CheckoutForm() {
   const { items, subtotal, clearCart } = useCartStore();
   const [loading, setLoading] = useState(false);
+  const [shippingLoading, setShippingLoading] = useState(false);
+  const [shippingError, setShippingError] = useState<string | null>(null);
+  const [shippingQuote, setShippingQuote] = useState<ShippingQuote | null>(null);
+  const quoteRequestIdRef = useRef(0);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -55,11 +66,82 @@ export function CheckoutForm() {
     },
   });
 
-  const total = subtotal() + SHIPPING_COST;
+  const customerZip = useWatch({
+    control: form.control,
+    name: "customerZip",
+  });
+  const total = subtotal() + (shippingQuote?.price ?? 0);
+
+  useEffect(() => {
+    const zip = customerZip?.trim();
+
+    if (items.length === 0) {
+      setShippingQuote(null);
+      setShippingError(null);
+      setShippingLoading(false);
+      return;
+    }
+
+    if (!zip || zip.length < 3) {
+      setShippingQuote(null);
+      setShippingError("Ingresá un código postal válido para cotizar el envío.");
+      setShippingLoading(false);
+      return;
+    }
+
+    const requestId = ++quoteRequestIdRef.current;
+
+    setShippingLoading(true);
+    setShippingError(null);
+
+    quoteCorreoArgentinoShipping({
+      customerZip: zip,
+      items: items.map((item) => ({
+        productId: item.productId,
+        quantity: item.quantity,
+      })),
+    })
+      .then((result) => {
+        if (quoteRequestIdRef.current !== requestId) {
+          return;
+        }
+
+        if (result?.data) {
+          setShippingQuote(result.data);
+          setShippingError(null);
+          return;
+        }
+
+        setShippingQuote(null);
+        setShippingError(
+          result?.serverError ?? "No se pudo cotizar el envío para este carrito.",
+        );
+      })
+      .catch(() => {
+        if (quoteRequestIdRef.current !== requestId) {
+          return;
+        }
+
+        setShippingQuote(null);
+        setShippingError("No se pudo cotizar el envío para este carrito.");
+      })
+      .finally(() => {
+        if (quoteRequestIdRef.current === requestId) {
+          setShippingLoading(false);
+        }
+      });
+  }, [customerZip, items]);
 
   const onSubmit = async (values: FormValues) => {
     if (items.length === 0) {
       toast.error("El carrito está vacío");
+      return;
+    }
+
+    if (!shippingQuote) {
+      toast.error(
+        shippingError ?? "No se pudo confirmar el costo de envío. Revisá el código postal.",
+      );
       return;
     }
 
@@ -74,7 +156,7 @@ export function CheckoutForm() {
       });
 
       if (!orderResult?.data?.orderId) {
-        toast.error("Error al crear la orden");
+        toast.error(orderResult?.serverError ?? "Error al crear la orden");
         return;
       }
 
@@ -83,7 +165,7 @@ export function CheckoutForm() {
       });
 
       if (!mpResult?.data?.initPoint) {
-        toast.error("Error al procesar el pago");
+        toast.error(mpResult?.serverError ?? "Error al procesar el pago");
         return;
       }
 
@@ -110,7 +192,6 @@ export function CheckoutForm() {
 
   return (
     <div className="grid gap-8 lg:grid-cols-3">
-      {/* Form */}
       <div className="lg:col-span-2">
         <h2 className="mb-6 text-xl font-semibold">Datos de envío</h2>
         <Form {...form}>
@@ -227,7 +308,7 @@ export function CheckoutForm() {
                     <FormControl>
                       <Input
                         autoComplete="postal-code"
-                        inputMode="numeric"
+                        inputMode="text"
                         placeholder="1001"
                         {...field}
                       />
@@ -242,16 +323,17 @@ export function CheckoutForm() {
               type="submit"
               size="lg"
               className="w-full"
-              disabled={loading}
+              disabled={loading || shippingLoading || !shippingQuote}
             >
-              {loading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              {(loading || shippingLoading) && (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              )}
               Pagar con MercadoPago — {formatPrice(total)}
             </Button>
           </form>
         </Form>
       </div>
 
-      {/* Order summary */}
       <div>
         <div className="sticky top-24 rounded-xl border bg-card p-6">
           <h2 className="mb-4 text-lg font-semibold">Tu pedido</h2>
@@ -284,16 +366,51 @@ export function CheckoutForm() {
               </div>
             ))}
           </div>
+
           <Separator className="my-4" />
-          <div className="flex justify-between text-muted-foreground">
-            <span>Subtotal</span>
-            <span>{formatPrice(subtotal())}</span>
+
+          <div className="space-y-3">
+            <div className="flex justify-between text-muted-foreground">
+              <span>Subtotal</span>
+              <span>{formatPrice(subtotal())}</span>
+            </div>
+            <div className="flex justify-between text-muted-foreground">
+              <span>Envío</span>
+              <span>
+                {shippingLoading
+                  ? "Cotizando..."
+                  : shippingQuote
+                    ? formatPrice(shippingQuote.price)
+                    : "Pendiente"}
+              </span>
+            </div>
+
+            {(shippingQuote || shippingError) && (
+              <div className="rounded-dropdown bg-card-light p-3 text-xs text-muted-foreground">
+                <div className="flex items-start gap-2">
+                  <Truck className="mt-0.5 h-4 w-4 shrink-0" />
+                  <div className="space-y-1">
+                    {shippingQuote ? (
+                      <>
+                        <p className="font-medium text-text-primary">
+                          {shippingQuote.productName}
+                        </p>
+                        <p>
+                          Entrega estimada entre {shippingQuote.deliveryTimeMin} y{" "}
+                          {shippingQuote.deliveryTimeMax} días hábiles.
+                        </p>
+                      </>
+                    ) : (
+                      <p className="text-destructive">{shippingError}</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
-          <div className="flex justify-between text-muted-foreground">
-            <span>Envío</span>
-            <span>{SHIPPING_COST === 0 ? "Gratis" : formatPrice(SHIPPING_COST)}</span>
-          </div>
+
           <Separator className="my-4" />
+
           <div className="flex justify-between text-lg font-bold">
             <span>Total</span>
             <span className="text-primary">{formatPrice(total)}</span>

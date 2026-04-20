@@ -12,6 +12,15 @@ export const OrderStatus = {
 
 export type OrderStatus = (typeof OrderStatus)[keyof typeof OrderStatus];
 
+export const ShippingImportStatus = {
+  PENDING: "PENDING",
+  IMPORTED: "IMPORTED",
+  FAILED: "FAILED",
+} as const;
+
+export type ShippingImportStatus =
+  (typeof ShippingImportStatus)[keyof typeof ShippingImportStatus];
+
 export const TechnicalServiceUseCase = {
   ACUARISMO: "ACUARISMO",
   CULTIVO_INDOOR: "CULTIVO_INDOOR",

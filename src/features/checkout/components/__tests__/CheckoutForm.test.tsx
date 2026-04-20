@@ -3,6 +3,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { CheckoutForm } from "../CheckoutForm";
 import { useCartStore } from "@/features/cart/store/cartStore";
+import { quoteCorreoArgentinoShipping } from "@/features/checkout/actions/quoteCorreoArgentinoShipping";
 
 // Mock server actions — we only test form validation here
 vi.mock("@/features/checkout/actions/createOrder", () => ({
@@ -10,6 +11,9 @@ vi.mock("@/features/checkout/actions/createOrder", () => ({
 }));
 vi.mock("@/features/checkout/actions/createMercadoPagoPreference", () => ({
   createMercadoPagoPreference: vi.fn(),
+}));
+vi.mock("@/features/checkout/actions/quoteCorreoArgentinoShipping", () => ({
+  quoteCorreoArgentinoShipping: vi.fn(),
 }));
 vi.mock("sonner", () => ({ toast: { error: vi.fn(), success: vi.fn() } }));
 
@@ -24,6 +28,16 @@ const cartItemFixture = {
 
 beforeEach(() => {
   useCartStore.setState({ items: [cartItemFixture] });
+  vi.mocked(quoteCorreoArgentinoShipping).mockResolvedValue({
+    data: {
+      price: 2500,
+      productType: "CP",
+      productName: "Correo Argentino Clasico",
+      deliveryTimeMin: "2",
+      deliveryTimeMax: "5",
+      validTo: "2026-04-16T10:00:00.000-03:00",
+    },
+  } as Awaited<ReturnType<typeof quoteCorreoArgentinoShipping>>);
 });
 
 async function submitForm() {
@@ -43,15 +57,14 @@ describe("CheckoutForm", () => {
     expect(screen.getByLabelText(/código postal/i)).toBeInTheDocument();
   });
 
-  it("shows validation errors when submitting empty form", async () => {
+  it("keeps submit disabled until shipping can be quoted", async () => {
     render(<CheckoutForm />);
-    await submitForm();
-    await waitFor(
-      () => {
-        expect(screen.getByText(/nombre requerido/i)).toBeInTheDocument();
-      },
-      { timeout: 3000 }
-    );
+    expect(
+      screen.getByRole("button", { name: /pagar con mercadopago/i }),
+    ).toBeDisabled();
+    expect(
+      screen.getByText(/ingresá un código postal válido para cotizar el envío/i),
+    ).toBeInTheDocument();
   });
 
   it("shows email format error when email field is empty on submit", async () => {

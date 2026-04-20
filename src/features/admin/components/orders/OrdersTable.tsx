@@ -29,6 +29,9 @@ type Order = {
   customerName: string;
   customerEmail: string;
   status: OrderStatus;
+  shippingImportStatus: string | null;
+  shippingTrackingNumber: string | null;
+  shippingImportError: string | null;
   total: number;
   createdAt: Date;
 };
@@ -39,6 +42,22 @@ interface OrdersTableProps {
 
 const formatDate = (d: Date) =>
   new Intl.DateTimeFormat("es-AR", { dateStyle: "short", timeStyle: "short" }).format(d);
+
+function getShippingLabel(order: Order) {
+  if (order.shippingImportStatus === "IMPORTED") {
+    return order.shippingTrackingNumber
+      ? `Importado · Tracking ${order.shippingTrackingNumber}`
+      : "Importado";
+  }
+
+  if (order.shippingImportStatus === "FAILED") {
+    return order.shippingImportError
+      ? `Falló: ${order.shippingImportError}`
+      : "Falló la importación";
+  }
+
+  return "Pendiente de importación";
+}
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   return (
@@ -95,6 +114,10 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                     <p className="font-medium text-text-primary">{formatDate(order.createdAt)}</p>
                   </div>
                 </div>
+                <div className="mt-3 rounded-dropdown bg-card-light p-3 text-sm">
+                  <p className="text-muted-foreground">Envío Correo</p>
+                  <p className="font-medium text-text-primary">{getShippingLabel(order)}</p>
+                </div>
               </article>
             );
           })
@@ -108,14 +131,15 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                 <TableHead className="w-[12%]">ID</TableHead>
                 <TableHead className="w-[25%]" noWrap={false}>Cliente</TableHead>
                 <TableHead className="w-[24%]" noWrap={false}>Estado</TableHead>
-                <TableHead className="w-[14%]">Total</TableHead>
-                <TableHead className="w-[17%]">Fecha</TableHead>
-                <TableHead className="w-[18%] text-right">Acciones</TableHead>
+                <TableHead className="w-[16%]">Envío</TableHead>
+                <TableHead className="w-[12%]">Total</TableHead>
+                <TableHead className="w-[15%]">Fecha</TableHead>
+                <TableHead className="w-[12%] text-right">Acciones</TableHead>
               </TableRow>
             </TableHeader>
           <TableBody>
             {orders.length === 0 ? (
-              <EmptyState colSpan={6} message="No hay órdenes todavía" />
+              <EmptyState colSpan={7} message="No hay órdenes todavía" />
             ) : (
               orders.map((order) => {
                 const { variant, label } = orderStatusVariant[order.status];
@@ -139,6 +163,9 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                           triggerClassName="min-h-10 w-full bg-background"
                         />
                       </div>
+                    </TableCell>
+                    <TableCell noWrap={false}>
+                      <p className="text-sm text-text-primary">{getShippingLabel(order)}</p>
                     </TableCell>
                     <TableCell className="font-semibold">{formatPrice(order.total)}</TableCell>
                     <TableCell className="text-sm text-muted-foreground">

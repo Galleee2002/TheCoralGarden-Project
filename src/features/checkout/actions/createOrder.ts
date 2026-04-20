@@ -1,15 +1,15 @@
 "use server";
 
 import { action } from "@/lib/safe-action";
+import { quoteShippingForItems } from "@/lib/correo-argentino/service";
 import { prisma } from "@/lib/prisma/client";
+import { ShippingImportStatus } from "@/types/enums";
 import { z } from "zod";
 
 const orderItemSchema = z.object({
   productId: z.string(),
   quantity: z.number().int().min(1),
 });
-
-const SHIPPING_COST = 0;
 
 const createOrderSchema = z.object({
   customerName: z.string().min(2, "Nombre requerido"),
@@ -64,11 +64,14 @@ export const createOrder = action
       };
     });
 
-    const subtotal = items.reduce(
-      (sum, item) => sum + item.unitPrice * item.quantity,
-      0,
-    );
-    const total = subtotal + SHIPPING_COST;
+    const shippingQuote = await quoteShippingForItems({
+      customerZip: parsedInput.customerZip,
+      items: parsedInput.items,
+    });
+
+    const subtotal = items.reduce((sum, item) => sum + item.unitPrice * item.quantity, 0);
+    const shippingCost = shippingQuote.quote.price;
+    const total = subtotal + shippingCost;
 
     const order = await prisma.order.create({
       data: {
@@ -80,7 +83,12 @@ export const createOrder = action
         customerProvince: parsedInput.customerProvince,
         customerZip: parsedInput.customerZip,
         subtotal,
-        shippingCost: SHIPPING_COST,
+        shippingCost,
+        shippingMethod: "correo_argentino_home",
+        shippingQuoteProvider: "correo_argentino",
+        shippingQuotedAt: new Date(),
+        shippingRatePayload: shippingQuote.payload,
+        shippingImportStatus: ShippingImportStatus.PENDING,
         total,
         items: {
           create: items.map((item) => ({
@@ -94,5 +102,9 @@ export const createOrder = action
       include: { items: true },
     });
 
-    return { orderId: order.id, total: order.total };
+    return {
+      orderId: order.id,
+      total: Number(order.total),
+      shippingCost: Number(order.shippingCost),
+    };
   });
