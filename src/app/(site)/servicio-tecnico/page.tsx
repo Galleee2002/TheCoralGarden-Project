@@ -2,6 +2,7 @@ import { TechnicalServiceHero } from "@/features/technical-service/components/Te
 import { AttentionSection } from "@/features/technical-service/components/AttentionSection";
 import { ContactCards } from "@/features/technical-service/components/ContactCards";
 import { MiniBanner } from "@/features/home/components/MiniBanner";
+import { RevealOnScroll } from "@/components/shared/RevealOnScroll";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -16,10 +17,18 @@ export const metadata: Metadata = {
 export default function TechnicalServicePage() {
   return (
     <>
-      <TechnicalServiceHero />
-      <AttentionSection />
-      <ContactCards />
-      <MiniBanner />
+      <RevealOnScroll>
+        <TechnicalServiceHero />
+      </RevealOnScroll>
+      <RevealOnScroll direction="left" delay={0.05}>
+        <AttentionSection />
+      </RevealOnScroll>
+      <RevealOnScroll direction="right" delay={0.1}>
+        <ContactCards />
+      </RevealOnScroll>
+      <RevealOnScroll direction="fade" delay={0.1}>
+        <MiniBanner />
+      </RevealOnScroll>
     </>
   );
 }

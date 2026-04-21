@@ -7,6 +7,7 @@ import { getProducts } from "@/features/products/actions/getProducts";
 import { getCategories } from "@/features/products/actions/getCategories";
 import { MiniBanner } from "@/features/home/components/MiniBanner";
 import { Skeleton } from "@/components/ui/skeleton";
+import { RevealOnScroll } from "@/components/shared/RevealOnScroll";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -60,47 +61,55 @@ export default async function ProductsPage({
     <>
       <div className="pt-16">
         <div className="container mx-auto px-4 py-section-mobile md:py-section">
-          {/* Header row */}
-          <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h1 className="font-heading text-[56px] font-black leading-[1.1] text-text-primary uppercase md:text-[64px] lg:text-[96px]">
-              PRODUCTOS
-            </h1>
-            <Suspense>
-              <SearchBar />
-            </Suspense>
-          </div>
+          <RevealOnScroll>
+            {/* Header row */}
+            <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+              <h1 className="font-heading text-[56px] font-black leading-[1.1] text-text-primary uppercase md:text-[64px] lg:text-[96px]">
+                PRODUCTOS
+              </h1>
+              <Suspense>
+                <SearchBar />
+              </Suspense>
+            </div>
+          </RevealOnScroll>
 
-          {/* Filter chips */}
-          <div className="mb-8">
-            <Suspense>
-              <FiltersPanel categories={categories} />
-            </Suspense>
-          </div>
+          <RevealOnScroll direction="left" delay={0.05}>
+            {/* Filter chips */}
+            <div className="mb-8">
+              <Suspense>
+                <FiltersPanel categories={categories} />
+              </Suspense>
+            </div>
+          </RevealOnScroll>
 
-          {/* Grid + pagination */}
-          <Suspense
-            key={`${categoria}-${page}-${q}`}
-            fallback={
-              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-                {Array.from({ length: 8 }).map((_, i) => (
-                  <div key={i} className="overflow-hidden rounded-card border">
-                    <Skeleton className="aspect-square w-full" />
-                    <div className="p-4">
-                      <Skeleton className="mb-2 h-5 w-3/4" />
-                      <Skeleton className="mb-4 h-4 w-full" />
-                      <Skeleton className="h-6 w-1/3" />
+          <RevealOnScroll direction="up" delay={0.1}>
+            {/* Grid + pagination */}
+            <Suspense
+              key={`${categoria}-${page}-${q}`}
+              fallback={
+                <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                  {Array.from({ length: 8 }).map((_, i) => (
+                    <div key={i} className="overflow-hidden rounded-card border">
+                      <Skeleton className="aspect-square w-full" />
+                      <div className="p-4">
+                        <Skeleton className="mb-2 h-5 w-3/4" />
+                        <Skeleton className="mb-4 h-4 w-full" />
+                        <Skeleton className="h-6 w-1/3" />
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
-            }
-          >
-            <ProductsCatalog categorySlug={categoria} page={page} query={q} />
-          </Suspense>
+                  ))}
+                </div>
+              }
+            >
+              <ProductsCatalog categorySlug={categoria} page={page} query={q} />
+            </Suspense>
+          </RevealOnScroll>
         </div>
       </div>
 
-      <MiniBanner />
+      <RevealOnScroll direction="fade" delay={0.1}>
+        <MiniBanner />
+      </RevealOnScroll>
     </>
   );
 }

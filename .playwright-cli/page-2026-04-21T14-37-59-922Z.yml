@@ -1,0 +1,247 @@
+- generic [active] [ref=e1]:
+  - banner [ref=e2]:
+    - generic [ref=e3]:
+      - link "The Coral Garden" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - img "The Coral Garden" [ref=e5]
+      - navigation [ref=e6]:
+        - link "PRODUCTOS" [ref=e7] [cursor=pointer]:
+          - /url: /productos
+        - link "SERVICIO TÉCNICO" [ref=e8] [cursor=pointer]:
+          - /url: /servicio-tecnico
+        - link "SOBRE NOSOTROS" [ref=e9] [cursor=pointer]:
+          - /url: /sobre-nosotros
+      - generic [ref=e10]:
+        - link "Favoritos" [ref=e11] [cursor=pointer]:
+          - /url: /favoritos
+          - img
+        - button "Abrir carrito" [ref=e12]:
+          - img
+        - link "Admin" [ref=e13] [cursor=pointer]:
+          - /url: /admin
+          - img
+  - main [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]:
+        - img "NUESTROS PRODUCTOS" [ref=e17]
+        - generic [ref=e20]:
+          - heading "NUESTROS PRODUCTOS" [level=1] [ref=e21]
+          - list [ref=e22]:
+            - listitem [ref=e23]:
+              - img [ref=e24]
+              - generic [ref=e27]: Agua para tu cultivo indoor
+            - listitem [ref=e28]:
+              - img [ref=e29]
+              - generic [ref=e32]: Hidroponia
+            - listitem [ref=e33]:
+              - img [ref=e34]
+              - generic [ref=e37]: Aquarismo
+          - link "Conocé más" [ref=e38] [cursor=pointer]:
+            - /url: /productos
+      - generic:
+        - img
+        - generic:
+          - generic:
+            - heading [level=1]: PURIFICADORES DE AGUA
+            - list:
+              - listitem:
+                - img
+                - generic: Acuarismo marino y de agua dulce
+              - listitem:
+                - img
+                - generic: Hidroponía y cultivo indoor
+              - listitem:
+                - img
+                - generic: Envíos a todo el país
+            - link:
+              - /url: /productos
+              - text: Conocé más
+      - generic:
+        - img
+        - generic:
+          - generic:
+            - heading [level=1]: ¿SABIAS QUÉ?
+            - list:
+              - listitem:
+                - img
+                - generic: Solo el 2,5 % del agua es dulce, por eso debemos ahorrarla y evitar químicos contaminantes.
+              - listitem:
+                - img
+                - generic: Millones de botellas plásticas contaminan ríos y océanos, reciclar reduce el impacto.
+              - listitem:
+                - img
+                - generic: Cerrar la canilla, reutilizar y reciclar agua ayuda a proteger el planeta.
+            - link:
+              - /url: /productos
+              - text: Conocé más
+      - button "Anterior" [ref=e39]:
+        - img [ref=e40]
+      - button "Siguiente" [ref=e42]:
+        - img [ref=e43]
+      - generic [ref=e45]:
+        - button "Ir a slide 1" [ref=e46]
+        - button "Ir a slide 2" [ref=e47]
+        - button "Ir a slide 3" [ref=e48]
+    - generic [ref=e51]:
+      - generic [ref=e52]:
+        - img "Fundadores de The Coral Garden" [ref=e54]
+        - generic [ref=e55]:
+          - heading "The Coral Garden" [level=2] [ref=e56]
+          - paragraph [ref=e57]: Especialistas en purificación y tratamiento de agua.
+          - paragraph [ref=e58]: "Somos un equipo pequeño con una gran misión: concientizar sobre la importancia del agua pura. Desde hace más de 10 años impulsamos el uso de ósmosis inversa en cultivo, acuarismo, detailing, cosmética y muchos ámbitos más. Creemos en informar, educar y acompañar — sin tabúes, con transparencia y pasión."
+          - link "Conocé más" [ref=e59] [cursor=pointer]:
+            - /url: /sobre-nosotros
+      - generic [ref=e60]:
+        - img "Galería 1" [ref=e62]
+        - generic [ref=e63]:
+          - img "Galería 2" [ref=e64]
+          - generic [ref=e65]:
+            - paragraph [ref=e66]: Desarrollamos soluciones de filtración y ósmosis inversa para sistemas que requieren máxima estabilidad y calidad.
+            - link "Ver más" [ref=e67] [cursor=pointer]:
+              - /url: /productos
+        - img "Galería 3" [ref=e69]
+    - generic [ref=e72]:
+      - img "Marca 1" [ref=e74]
+      - img "Marca 2" [ref=e76]
+      - img "Marca 3" [ref=e78]
+      - img "Marca 4" [ref=e80]
+      - img "Marca 5" [ref=e82]
+      - img "Marca 1" [ref=e84]
+      - img "Marca 2" [ref=e86]
+      - img "Marca 3" [ref=e88]
+      - img "Marca 4" [ref=e90]
+      - img "Marca 5" [ref=e92]
+    - generic [ref=e95]:
+      - generic [ref=e96]:
+        - heading "Nuestros servicios" [level=2] [ref=e97]
+        - paragraph [ref=e98]: Impulsamos cada proyecto con sistemas de filtración y ósmosis inversa diseñados para garantizar agua pura, estable y segura en cualquier aplicación.
+      - generic [ref=e99]:
+        - article [ref=e100]:
+          - img "Servicio de venta y asesoramiento" [ref=e102]
+          - generic [ref=e104]:
+            - generic [ref=e107]: Servicio 01
+            - heading "Venta y asesoramiento" [level=3] [ref=e108]
+            - paragraph [ref=e110]: Te ayudamos a elegir el equipo ideal para tus necesidades. Asesoramiento personalizado con profesionales especializados.
+            - link "Conocé más sobre Venta y asesoramiento" [ref=e111] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Conocé más
+          - generic [ref=e113]: "01"
+        - article [ref=e117]:
+          - img "Servicio de servicio post venta" [ref=e119]
+          - generic [ref=e121]:
+            - generic [ref=e124]: Servicio 02
+            - heading "Servicio post venta" [level=3] [ref=e125]
+            - paragraph [ref=e127]: Acompañamiento continuo después de tu compra. Mantenimiento preventivo y soporte técnico garantizado.
+            - link "Conocé más sobre Servicio post venta" [ref=e128] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Conocé más
+          - generic [ref=e130]: "02"
+        - article [ref=e134]:
+          - img "Servicio de reparación y mantenimiento" [ref=e136]
+          - generic [ref=e138]:
+            - generic [ref=e141]: Servicio 03
+            - heading "Reparación y mantenimiento" [level=3] [ref=e142]
+            - paragraph [ref=e144]: Servicio técnico especializado en reparación y mantenimiento de equipos de ósmosis inversa y purificación de agua.
+            - link "Conocé más sobre Reparación y mantenimiento" [ref=e145] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Conocé más
+          - generic [ref=e147]: "03"
+    - generic [ref=e180]:
+      - heading "Preguntas frecuentes" [level=2] [ref=e181]
+      - generic [ref=e182]:
+        - generic [ref=e183]:
+          - heading "¿Qué tipos de equipos de purificación ofrecen?" [level=3] [ref=e185]:
+            - button "¿Qué tipos de equipos de purificación ofrecen?" [ref=e186]:
+              - text: ¿Qué tipos de equipos de purificación ofrecen?
+              - img
+          - heading "¿Realizan envíos a todo el país?" [level=3] [ref=e188]:
+            - button "¿Realizan envíos a todo el país?" [ref=e189]:
+              - text: ¿Realizan envíos a todo el país?
+              - img
+          - heading "¿Tienen servicio técnico?" [level=3] [ref=e191]:
+            - button "¿Tienen servicio técnico?" [ref=e192]:
+              - text: ¿Tienen servicio técnico?
+              - img
+          - heading "¿Cómo puedo saber qué equipo necesito?" [level=3] [ref=e194]:
+            - button "¿Cómo puedo saber qué equipo necesito?" [ref=e195]:
+              - text: ¿Cómo puedo saber qué equipo necesito?
+              - img
+          - heading "¿Qué garantía tienen los productos?" [level=3] [ref=e197]:
+            - button "¿Qué garantía tienen los productos?" [ref=e198]:
+              - text: ¿Qué garantía tienen los productos?
+              - img
+        - paragraph [ref=e199]:
+          - text: ¿Tenés más preguntas?
+          - link "¡Contáctanos!" [ref=e200] [cursor=pointer]:
+            - /url: https://wa.me/5491136647107
+    - paragraph [ref=e204]: ¿Querés trabajar con nosotros? ¡Contáctanos! (+5401123456789)
+  - contentinfo [ref=e205]:
+    - generic [ref=e207]:
+      - generic [ref=e208]:
+        - link "The Coral Garden" [ref=e209] [cursor=pointer]:
+          - /url: /
+          - img "The Coral Garden" [ref=e210]
+        - list [ref=e211]:
+          - listitem [ref=e212]:
+            - img [ref=e213]
+            - generic [ref=e216]: Buenos Aires, Argentina
+          - listitem [ref=e217]:
+            - img [ref=e218]
+            - link "Thecoral_purificadores@outlook.es" [ref=e221] [cursor=pointer]:
+              - /url: mailto:Thecoral_purificadores@outlook.es
+          - listitem [ref=e222]:
+            - img [ref=e223]
+            - generic [ref=e225]: (+54 011 234 567 889)
+      - generic [ref=e226]:
+        - heading "Links rápidos" [level=3] [ref=e227]
+        - list [ref=e228]:
+          - listitem [ref=e229]:
+            - link "Inicio" [ref=e230] [cursor=pointer]:
+              - /url: /
+              - text: Inicio
+              - img [ref=e231]
+          - listitem [ref=e234]:
+            - link "Productos" [ref=e235] [cursor=pointer]:
+              - /url: /productos
+              - text: Productos
+              - img [ref=e236]
+          - listitem [ref=e239]:
+            - link "Servicio técnico" [ref=e240] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Servicio técnico
+              - img [ref=e241]
+          - listitem [ref=e244]:
+            - link "Sobre nosotros" [ref=e245] [cursor=pointer]:
+              - /url: /sobre-nosotros
+              - text: Sobre nosotros
+              - img [ref=e246]
+          - listitem [ref=e249]:
+            - link "Preguntas frecuentes" [ref=e250] [cursor=pointer]:
+              - /url: /#faq
+              - text: Preguntas frecuentes
+              - img [ref=e251]
+      - generic [ref=e254]:
+        - heading "Nuestros servicios" [level=3] [ref=e255]
+        - list [ref=e256]:
+          - listitem [ref=e257]:
+            - link "Venta y asesoramiento" [ref=e258] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Venta y asesoramiento
+              - img [ref=e259]
+          - listitem [ref=e262]:
+            - link "Servicio post venta" [ref=e263] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Servicio post venta
+              - img [ref=e264]
+          - listitem [ref=e267]:
+            - link "Reparación y mantenimiento" [ref=e268] [cursor=pointer]:
+              - /url: /servicio-tecnico
+              - text: Reparación y mantenimiento
+              - img [ref=e269]
+    - paragraph [ref=e274]: © 2026 The Coral Garden Inc.
+  - link "Contactar por WhatsApp" [ref=e275] [cursor=pointer]:
+    - /url: https://wa.me/5491136647107?text=Hola!%20Me%20interesa%20conocer%20m%C3%A1s%20sobre%20sus%20productos%20y%20servicios%20de%20purificaci%C3%B3n%20de%20agua.
+    - img [ref=e276]
+  - region "Notifications alt+T"
+  - button "Open Next.js Dev Tools" [ref=e284] [cursor=pointer]:
+    - img [ref=e285]

@@ -1,0 +1,73 @@
+<h2>Lista técnica: variantes de composición</h2>
+<p class="subtitle">Base elegida: mismo peso para los tres servicios, CTA por ficha e imagen limpia lateral.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="height:390px;background:#f8f8f8;padding:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="height:110px;border-radius:15px;background:#042f34;color:#f8f8f8;display:grid;grid-template-columns:88px 1fr 150px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="font-size:32px;font-weight:900;color:#74e4bb;">01</div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Venta y asesoramiento</div><div style="height:8px;width:82%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:13px;"></div><div style="height:8px;width:58%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:7px;"></div></div>
+        <div style="height:82px;border-radius:10px;background:linear-gradient(135deg,#d6e5e9,#f8f8f8);"></div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#d6e5e9;color:#111c24;display:grid;grid-template-columns:88px 1fr 150px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="font-size:32px;font-weight:900;color:#042f34;">02</div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Servicio post venta</div><div style="height:8px;width:82%;background:rgba(17,28,36,.16);border-radius:999px;margin-top:13px;"></div><div style="height:8px;width:54%;background:rgba(17,28,36,.16);border-radius:999px;margin-top:7px;"></div></div>
+        <div style="height:82px;border-radius:10px;background:#f8f8f8;"></div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#111c24;color:#f8f8f8;display:grid;grid-template-columns:88px 1fr 150px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="font-size:32px;font-weight:900;color:#33c2e9;">03</div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Reparación y mantenimiento</div><div style="height:8px;width:86%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:13px;"></div><div style="height:8px;width:62%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:7px;"></div></div>
+        <div style="height:82px;border-radius:10px;background:linear-gradient(135deg,#063b41,#33c2e9);"></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Ficha horizontal sobria</h3>
+      <p>Muy clara, fácil de implementar y robusta en mobile. Originalidad moderada.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="height:390px;background:#f8f8f8;padding:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="height:110px;border-radius:15px;background:#042f34;color:#f8f8f8;display:grid;grid-template-columns:1fr 176px;gap:18px;align-items:stretch;overflow:hidden;">
+        <div style="padding:18px 0 18px 20px;display:grid;grid-template-columns:50px 1fr;gap:14px;align-items:start;"><div style="font-size:12px;text-transform:uppercase;color:#74e4bb;">TCG<br/>01</div><div><div style="font-size:25px;font-weight:900;line-height:1;text-transform:uppercase;">Venta y asesoramiento</div><div style="height:1px;background:rgba(116,228,187,.45);margin:14px 0 10px;"></div><div style="height:7px;width:86%;background:rgba(248,248,248,.18);border-radius:999px;"></div><div style="height:7px;width:58%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:7px;"></div></div></div>
+        <div style="background:linear-gradient(135deg,#d6e5e9,#f8f8f8);position:relative;"><div style="position:absolute;left:12px;top:12px;right:12px;bottom:12px;border:1px solid rgba(4,47,52,.28);border-radius:9px;"></div></div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#d6e5e9;color:#111c24;display:grid;grid-template-columns:1fr 176px;gap:18px;align-items:stretch;overflow:hidden;">
+        <div style="padding:18px 0 18px 20px;display:grid;grid-template-columns:50px 1fr;gap:14px;align-items:start;"><div style="font-size:12px;text-transform:uppercase;color:#042f34;">TCG<br/>02</div><div><div style="font-size:25px;font-weight:900;line-height:1;text-transform:uppercase;">Servicio post venta</div><div style="height:1px;background:rgba(4,47,52,.38);margin:14px 0 10px;"></div><div style="height:7px;width:80%;background:rgba(17,28,36,.16);border-radius:999px;"></div><div style="height:7px;width:50%;background:rgba(17,28,36,.16);border-radius:999px;margin-top:7px;"></div></div></div>
+        <div style="background:#f8f8f8;position:relative;"><div style="position:absolute;left:12px;top:12px;right:12px;bottom:12px;border:1px solid rgba(4,47,52,.18);border-radius:9px;"></div></div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#111c24;color:#f8f8f8;display:grid;grid-template-columns:1fr 176px;gap:18px;align-items:stretch;overflow:hidden;">
+        <div style="padding:18px 0 18px 20px;display:grid;grid-template-columns:50px 1fr;gap:14px;align-items:start;"><div style="font-size:12px;text-transform:uppercase;color:#33c2e9;">TCG<br/>03</div><div><div style="font-size:25px;font-weight:900;line-height:1;text-transform:uppercase;">Reparación y mantenimiento</div><div style="height:1px;background:rgba(51,194,233,.45);margin:14px 0 10px;"></div><div style="height:7px;width:86%;background:rgba(248,248,248,.18);border-radius:999px;"></div><div style="height:7px;width:62%;background:rgba(248,248,248,.18);border-radius:999px;margin-top:7px;"></div></div></div>
+        <div style="background:linear-gradient(135deg,#063b41,#33c2e9);position:relative;"><div style="position:absolute;left:12px;top:12px;right:12px;bottom:12px;border:1px solid rgba(248,248,248,.28);border-radius:9px;"></div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Ficha editorial técnica</h3>
+      <p>Más original: numeración, regla fina y bloque de imagen como “evidencia”. Mantiene legibilidad y peso parejo.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="height:390px;background:#f8f8f8;padding:18px;display:flex;flex-direction:column;gap:12px;">
+      <div style="height:110px;border-radius:15px;background:#042f34;color:#f8f8f8;display:grid;grid-template-columns:140px 1fr 86px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="height:82px;border-radius:10px;background:#d6e5e9;"></div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Venta y asesoramiento</div><div style="display:flex;gap:7px;margin-top:14px;"><span style="width:58px;height:20px;border-radius:999px;background:#74e4bb;"></span><span style="width:88px;height:20px;border-radius:999px;background:rgba(248,248,248,.18);"></span></div></div>
+        <div style="font-size:32px;font-weight:900;color:#74e4bb;text-align:right;">01</div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#d6e5e9;color:#111c24;display:grid;grid-template-columns:140px 1fr 86px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="height:82px;border-radius:10px;background:#f8f8f8;"></div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Servicio post venta</div><div style="display:flex;gap:7px;margin-top:14px;"><span style="width:58px;height:20px;border-radius:999px;background:#042f34;"></span><span style="width:88px;height:20px;border-radius:999px;background:rgba(17,28,36,.16);"></span></div></div>
+        <div style="font-size:32px;font-weight:900;color:#042f34;text-align:right;">02</div>
+      </div>
+      <div style="height:110px;border-radius:15px;background:#111c24;color:#f8f8f8;display:grid;grid-template-columns:140px 1fr 86px;gap:16px;align-items:center;padding:14px 16px;">
+        <div style="height:82px;border-radius:10px;background:#063b41;"></div>
+        <div><div style="font-size:24px;font-weight:900;line-height:1;text-transform:uppercase;">Reparación y mantenimiento</div><div style="display:flex;gap:7px;margin-top:14px;"><span style="width:58px;height:20px;border-radius:999px;background:#33c2e9;"></span><span style="width:88px;height:20px;border-radius:999px;background:rgba(248,248,248,.18);"></span></div></div>
+        <div style="font-size:32px;font-weight:900;color:#33c2e9;text-align:right;">03</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Ficha instrumental compacta</h3>
+      <p>Más “dashboard” y sintética. Funciona bien, pero puede sentirse menos cálida para la home.</p>
+    </div>
+  </div>
+</div>

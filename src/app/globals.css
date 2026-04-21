@@ -217,3 +217,13 @@
     transform: translateX(-50%);
   }
 }
+
+.animate-brands-scroll {
+  animation: scroll 25s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-brands-scroll {
+    animation: none;
+  }
+}

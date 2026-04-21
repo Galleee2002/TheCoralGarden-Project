@@ -14,13 +14,7 @@ export function BrandsCarousel() {
 
   return (
     <section className="bg-bg-secondary overflow-hidden py-10">
-      <div
-        className="flex items-center gap-16"
-        style={{
-          animation: "scroll 25s linear infinite",
-          width: "max-content",
-        }}
-      >
+      <div className="animate-brands-scroll flex w-max items-center gap-16">
         {allBrands.map((src, i) => (
           <div key={i} className="relative h-12 w-32 shrink-0 sm:h-14 sm:w-40 transition-transform duration-300 hover:scale-110">
             <Image

@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { CircleCheckBig, ChevronLeft, ChevronRight } from "lucide-react";
+import { useReducedMotion } from "framer-motion";
 
 export interface SlideData {
   image: string | null;
@@ -17,6 +18,7 @@ const INTERVAL_MS = 5000;
 export function HeroSlider({ slides }: { slides: SlideData[] }) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
 
   const next = useCallback(
     () => setCurrent((c) => (c + 1) % slides.length),
@@ -28,10 +30,10 @@ export function HeroSlider({ slides }: { slides: SlideData[] }) {
   );
 
   useEffect(() => {
-    if (paused) return;
+    if (paused || prefersReducedMotion) return;
     const id = setInterval(next, INTERVAL_MS);
     return () => clearInterval(id);
-  }, [paused, next]);
+  }, [paused, next, prefersReducedMotion]);
 
   return (
     <section
@@ -43,7 +45,9 @@ export function HeroSlider({ slides }: { slides: SlideData[] }) {
         <div
           key={i}
           aria-hidden={i !== current}
-          className={`absolute inset-0 flex items-center transition-opacity duration-700 ${
+          className={`absolute inset-0 flex items-center transition-opacity ${
+            prefersReducedMotion ? "duration-0" : "duration-700"
+          } ${
             i === current ? "opacity-100" : "opacity-0 pointer-events-none"
           }`}
         >
