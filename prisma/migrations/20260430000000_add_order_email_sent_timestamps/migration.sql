@@ -1,0 +1,3 @@
+ALTER TABLE "Order"
+  ADD COLUMN IF NOT EXISTS "orderConfirmationEmailSentAt" TIMESTAMP(3),
+  ADD COLUMN IF NOT EXISTS "orderAdminEmailSentAt" TIMESTAMP(3);

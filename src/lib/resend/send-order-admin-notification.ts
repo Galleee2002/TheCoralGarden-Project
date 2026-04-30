@@ -6,7 +6,7 @@ import type { OrderEmailData } from "./types";
 export async function sendOrderAdminNotificationEmail(data: OrderEmailData) {
   const html = buildOrderAdminNotificationHtml(data);
 
-  const { error } = await resend.emails.send({
+  const { data: result, error } = await resend.emails.send({
     from: ORDER_EMAIL_FROM,
     to: ORDER_ADMIN_EMAIL,
     replyTo: data.customerEmail,
@@ -16,5 +16,8 @@ export async function sendOrderAdminNotificationEmail(data: OrderEmailData) {
 
   if (error) {
     console.error("[Resend Admin Error]", error);
+    throw new Error(error.message);
   }
+
+  return result;
 }

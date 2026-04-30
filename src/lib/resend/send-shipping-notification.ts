@@ -6,7 +6,7 @@ import type { OrderEmailData } from "./types";
 export async function sendShippingNotificationEmail(data: OrderEmailData) {
   const html = buildShippingNotificationHtml(data);
 
-  const { error } = await resend.emails.send({
+  const { data: result, error } = await resend.emails.send({
     from: ORDER_EMAIL_FROM,
     to: data.customerEmail,
     replyTo: ORDER_ADMIN_EMAIL,
@@ -16,5 +16,8 @@ export async function sendShippingNotificationEmail(data: OrderEmailData) {
 
   if (error) {
     console.error("[Resend Shipping Error]", error);
+    throw new Error(error.message);
   }
+
+  return result;
 }

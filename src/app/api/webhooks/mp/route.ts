@@ -16,6 +16,48 @@ type MercadoPagoWebhookBody = {
   data?: { id?: string };
 };
 
+type PaidOrderWithItems = Parameters<typeof buildOrderEmailData>[0] & {
+  orderConfirmationEmailSentAt: Date | null;
+  orderAdminEmailSentAt: Date | null;
+};
+
+async function sendPendingPaidOrderEmails(order: PaidOrderWithItems) {
+  const orderEmailData = buildOrderEmailData(order);
+  const failures: Error[] = [];
+
+  if (!order.orderConfirmationEmailSentAt) {
+    try {
+      await sendOrderConfirmationEmail(orderEmailData);
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { orderConfirmationEmailSentAt: new Date() },
+      });
+    } catch (error) {
+      failures.push(
+        error instanceof Error ? error : new Error("Order email failed")
+      );
+    }
+  }
+
+  if (!order.orderAdminEmailSentAt) {
+    try {
+      await sendOrderAdminNotificationEmail(orderEmailData);
+      await prisma.order.update({
+        where: { id: order.id },
+        data: { orderAdminEmailSentAt: new Date() },
+      });
+    } catch (error) {
+      failures.push(
+        error instanceof Error ? error : new Error("Admin email failed")
+      );
+    }
+  }
+
+  if (failures.length > 0) {
+    throw new AggregateError(failures, "One or more order emails failed");
+  }
+}
+
 function getWebhookResourceId(
   request: NextRequest,
   body: MercadoPagoWebhookBody
@@ -129,6 +171,10 @@ export async function POST(request: NextRequest) {
       existingOrder.status === newStatus;
 
     if (alreadyProcessedSamePayment) {
+      if (newStatus === "PAID") {
+        await sendPendingPaidOrderEmails(existingOrder);
+      }
+
       return NextResponse.json({ received: true });
     }
 
@@ -225,16 +271,7 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ received: true });
       }
 
-      const orderEmailData = buildOrderEmailData(updatedOrder);
-
-      await Promise.all([
-        sendOrderConfirmationEmail(orderEmailData).catch((err) =>
-          console.error("[Order Email Error]", err)
-        ),
-        sendOrderAdminNotificationEmail(orderEmailData).catch((err) =>
-          console.error("[Order Admin Email Error]", err)
-        ),
-      ]);
+      await sendPendingPaidOrderEmails(updatedOrder);
     }
 
     return NextResponse.json({ received: true });
