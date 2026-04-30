@@ -43,10 +43,6 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isTransparentPage]);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
   return (
     <>
       <header
