@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
+import instagramIcon from "../../../public/icon-instagram.svg";
 
 const quickLinks = [
   { href: "/", label: "Inicio" },
@@ -15,6 +16,9 @@ const serviceLinks = [
   { href: "/servicio-tecnico", label: "Servicio post venta" },
   { href: "/servicio-tecnico", label: "Reparación y mantenimiento" },
 ];
+
+const instagramIconSrc =
+  typeof instagramIcon === "string" ? instagramIcon : instagramIcon.src;
 
 export function Footer() {
   return (
@@ -43,6 +47,24 @@ export function Footer() {
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0 text-text-secondary" />
                 <span>(+54 9 11 3953-6736)</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Link
+                  href="https://www.instagram.com/the.coralgarden"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 transition-colors hover:text-white"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="h-4 w-4 shrink-0 bg-text-secondary"
+                    style={{
+                      mask: `url(${instagramIconSrc}) center / contain no-repeat`,
+                      WebkitMask: `url(${instagramIconSrc}) center / contain no-repeat`,
+                    }}
+                  />
+                  <span>@the.coralgarden</span>
+                </Link>
               </li>
             </ul>
           </div>
