@@ -23,7 +23,7 @@ const instagramIconSrc =
 export function Footer() {
   return (
     <footer className="bg-bg-secondary text-white">
-      <div className="container mx-auto px-4 py-12 sm:py-16">
+      <div className="mx-auto w-full max-w-screen-2xl px-4 py-12 sm:py-16">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           {/* Column 1: Logo + contact info */}
           <div className="flex flex-col gap-5">
@@ -40,9 +40,14 @@ export function Footer() {
                 <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-text-secondary" />
                 <span>Buenos Aires, Argentina</span>
               </li>
-              <li className="flex items-center gap-2">
+              <li className="flex min-w-0 items-start gap-2">
                 <Mail className="h-4 w-4 shrink-0 text-text-secondary" />
-                <Link href="mailto:Thecoral_purificadores@outlook.es" className="hover:text-white transition-colors">Thecoral_purificadores@outlook.es</Link>
+                <Link
+                  href="mailto:Thecoral_purificadores@outlook.es"
+                  className="min-w-0 break-all transition-colors hover:text-white"
+                >
+                  Thecoral_purificadores@outlook.es
+                </Link>
               </li>
               <li className="flex items-center gap-2">
                 <Phone className="h-4 w-4 shrink-0 text-text-secondary" />
@@ -113,7 +118,7 @@ export function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-white/10">
-        <div className="container mx-auto px-4 py-5">
+        <div className="mx-auto w-full max-w-screen-2xl px-4 py-5">
           <p className="text-center text-sm text-white/40">
             &copy; 2026 The Coral Garden Inc.
           </p>

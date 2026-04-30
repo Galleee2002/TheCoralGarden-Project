@@ -35,7 +35,7 @@ export function FiltersPanel({ categories }: FiltersPanelProps) {
       <button
         onClick={() => setCategory(null)}
         className={cn(
-          "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+          "max-w-full rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-normal wrap-break-word",
           !currentCategory
             ? "bg-btn-primary text-text-secondary"
             : "bg-card-light text-text-primary hover:bg-card-light/80"
@@ -48,7 +48,7 @@ export function FiltersPanel({ categories }: FiltersPanelProps) {
           key={cat.id}
           onClick={() => setCategory(cat.slug)}
           className={cn(
-            "rounded-full px-4 py-2 text-sm font-medium transition-colors",
+            "max-w-full rounded-full px-4 py-2 text-sm font-medium transition-colors whitespace-normal wrap-break-word",
             currentCategory === cat.slug
               ? "bg-btn-primary text-text-secondary"
               : "bg-card-light text-text-primary hover:bg-card-light/80"

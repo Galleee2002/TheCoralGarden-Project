@@ -42,6 +42,11 @@ export function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, [isTransparentPage]);
+
+  useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
   return (
     <>
       <header
@@ -52,7 +57,7 @@ export function Navbar() {
             : "bg-bg-secondary"
         )}
       >
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
+        <div className="mx-auto flex h-16 w-full max-w-screen-2xl items-center justify-between px-4">
           {/* Logo */}
           <Link href="/" className="relative h-10 w-40 shrink-0">
             <Image
@@ -68,7 +73,7 @@ export function Navbar() {
           </Link>
 
           {/* Desktop nav */}
-          <nav className="hidden items-center gap-8 lg:flex">
+          <nav className="hidden items-center gap-6 xl:gap-8 lg:flex">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -185,7 +190,7 @@ export function Navbar() {
               "bg-bg-secondary/95 backdrop-blur"
             )}
           >
-            <nav className="container mx-auto flex flex-col px-4 py-4">
+            <nav className="mx-auto flex w-full max-w-screen-2xl flex-col px-4 py-4">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}

@@ -1,4 +1,7 @@
+"use client";
+
 import { Droplets } from "lucide-react";
+import { usePathname } from "next/navigation";
 import { Separator } from "@/components/ui/separator";
 import { AdminSidebarNav } from "@/features/admin/components/AdminSidebarNav";
 import { AdminMobileNav } from "@/features/admin/components/AdminMobileNav";
@@ -8,6 +11,12 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const pathname = usePathname();
+
+  if (pathname === "/admin/login") {
+    return <>{children}</>;
+  }
+
   return (
     <div className="flex h-screen flex-col lg:flex-row overflow-hidden">
       {/* Mobile header */}

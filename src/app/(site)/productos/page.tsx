@@ -60,11 +60,11 @@ export default async function ProductsPage({
   return (
     <>
       <div className="pt-16">
-        <div className="container mx-auto px-4 py-section-mobile md:py-section">
+        <div className="mx-auto w-full max-w-screen-2xl px-4 py-section-mobile md:py-section">
           <RevealOnScroll>
             {/* Header row */}
             <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-              <h1 className="font-heading text-[56px] font-black leading-[1.1] text-text-primary uppercase md:text-[64px] lg:text-[96px]">
+              <h1 className="font-heading text-4xl font-black leading-[1.05] text-text-primary uppercase sm:text-5xl md:text-[64px] lg:text-[96px]">
                 PRODUCTOS
               </h1>
               <Suspense>

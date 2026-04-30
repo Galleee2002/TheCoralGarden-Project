@@ -3,10 +3,10 @@ import Image from "next/image";
 export function AboutHero() {
   return (
     <section className="bg-bg-primary py-section-mobile md:py-section">
-      <div className="container mx-auto px-4">
+      <div className="mx-auto w-full max-w-screen-2xl px-4">
         <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
           {/* Imagen */}
-          <div className="relative aspect-[3/4] overflow-hidden rounded-card lg:aspect-auto lg:min-h-[600px]">
+          <div className="relative aspect-3/4 overflow-hidden rounded-card lg:aspect-auto lg:min-h-[600px]">
             <Image
               src="/profile-coral-garden.jpeg"
               alt="Fundadores de The Coral Garden"
@@ -18,7 +18,7 @@ export function AboutHero() {
 
           {/* Contenido */}
           <div className="flex flex-col gap-6">
-            <h1 className="font-heading text-[56px] uppercase leading-none text-text-primary md:text-[80px]">
+            <h1 className="font-heading text-4xl uppercase leading-none text-text-primary sm:text-5xl md:text-[80px]">
               THE CORAL GARDEN
             </h1>
             <div className="flex flex-col gap-4 text-base text-text-primary/80 [&_strong]:font-bold [&_strong]:text-text-primary">

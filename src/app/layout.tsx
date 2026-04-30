@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Montserrat } from "next/font/google";
 import localFont from "next/font/local";
 import "./globals.css";
@@ -56,6 +56,11 @@ export const metadata: Metadata = {
   ],
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+};
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -63,7 +68,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body className={`${montserrat.variable} ${leHavre.variable} font-sans antialiased`}>
+      <body
+        className={`${montserrat.variable} ${leHavre.variable} min-w-0 overflow-x-clip font-sans antialiased`}
+      >
         <Providers>
           {children}
           <Toaster />
