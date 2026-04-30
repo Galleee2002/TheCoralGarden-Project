@@ -24,8 +24,8 @@ export default function AboutPage() {
       {/* Trust section: heading + carrusel */}
       <RevealOnScroll direction="up" delay={0.05}>
         <div className="pt-section-mobile md:pt-section bg-bg-primary mb-10">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="font-heading text-[48px] text-black uppercase md:text-[64px]">
+          <div className="mx-auto w-full max-w-screen-2xl px-4 text-center">
+            <h2 className="font-heading text-4xl text-black uppercase sm:text-5xl md:text-[64px]">
               CONFÍAN EN NOSOTROS
             </h2>
           </div>

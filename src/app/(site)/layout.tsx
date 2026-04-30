@@ -10,7 +10,7 @@ export default function SiteLayout({
   return (
     <>
       <Navbar />
-      <main className="min-h-screen pt-16">{children}</main>
+      <main className="min-h-screen overflow-x-clip pt-16">{children}</main>
       <Footer />
       <WhatsAppButton />
     </>

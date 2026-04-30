@@ -51,14 +51,14 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div>
-      <div className="container mx-auto px-4 py-10">
+      <div className="mx-auto w-full max-w-screen-2xl px-4 py-10">
         {/* Breadcrumb */}
-        <nav className="mb-8 flex items-center gap-1.5 text-sm text-muted-foreground">
+        <nav className="mb-8 flex min-w-0 items-center gap-1.5 text-sm text-muted-foreground">
           <Link href="/productos" className="hover:text-foreground transition-colors">
             Productos
           </Link>
           <ChevronRight className="h-4 w-4" />
-          <span className="text-foreground font-medium">{product.name}</span>
+          <span className="text-foreground block truncate font-medium">{product.name}</span>
         </nav>
 
         {/* Product detail grid */}

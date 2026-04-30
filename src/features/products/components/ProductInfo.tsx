@@ -59,7 +59,7 @@ export function ProductInfo({
     <div className="flex flex-col gap-6">
       {/* Title + Price row */}
       <div className="flex items-start justify-between gap-4">
-        <h1 className="font-heading text-3xl md:text-4xl">{name}</h1>
+        <h1 className="font-heading min-w-0 text-3xl wrap-break-word md:text-4xl">{name}</h1>
         <span className="font-heading text-3xl font-bold whitespace-nowrap">
           {formatPrice(price)}
         </span>
@@ -79,14 +79,14 @@ export function ProductInfo({
       {specifications.length > 0 && (
         <div className="flex flex-col gap-3">
           <h2 className="font-heading text-2xl font-bold">Especificaciones</h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {specifications.map((spec, i) => (
               <div
                 key={i}
                 className="border-border/30 bg-card-light flex items-center gap-2 rounded-lg border p-3 text-sm"
               >
                 <CheckCircle2 className="text-text-primary h-4 w-4 shrink-0" />
-                <span>{spec}</span>
+                <span className="min-w-0 wrap-break-word">{spec}</span>
               </div>
             ))}
           </div>
