@@ -13,6 +13,9 @@ import { isCorreoArgentinoConfigured } from "@/lib/correo-argentino/client";
 type MercadoPagoWebhookBody = {
   type?: string;
   action?: string;
+  topic?: string;
+  id?: string | number;
+  resource?: string;
   data?: { id?: string };
 };
 
@@ -62,11 +65,13 @@ function getWebhookResourceId(
   request: NextRequest,
   body: MercadoPagoWebhookBody
 ): string | undefined {
-  return (
+  const resourceFromQuery =
     request.nextUrl.searchParams.get("data.id") ??
-    request.nextUrl.searchParams.get("id") ??
-    body.data?.id
-  );
+    request.nextUrl.searchParams.get("id");
+  const resourceFromBody = body.data?.id ?? (body.id ? String(body.id) : undefined);
+  const resourceFromPath = body.resource?.split("/").pop();
+
+  return resourceFromQuery ?? resourceFromBody ?? resourceFromPath;
 }
 
 function verifyMPSignature(
@@ -74,7 +79,12 @@ function verifyMPSignature(
   dataId: string | undefined
 ): boolean {
   const secret = process.env.MERCADOPAGO_WEBHOOK_SECRET;
-  if (!secret) return false;
+  if (!secret) {
+    console.warn(
+      "[MP Webhook Warning] MERCADOPAGO_WEBHOOK_SECRET missing, skipping signature verification"
+    );
+    return true;
+  }
 
   const xSignature = request.headers.get("x-signature");
   const xRequestId = request.headers.get("x-request-id");
@@ -103,6 +113,26 @@ function verifyMPSignature(
   );
 }
 
+function shouldProcessPaymentEvent(
+  request: NextRequest,
+  body: MercadoPagoWebhookBody
+): boolean {
+  const queryTopic = request.nextUrl.searchParams.get("topic");
+  const bodyTopic = body.topic;
+  const bodyType = body.type;
+  const action = body.action;
+  const normalizedAction = action?.toLowerCase();
+
+  return (
+    bodyType === "payment" ||
+    bodyTopic === "payment" ||
+    queryTopic === "payment" ||
+    normalizedAction === "payment.updated" ||
+    normalizedAction === "payment.created" ||
+    normalizedAction === "payment"
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     const body = (await request.json()) as MercadoPagoWebhookBody;
@@ -116,11 +146,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (body.type !== "payment" && body.action !== "payment.updated") {
+    if (!shouldProcessPaymentEvent(request, body)) {
+      console.info("[MP Webhook] Ignored non-payment event", {
+        type: body.type,
+        action: body.action,
+        topic: body.topic,
+        queryTopic: request.nextUrl.searchParams.get("topic"),
+      });
       return NextResponse.json({ received: true });
     }
 
     if (!paymentId) {
+      console.warn("[MP Webhook Warning] Missing payment id", {
+        type: body.type,
+        action: body.action,
+        topic: body.topic,
+      });
       return NextResponse.json({ received: true });
     }
 
@@ -133,6 +174,10 @@ export async function POST(request: NextRequest) {
 
     const orderId = payment.external_reference;
     if (!orderId) {
+      console.warn("[MP Webhook Warning] Payment without external_reference", {
+        paymentId,
+        paymentStatus: payment.status,
+      });
       return NextResponse.json({ received: true });
     }
 
@@ -162,6 +207,10 @@ export async function POST(request: NextRequest) {
     });
 
     if (!existingOrder) {
+      console.warn("[MP Webhook Warning] Order not found for payment", {
+        orderId,
+        paymentId,
+      });
       return NextResponse.json({ received: true });
     }
 

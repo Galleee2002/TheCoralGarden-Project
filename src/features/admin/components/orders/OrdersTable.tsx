@@ -30,8 +30,18 @@ type Order = {
   id: string;
   customerName: string;
   customerEmail: string;
+  customerPhone: string;
+  customerStreet: string;
+  customerStreetNumber: string | null;
+  customerFloor: string | null;
+  customerApartment: string | null;
+  customerCity: string;
+  customerProvince: string;
+  customerZip: string;
   status: OrderStatus;
   total: number;
+  mpPreferenceId: string | null;
+  mpPaymentId: string | null;
   createdAt: Date;
   shippingCarrier: string | null;
   shippingDeliveryType: string | null;
@@ -63,6 +73,20 @@ const shippingStatusVariant = (status: string | null) => {
 
 const deliveryLabel = (value: string | null) =>
   value === "D" || value === "S" ? SHIPPING_DELIVERY_LABEL[value] : "Sin definir";
+
+const formatCustomerAddress = (order: Order) => {
+  const street = [order.customerStreet, order.customerStreetNumber]
+    .filter(Boolean)
+    .join(" ");
+  const floorApartment = [order.customerFloor, order.customerApartment]
+    .filter(Boolean)
+    .join(" ");
+  const location = [order.customerCity, order.customerProvince, order.customerZip]
+    .filter(Boolean)
+    .join(", ");
+
+  return [street, floorApartment, location].filter(Boolean).join(" · ");
+};
 
 export function OrdersTable({ orders }: OrdersTableProps) {
   return (
@@ -117,6 +141,19 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                   <div>
                     <p className="text-muted-foreground">Fecha</p>
                     <p className="font-medium text-text-primary">{formatDate(order.createdAt)}</p>
+                  </div>
+                </div>
+                <div className="mt-4 rounded-dropdown bg-card-light p-3 text-sm">
+                  <p className="text-xs font-medium text-muted-foreground">Cliente</p>
+                  <div className="mt-2 space-y-1">
+                    <p className="text-text-primary">{order.customerPhone}</p>
+                    <p className="text-muted-foreground">{formatCustomerAddress(order)}</p>
+                    <p className="text-xs text-muted-foreground">
+                      MP pago: {order.mpPaymentId ?? "Pendiente"}
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      MP pref: {order.mpPreferenceId ?? "Sin preferencia"}
+                    </p>
                   </div>
                 </div>
                 <div className="mt-4 rounded-dropdown bg-card-light p-3 text-sm">
@@ -178,6 +215,15 @@ export function OrdersTable({ orders }: OrdersTableProps) {
                       <div>
                         <p className="font-medium break-words">{order.customerName}</p>
                         <p className="text-xs text-muted-foreground break-words">{order.customerEmail}</p>
+                        <p className="text-xs text-muted-foreground break-words">
+                          {order.customerPhone}
+                        </p>
+                        <p className="text-xs text-muted-foreground break-words">
+                          {formatCustomerAddress(order)}
+                        </p>
+                        <p className="mt-1 text-[11px] text-muted-foreground break-words">
+                          MP pago: {order.mpPaymentId ?? "Pendiente"}
+                        </p>
                       </div>
                     </TableCell>
                     <TableCell noWrap={false}>

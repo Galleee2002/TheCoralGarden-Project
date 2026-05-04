@@ -7,6 +7,7 @@ import {
   Package,
   ShoppingBag,
   Tag,
+  Users,
   Settings,
   ExternalLink,
   LogOut,
@@ -17,6 +18,7 @@ import { Separator } from "@/components/ui/separator";
 const adminLinks = [
   { href: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { href: "/admin/ordenes", label: "Órdenes", icon: ShoppingBag },
+  { href: "/admin/clientes", label: "Clientes", icon: Users },
   { href: "/admin/productos", label: "Productos", icon: Package },
   { href: "/admin/categorias", label: "Categorías", icon: Tag },
   { href: "/admin/configuracion", label: "Configuración", icon: Settings },
