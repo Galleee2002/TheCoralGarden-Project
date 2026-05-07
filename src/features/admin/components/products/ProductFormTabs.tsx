@@ -72,6 +72,27 @@ function toSlug(name: string) {
     .replace(/^-|-$/g, "");
 }
 
+function fieldLabel(field: keyof FormValues) {
+  const labels: Record<keyof FormValues, string> = {
+    name: "Nombre",
+    slug: "Slug",
+    description: "Descripción",
+    price: "Precio",
+    stock: "Stock",
+    shippingWeightGrams: "Peso",
+    shippingHeightCm: "Alto",
+    shippingWidthCm: "Ancho",
+    shippingLengthCm: "Largo",
+    images: "Imágenes",
+    specifications: "Especificaciones",
+    categoryId: "Categoría",
+    featured: "Destacado",
+    active: "Activo",
+  };
+
+  return labels[field];
+}
+
 export function ProductFormTabs({ categories, mode, defaultValues }: ProductFormTabsProps) {
   const router = useRouter();
   const [categoryList, setCategoryList] = useState<CategoryOption[]>(categories);
@@ -99,9 +120,7 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
   });
 
   const handleNameChange = (name: string) => {
-    if (mode === "create") {
-      form.setValue("slug", toSlug(name), { shouldValidate: false });
-    }
+    form.setValue("slug", toSlug(name), { shouldValidate: false });
   };
 
   const handleCategoryCreated = (cat: { id: string; name: string; slug: string }) => {
@@ -139,6 +158,42 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
     }
   };
 
+  const onInvalid = (errors: typeof form.formState.errors) => {
+    const fieldKeys = Object.keys(errors) as (keyof FormValues)[];
+    const requiredFields = fieldKeys
+      .map((field) => fieldLabel(field))
+      .slice(0, 4);
+
+    if (
+      errors.name ||
+      errors.slug ||
+      errors.description ||
+      errors.categoryId
+    ) {
+      setActiveTab("basico");
+    } else if (
+      errors.price ||
+      errors.stock ||
+      errors.shippingWeightGrams ||
+      errors.shippingHeightCm ||
+      errors.shippingWidthCm ||
+      errors.shippingLengthCm
+    ) {
+      setActiveTab("precios");
+    } else if (errors.images) {
+      setActiveTab("media");
+    } else if (errors.specifications) {
+      setActiveTab("specs");
+    }
+
+    if (requiredFields.length > 0) {
+      toast.error(`Completá los campos obligatorios: ${requiredFields.join(", ")}`);
+      return;
+    }
+
+    toast.error("Completá los campos obligatorios para guardar el producto");
+  };
+
   const errors = form.formState.errors;
   const basicHasError = !!(errors.name || errors.slug || errors.description || errors.categoryId);
   const pricingHasError = !!(
@@ -156,7 +211,7 @@ export function ProductFormTabs({ categories, mode, defaultValues }: ProductForm
 
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit, onInvalid)} className="space-y-6">
         <Tabs value={activeTab} onValueChange={setActiveTab}>
           <TabsList className="h-auto w-full justify-start gap-1 overflow-x-auto overflow-y-hidden whitespace-nowrap rounded-card bg-card-light p-1">
             <TabsTrigger value="basico" className={tabTriggerClassName}>
