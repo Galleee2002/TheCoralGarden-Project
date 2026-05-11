@@ -5,7 +5,7 @@ export function MiniBanner() {
         <p className="text-text-primary font-sans text-sm font-bold tracking-wide uppercase sm:text-base">
           ¿Querés trabajar con nosotros? ¡Contáctanos!{" "}
           <span className="text-bg-secondary block font-medium sm:inline">
-            (+54 9 11 3953-6736)
+            (+54 9 11 3664-7107)
           </span>
         </p>
       </div>
